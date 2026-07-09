@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IOQUE — Neo Artesanal</title>
+  <link rel="icon" type="image/png" href="/static/img/logoicon.png" />
+  <link rel="shortcut icon" href="/static/img/logoicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
+  <style>
+    :root {
+      --bg: #080706; --surface: #151310; --surface-warm: #241e14;
+      --fg: #fff8ea; --fg-2: #d8cdb7; --muted: #9f927c;
+      --meta: #c6a15b; --accent: #c6a15b; --accent-on: #080706;
+      --border: #3a3020; --border-soft: #282217;
+      --success: #5fa36a; --warn: #d8a94f; --danger: #d85a52;
+      --font-display: "Playfair Display", Georgia, serif;
+      --font-body: Inter, system-ui, sans-serif;
+      --text-xs: 13px; --text-sm: 15px; --text-base: 18px; --text-lg: 22px;
+      --text-xl: 28px; --text-2xl: 44px; --text-3xl: 68px; --text-4xl: 96px;
+      --leading-body: 1.6; --leading-tight: 0.98;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-12: 48px;
+      --radius-sm: 8px; --radius-md: 14px; --radius-lg: 24px; --radius-pill: 9999px;
+      --elev-flat: none; --elev-raised: 0 30px 90px rgba(0,0,0,0.52);
+      --focus-ring: 0 0 0 4px rgba(198,161,91,0.30);
+      --motion-fast: 180ms; --motion-base: 300ms;
+      --container-max: 1280px; --section-y: 120px;
+    }
+    .theme-warm {
+      --bg: #FAF3DF; --surface: #FFFAF0; --surface-warm: #EFE0BD;
+      --fg: #211B12; --fg-2: #504737; --muted: #7C7160;
+      --meta: #8F5D24; --accent: #8F5D24; --accent-on: #FFFFFF;
+      --border: #DDD0B4; --border-soft: #EEE3CD;
+      --success: #5B8D42; --warn: #C27B22; --danger: #A64036;
+      --font-display: Georgia, "Times New Roman", serif;
+      --elev-raised: 0 18px 42px rgba(33,27,18,0.12);
+      --focus-ring: 0 0 0 4px rgba(143,93,36,0.24);
+    }
+    .theme-warm .glass { background: rgba(255,250,240,0.75); backdrop-filter: blur(16px); }
+    .theme-warm .glass-card { background: rgba(255,250,240,0.6); backdrop-filter: blur(12px); border: 1px solid var(--border-soft); }
+    .theme-warm .glass-dark { background: rgba(250,243,223,0.85); backdrop-filter: blur(20px); }
+    .theme-warm .navbar { background: rgba(250,243,223,0.82); border-bottom-color: var(--border-soft); }
+    .theme-warm .nav-links a { color: var(--fg-2); }
+    .theme-warm .logo-box { border-color: rgba(143,93,36,0.25); color: var(--accent); }
+    .theme-warm .mobile-menu { background: rgba(250,243,223,0.97); }
+    .theme-warm .hero-bg { opacity: 0.15; }
+    .theme-warm .cart-sidebar { background: var(--surface); }
+    .theme-warm .footer { border-top-color: var(--border-soft); background: var(--bg); }
+    .theme-warm .cart-item { background: rgba(33,27,18,0.02); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body); background: var(--bg); color: var(--fg);
+      font-size: var(--text-base); line-height: var(--leading-body);
+      -webkit-font-smoothing: antialiased;
+      transition: background var(--motion-base), color var(--motion-base);
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-pill); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--space-6); }
+    @media (min-width: 1024px) { .container { padding: 0 var(--space-12); } }
+
+    .spotlight {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 100vmax; height: 100vmax;
+      background:
+        radial-gradient(ellipse 60% 50% at 30% 20%, rgba(198,161,91,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 70% 80%, rgba(198,161,91,0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(198,161,91,0.025) 0%, transparent 40%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .glass { background: rgba(21,19,16,0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .glass-card { background: rgba(21,19,16,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-soft); }
+    .glass-dark { background: rgba(8,7,6,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .section-label {
+      font-family: var(--font-body); font-size: var(--text-xs);
+      letter-spacing: 0.4em; text-transform: uppercase; color: var(--meta);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700;
+      color: var(--fg); margin-top: var(--space-6); margin-bottom: var(--space-5);
+      line-height: var(--leading-tight);
+    }
+    .gold-divider { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+
+    .card-hover {
+      transition: all var(--motion-base) cubic-bezier(0.22,1,0.36,1);
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      border-color: rgba(198,161,91,0.25);
+      box-shadow: var(--elev-raised);
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(8,7,6,0.82); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .navbar-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+    .nav-links { display: none; gap: var(--space-10, 40px); }
+    @media (min-width: 768px) { .nav-links { display: flex; } }
+    .nav-links a {
+      font-family: var(--font-body); font-size: var(--text-sm);
+      color: var(--muted); text-decoration: none; text-transform: uppercase;
+      letter-spacing: 0.1em; transition: color var(--motion-fast);
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a.active { color: var(--accent); }
+    .logo-box {
+      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(198,161,91,0.25); border-radius: var(--radius-sm);
+      color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg);
+      text-decoration: none; transition: all var(--motion-base);
+    }
+    .logo-box:hover { border-color: var(--accent); box-shadow: 0 0 30px rgba(198,161,91,0.15); }
+    .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: var(--space-2); transition: color var(--motion-fast); }
+    .nav-btn:hover { color: var(--accent); }
+    .lang-select { background: transparent; color: var(--muted); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2); font-family: var(--font-body); font-size: var(--text-sm); cursor: pointer; transition: color var(--motion-fast), border-color var(--motion-fast); }
+    .lang-select:hover { color: var(--accent); border-color: var(--accent); }
+    .lang-select option { background: var(--surface); color: var(--text); }
+    .cart-badge {
+      position: absolute; top: -4px; right: -4px; width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; border-radius: 50%;
+      background: var(--accent); color: var(--accent-on);
+    }
+    .mobile-menu {
+      display: none; padding: var(--space-5) var(--space-6);
+      background: rgba(8,7,6,0.97); border-top: 1px solid var(--border-soft);
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block; padding: var(--space-3) 0;
+      font-family: var(--font-body); font-size: var(--text-sm);
+      color: var(--muted); text-decoration: none; text-transform: uppercase;
+      letter-spacing: 0.1em; transition: color var(--motion-fast);
+    }
+    .mobile-menu a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; padding-top: 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 40% at 50% 15%, rgba(198,161,91,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 30% 70%, rgba(198,161,91,0.03) 0%, transparent 50%),
+        url('/static/img/bacnground.png') center/cover;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+    .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 var(--space-6); max-width: 900px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-block; font-family: var(--font-body); font-size: var(--text-xs);
+      letter-spacing: 0.4em; text-transform: uppercase; color: rgba(198,161,91,0.5);
+      margin-bottom: var(--space-6);
+    }
+    .hero-title {
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 7vw, 13.65rem);
+      font-weight: 700; line-height: 1.1; color: var(--fg);
+      letter-spacing: 0.08em;
+    }
+    .hero-title span {
+      display: inline-block;
+      opacity: 0;
+      animation: letterAppear 0.4s ease both;
+      animation-delay: calc(0.6s + (var(--i) * 0.3s));
+    }
+    .hero-logo {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      vertical-align: middle;
+      background: url('/static/img/logof.png') center / contain no-repeat;
+      border-radius: 0.15em;
+    }
+    .hero-title::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 20%,
+        rgba(255, 255, 255, 0.12) 45%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.12) 55%,
+        transparent 80%,
+        transparent 100%
+      );
+      transform: translateX(-100%);
+      animation: shineEffect 0.8s ease-in-out 2.2s forwards;
+    }
+    .theme-warm .hero-title::after {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 20%,
+        rgba(33, 27, 18, 0.06) 45%,
+        rgba(33, 27, 18, 0.12) 50%,
+        rgba(33, 27, 18, 0.06) 55%,
+        transparent 80%,
+        transparent 100%
+      );
+    }
+    .hero-subtitle {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: clamp(2rem, 3.6vw, 3rem);
+      font-weight: 400; color: rgba(255,248,234,0.45); margin-top: var(--space-2);
+    }
+    .hero-tagline {
+      font-family: var(--font-display); font-size: var(--text-xl); font-style: italic;
+      color: var(--accent); opacity: 0.8; margin: var(--space-6) 0;
+    }
+    .hero-text {
+      font-family: var(--font-body); font-size: var(--text-base);
+      color: var(--muted); max-width: 600px; margin: 0 auto var(--space-8);
+      line-height: var(--leading-body);
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      padding: 16px 40px; background: var(--accent); color: var(--accent-on);
+      font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm);
+      text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none;
+      border-radius: var(--radius-sm); transition: all var(--motion-base);
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover { box-shadow: 0 0 40px rgba(198,161,91,0.25), var(--elev-raised); transform: translateY(-2px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      padding: 16px 40px; background: transparent; color: var(--muted);
+      font-family: var(--font-display); font-weight: 600; font-size: var(--text-sm);
+      text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none;
+      border-radius: var(--radius-sm); transition: all var(--motion-base);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--fg); }
+    .btn-gold-border {
+      display: inline-flex; align-items: center; gap: var(--space-2); justify-content: center;
+      padding: 12px 24px; background: transparent; color: var(--accent);
+      font-family: var(--font-display); font-weight: 600; font-size: var(--text-sm);
+      text-transform: uppercase; letter-spacing: 0.06em; text-decoration: none;
+      border-radius: var(--radius-sm); transition: all var(--motion-fast);
+      border: 1px solid rgba(198,161,91,0.3); cursor: pointer; width: 100%;
+    }
+    .btn-gold-border:hover { background: rgba(198,161,91,0.1); border-color: var(--accent); }
+    .hero-social {
+      display: flex; align-items: center; justify-content: center; gap: var(--space-6);
+      margin-top: var(--space-12);
+    }
+    .hero-social a {
+      font-family: var(--font-body); font-size: var(--text-sm); color: rgba(255,248,234,0.15); letter-spacing: 0.05em;
+      text-decoration: none; transition: color var(--motion-fast);
+    }
+    .hero-social a:hover { color: var(--accent); }
+    .hero-social .sep { color: rgba(198,161,91,0.25); }
+    .bounce-chevron {
+      position: absolute; bottom: var(--space-8); left: 50%; transform: translateX(-50%);
+      color: rgba(255,248,234,0.12); animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    @keyframes letterAppear {
+      0%   { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes shineEffect {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    @keyframes dividerExpand {
+      0%   { transform: scaleX(0); opacity: 0; }
+      100% { transform: scaleX(1); opacity: 1; }
+    }
+    @keyframes heroFadeIn {
+      0%   { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-content .gold-divider {
+      transform: scaleX(0);
+      animation: dividerExpand 0.6s ease 2.4s forwards;
+    }
+    .hero-subtitle span {
+      display: inline-block;
+      opacity: 0;
+      animation: letterAppear 0.3s ease both;
+      animation-delay: calc(2.7s + (var(--i) * 0.08s));
+    }
+    .hero-subtitle-space {
+      width: 0.45em;
+    }
+    .hero-badge {
+      opacity: 0;
+      animation: heroFadeIn 0.5s ease 0.2s forwards;
+    }
+    .hero-tagline {
+      opacity: 0;
+      animation: heroFadeIn 0.6s ease 2.9s forwards;
+    }
+    .hero-text {
+      opacity: 0;
+      animation: heroFadeIn 0.6s ease 3.1s forwards;
+    }
+    .hero-content .btn-primary {
+      opacity: 0;
+      animation: heroFadeIn 0.5s ease 3.3s forwards;
+    }
+    .hero-content .btn-secondary {
+      opacity: 0;
+      animation: heroFadeIn 0.5s ease 3.5s forwards;
+    }
+    .hero-social {
+      opacity: 0;
+      animation: heroFadeIn 0.6s ease 3.7s forwards;
+    }
+
+    /* ESENCIA */
+    .section { padding: var(--section-y) 0; position: relative; }
+    .section-dark { background: rgba(8,7,6,0.5); }
+    .value-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-5); margin-top: var(--space-12); }
+    @media (min-width: 768px) { .value-grid { grid-template-columns: repeat(3, 1fr); } }
+    .value-card {
+      position: relative;
+      padding: var(--space-10, 40px); border-radius: var(--radius-md);
+      background: rgba(21,19,16,0.5); border: 1px solid var(--border-soft);
+      transition: all var(--motion-base) cubic-bezier(0.22,1,0.36,1);
+    }
+    .value-card-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background-size: cover; background-position: center;
+      opacity: 0.2; border-radius: var(--radius-md);
+      pointer-events: none;
+    }
+    .value-card > :not(.value-card-bg) { position: relative; z-index: 1; }
+    .value-card:hover { transform: translateY(-6px); border-color: rgba(198,161,91,0.2); box-shadow: var(--elev-raised); }
+    .value-icon {
+      width: 64px; height: 64px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      background: rgba(198,161,91,0.08); border: 1px solid rgba(198,161,91,0.12); margin-bottom: var(--space-5);
+      overflow: hidden;
+    }
+
+    .value-number { font-family: var(--font-body); font-size: var(--text-xs); letter-spacing: 0.3em; text-transform: uppercase; color: rgba(198,161,91,0.35); }
+    .value-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--fg); margin: var(--space-2) 0 var(--space-3); }
+    .value-text { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); line-height: var(--leading-body); }
+    .process-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      border-radius: var(--radius-md); overflow: hidden;
+      border: 1px solid rgba(198,161,91,0.08); margin-top: var(--space-12);
+    }
+    @media (min-width: 768px) { .process-grid { grid-template-columns: repeat(4, 1fr); } }
+    .process-step {
+      padding: var(--space-8); text-align: center;
+      background: rgba(21,19,16,0.4); transition: background var(--motion-fast);
+    }
+    .process-step:hover { background: rgba(21,19,16,0.7); }
+    .process-step:not(:last-child) { border-right: none; }
+    @media (min-width: 768px) { .process-step { border-right: 1px solid var(--border-soft); } }
+    .process-step:last-child { border-right: none; }
+    .process-number { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: 700; color: var(--accent); line-height: 1; }
+    .process-label { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); margin-top: var(--space-2); }
+
+    /* CATÁLOGO */
+    .product-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-5); margin-top: var(--space-12); }
+    @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    .product-card {
+      display: flex; flex-direction: column; border-radius: var(--radius-md);
+      background: rgba(21,19,16,0.4); border: 1px solid var(--border-soft);
+      overflow: hidden; transition: all var(--motion-base) cubic-bezier(0.22,1,0.36,1);
+    }
+    .product-card:hover { transform: translateY(-4px); border-color: rgba(198,161,91,0.2); box-shadow: var(--elev-raised); }
+    @media (min-width: 1024px) { .product-card { flex-direction: row; } }
+    .product-img-wrap {
+      overflow: hidden; position: relative;
+      aspect-ratio: 1/1;
+    }
+    @media (min-width: 1024px) { .product-img-wrap { width: 50%; aspect-ratio: auto; min-height: 280px; } }
+    .product-img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      position: relative; z-index: 2;
+    }
+    .product-img-back {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center; z-index: 1;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      opacity: 0;
+    }
+    .product-card:hover .product-img { transform: scale(1.06); }
+    .product-card:hover .product-img-back { transform: scale(1.06); }
+    .product-card:hover .product-img-wrap.crossfade .product-img { opacity: 0; }
+    .product-card:hover .product-img-wrap.crossfade .product-img-back { opacity: 1; }
+    .product-info {
+      padding: var(--space-5); display: flex; flex-direction: column; justify-content: center;
+    }
+    @media (min-width: 1024px) { .product-info { width: 50%; } }
+    .product-name { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--fg); }
+    .product-price { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: var(--text-lg); }
+    .product-phrase { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); font-style: italic; margin: var(--space-1) 0 var(--space-4); }
+    .product-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-1); }
+
+    /* Loading state */
+    .catalog-loading { text-align: center; padding: 60px 0; color: var(--muted); font-family: var(--font-body); }
+    .catalog-loading i { font-size: 2rem; margin-bottom: var(--space-4); display: block; opacity: 0.3; }
+    .catalog-empty { text-align: center; padding: 60px 0; color: var(--muted); font-family: var(--font-body); }
+    .catalog-empty i { font-size: 2rem; margin-bottom: var(--space-4); display: block; opacity: 0.3; }
+    .pagination { display: flex; }
+    .btn-pagination { background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: all 0.2s; }
+    .btn-pagination:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-pagination:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* HISTORIAS */
+    .story-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-5); margin-top: var(--space-12); }
+    @media (min-width: 768px) { .story-grid { grid-template-columns: repeat(3, 1fr); } }
+    .story-card {
+      position: relative; border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+      background: rgba(21,19,16,0.4); border: 1px solid var(--border-soft);
+      transition: all var(--motion-base) cubic-bezier(0.22,1,0.36,1);
+    }
+    .story-card:hover { transform: translateY(-6px); border-color: rgba(198,161,91,0.2); box-shadow: var(--elev-raised); }
+    .story-card-inner { aspect-ratio: 4/5; position: relative; }
+    .story-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+    .story-card:hover .story-img { transform: scale(1.05); }
+    .story-gradient { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(8,7,6,0.92)); }
+    .story-label { position: absolute; bottom: var(--space-6); left: var(--space-6); }
+    .story-breed { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.35); letter-spacing: 0.15em; text-transform: uppercase; }
+    .story-name { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 700; color: var(--fg); margin-top: var(--space-1); }
+    .story-play {
+      position: absolute; top: var(--space-6); right: var(--space-6);
+      width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(198,161,91,0.25); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      background: rgba(21,19,16,0.4);
+    }
+    .story-play i { color: var(--accent); font-size: var(--text-sm); }
+
+    /* STORY MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 60;
+      display: flex; align-items: center; justify-content: center; padding: var(--space-6);
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(8,7,6,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    .modal-content {
+      position: relative; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;
+      border-radius: var(--radius-lg); background: var(--surface);
+      border: 1px solid rgba(198,161,91,0.12);
+      box-shadow: 0 0 80px rgba(0,0,0,0.7);
+    }
+    .modal-close {
+      position: absolute; top: var(--space-5); right: var(--space-5); z-index: 2;
+      width: 44px; height: 44px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,248,234,0.5); cursor: pointer; transition: all var(--motion-fast);
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.08); color: var(--fg); }
+    .modal-header {
+      height: 260px; display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .modal-header-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(8,7,6,0.92)); }
+    .modal-header-icon { color: rgba(255,248,234,0.06); font-size: 5rem; }
+    .modal-header-text { position: absolute; bottom: var(--space-8); left: var(--space-8); }
+    .modal-header-breed { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.35); text-transform: uppercase; letter-spacing: 0.15em; }
+    .modal-header-title { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: 700; color: var(--fg); margin-top: var(--space-1); }
+    .modal-header-qr {
+      position: absolute; bottom: var(--space-8); right: var(--space-8);
+      width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .modal-header-qr i { color: rgba(255,248,234,0.2); font-size: var(--text-lg); }
+    .modal-body { padding: var(--space-10); }
+    .modal-italics { font-family: var(--font-display); font-size: var(--text-lg); font-style: italic; color: rgba(198,161,91,0.65); }
+    .modal-body-divider { width: 48px; height: 1px; background: var(--accent); margin: var(--space-5) 0; }
+    .modal-body p { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); line-height: var(--leading-body); margin-bottom: var(--space-5); }
+    .modal-qr-box {
+      display: flex; align-items: flex-start; gap: var(--space-4);
+      padding: var(--space-6); border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-soft);
+    }
+    .modal-qr-box i { color: var(--accent); font-size: var(--text-lg); margin-top: 2px; }
+    .modal-qr-box p { font-size: var(--text-xs); margin-bottom: 0; }
+    .modal-qr-box strong { color: rgba(255,248,234,0.5); }
+
+    /* CART */
+    .cart-overlay {
+      position: fixed; inset: 0; z-index: 70;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .cart-overlay.active { opacity: 1; pointer-events: all; }
+    .cart-backdrop { position: absolute; inset: 0; background: rgba(8,7,6,0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .cart-sidebar {
+      position: absolute; top: 0; right: 0; width: 100%; max-width: 480px; height: 100%;
+      background: var(--surface); border-left: 1px solid var(--border-soft);
+      transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+      display: flex; flex-direction: column;
+    }
+    .cart-sidebar.active { transform: translateX(0); }
+    .cart-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-8); border-bottom: 1px solid var(--border-soft);
+    }
+    .cart-header h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--fg); display: flex; align-items: center; gap: var(--space-3); }
+    .cart-header h2 i { color: var(--accent); }
+    .cart-items { flex: 1; overflow-y: auto; padding: var(--space-6); }
+    .cart-empty {
+      text-align: center; padding: 64px 0;
+    }
+    .cart-empty i { font-size: 3rem; color: rgba(255,248,234,0.06); margin-bottom: var(--space-4); }
+    .cart-empty p { font-family: var(--font-body); color: rgba(255,248,234,0.15); }
+    .cart-item {
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-4); border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-soft); margin-bottom: var(--space-3);
+    }
+    .cart-item-avatar {
+      width: 56px; height: 56px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      background: rgba(198,161,91,0.12); color: var(--accent);
+      font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); flex-shrink: 0;
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-unit { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.2); }
+    .cart-qty { display: flex; align-items: center; gap: var(--space-2); }
+    .cart-qty button {
+      width: 32px; height: 32px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04); border: none; color: var(--muted); cursor: pointer; transition: color var(--motion-fast);
+    }
+    .cart-qty button:hover { color: var(--fg); }
+    .cart-qty span { font-family: var(--font-display); font-size: var(--text-base); color: var(--fg); width: 20px; text-align: center; font-weight: 600; }
+    .cart-item-total { text-align: right; }
+    .cart-item-price { font-family: var(--font-display); font-weight: 600; color: var(--accent); font-size: var(--text-sm); }
+    .cart-item-remove { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.2); cursor: pointer; background: none; border: none; transition: color var(--motion-fast); }
+    .cart-item-remove:hover { color: var(--danger); }
+    .cart-footer {
+      padding: var(--space-6) var(--space-8); border-top: 1px solid var(--border-soft);
+    }
+    .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); }
+    .cart-total-label { font-family: var(--font-body); color: var(--muted); }
+    .cart-total-amount { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--accent); }
+
+    .payment-tabs {
+      display: flex; gap: 4px; padding: 4px; margin-bottom: var(--space-5);
+      border-radius: var(--radius-sm); background: rgba(255,255,255,0.02); border: 1px solid var(--border-soft);
+    }
+    .payment-tab-btn {
+      flex: 1; padding: 12px; text-align: center; font-family: var(--font-display);
+      font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      border-radius: var(--radius-sm); border: none; cursor: pointer; transition: all var(--motion-fast);
+      background: transparent; color: var(--muted);
+    }
+    .payment-tab-btn.active { background: rgba(198,161,91,0.12); color: var(--accent); }
+    .payment-tab-btn:hover:not(.active) { color: var(--fg); }
+
+    .form-input {
+      width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft);
+      color: var(--fg); font-family: var(--font-body); font-size: var(--text-sm);
+      outline: none; transition: border-color var(--motion-fast);
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: rgba(255,248,234,0.15); }
+    .btn-pay {
+      width: 100%; margin-top: var(--space-4); padding: 16px;
+      border-radius: var(--radius-sm); font-family: var(--font-display);
+      font-weight: 700; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.06em;
+      border: none; cursor: pointer; transition: all var(--motion-fast);
+      background: var(--accent); color: var(--accent-on);
+    }
+    .btn-pay:hover { box-shadow: 0 0 30px rgba(198,161,91,0.2); transform: translateY(-1px); }
+    .btn-pay-paypal {
+      width: 100%; padding: 16px; border-radius: var(--radius-sm);
+      font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm);
+      text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all var(--motion-fast);
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--fg);
+    }
+    .btn-pay-paypal:hover { border-color: var(--accent); }
+    .btn-pay-mp {
+      width: 100%; padding: 16px; border-radius: var(--radius-sm);
+      font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm);
+      text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all var(--motion-fast);
+      background: rgba(95,163,106,0.1); border: 1px solid rgba(95,163,106,0.2); color: var(--success);
+    }
+    .btn-pay-mp:hover { background: rgba(95,163,106,0.15); border-color: var(--success); }
+    .cart-security { text-align: center; font-size: var(--text-xs); color: rgba(255,248,234,0.12); margin-top: var(--space-3); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: var(--space-6); right: var(--space-6); z-index: 9999;
+      padding: 16px 28px; border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--fg);
+      border: 1px solid rgba(198,161,91,0.2);
+      box-shadow: var(--elev-raised);
+      font-family: var(--font-body); font-size: var(--text-sm);
+      transform: translateY(100px); opacity: 0;
+      transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* FOOTER */
+    .footer { border-top: 1px solid var(--border-soft); background: var(--bg); }
+    .footer-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-8); padding: 64px 0; }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+    .footer-brand { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--accent); }
+    .footer-text { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); margin-top: var(--space-3); line-height: var(--leading-body); }
+    .footer-tagline { font-family: var(--font-display); font-size: var(--text-xs); font-style: italic; color: rgba(198,161,91,0.3); margin-top: var(--space-3); }
+    .footer-heading { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: rgba(255,248,234,0.45); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: var(--space-4); }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: var(--space-2); }
+    .footer-links a { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); text-decoration: none; transition: color var(--motion-fast); }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-social { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+    .footer-social a {
+      width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-soft);
+      color: var(--muted); text-decoration: none; transition: all var(--motion-fast);
+    }
+    .footer-social a:hover { transform: scale(1.1); }
+    .footer-payment { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+    .footer-payment span {
+      padding: 6px 12px; border-radius: var(--radius-sm); font-size: var(--text-xs);
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-soft);
+      color: var(--muted); font-family: var(--font-body);
+    }
+    .footer-bottom {
+      padding: var(--space-8) 0; border-top: 1px solid var(--border-soft);
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+    }
+    @media (min-width: 640px) { .footer-bottom { flex-direction: row; justify-content: space-between; } }
+    .footer-copy { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.15); }
+    .footer-legal { display: flex; gap: var(--space-5); }
+    .footer-legal span { font-family: var(--font-body); font-size: var(--text-xs); color: rgba(255,248,234,0.15); cursor: pointer; transition: color var(--motion-fast); }
+    .footer-legal span:hover { color: rgba(255,248,234,0.3); }
+
+    .proximamente { position: relative; }
+    .proximamente::after {
+      content: "próximamente";
+      position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-body); font-size: 8px; text-transform: uppercase;
+      letter-spacing: 0.05em; color: rgba(255,248,234,0.2);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767px) {
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="spotlight"></div>
+<div id="toast" class="toast"></div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="#" class="logo-box" style="border-color: rgba(198,161,91,0.3);">IO</a>
+      <div class="nav-links">
+        <a href="#esencia" data-i18n="nav_esencia">Esencia</a>
+        <a href="#catalogo" data-i18n="nav_catalogo">Catálogo</a>
+        <a href="#historias" data-i18n="nav_historias">Historias</a>
+        <a href="#contacto" data-i18n="nav_contacto">Contacto</a>
+        <button onclick="toggleTheme()" class="nav-btn" title="Cambiar tema">
+          <i id="theme-icon" class="fa-solid fa-sun" style="font-size:var(--text-lg);"></i>
+        </button>
+        <select onchange="changeLang(this.value)" class="lang-select" id="lang-select-nav" aria-label="Idioma">
+          <option value="es">🇪🇸 ES</option>
+          <option value="en">🇺🇸 EN</option>
+          <option value="pt">🇵🇹 PT</option>
+          <option value="fr">🇫🇷 FR</option>
+        </select>
+        <button onclick="toggleCart()" class="nav-btn" style="position:relative;">
+          <i class="fa-solid fa-bag-shopping" style="font-size:var(--text-lg);"></i>
+          <span id="cart-count-nav" class="cart-badge">0</span>
+        </button>
+      </div>
+      <div style="display:flex;gap:var(--space-2);align-items:center;">
+        <button onclick="toggleCart()" class="nav-btn" style="position:relative;display:block;">
+          <i class="fa-solid fa-bag-shopping" style="font-size:var(--text-lg);"></i>
+          <span id="cart-count-mob" class="cart-badge">0</span>
+        </button>
+        <button onclick="toggleMobileMenu()" class="nav-btn" style="display:block;">
+          <i class="fa-solid fa-bars" style="font-size:var(--text-lg);"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="mobile-menu">
+    <a href="#esencia" onclick="closeMobileMenu()" data-i18n="nav_esencia">Esencia</a>
+    <a href="#catalogo" onclick="closeMobileMenu()" data-i18n="nav_catalogo">Catálogo</a>
+    <a href="#historias" onclick="closeMobileMenu()" data-i18n="nav_historias">Historias</a>
+    <a href="#contacto" onclick="closeMobileMenu()" data-i18n="nav_contacto">Contacto</a>
+    <div style="display:flex;gap:var(--space-4);margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--border-soft);">
+      <button onclick="toggleTheme();closeMobileMenu()" class="nav-btn" style="display:flex;align-items:center;gap:var(--space-2);">
+        <i id="theme-icon-mob" class="fa-solid fa-sun"></i>
+        <span data-i18n="theme_toggle">Tema</span>
+      </button>
+      <select onchange="changeLang(this.value);closeMobileMenu()" class="lang-select" id="lang-select-mob" aria-label="Idioma" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-1) var(--space-2);font-family:var(--font-body);font-size:var(--text-sm);cursor:pointer;">
+        <option value="es">🇪🇸 ES</option>
+        <option value="en">🇺🇸 EN</option>
+        <option value="pt">🇵🇹 PT</option>
+        <option value="fr">🇫🇷 FR</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-badge" data-i18n="hero_badge">Edición Limitada · Hecho a Mano</span>
+    <h1 class="hero-title">
+      <span style="--i: 0">I</span>
+      <span style="--i: 1" class="hero-logo" aria-label="O"></span>
+      <span style="--i: 2">Q</span>
+      <span style="--i: 3">U</span>
+      <span style="--i: 4">E</span>
+    </h1>
+    <div class="hero-subtitle" data-i18n="hero_subtitle">
+      <span style="--i: 0">A</span>
+      <span style="--i: 1">R</span>
+      <span style="--i: 2">T</span>
+      <span style="--i: 3">E</span>
+      <span style="--i: 4">S</span>
+      <span style="--i: 5">A</span>
+      <span style="--i: 6">N</span>
+      <span style="--i: 7">Í</span>
+      <span style="--i: 8">A</span>
+      <span class="hero-subtitle-space" style="--i: 9">&nbsp;</span>
+      <span style="--i: 10">E</span>
+      <span style="--i: 11">N</span>
+      <span class="hero-subtitle-space" style="--i: 12">&nbsp;</span>
+      <span style="--i: 13">C</span>
+      <span style="--i: 14">U</span>
+      <span style="--i: 15">E</span>
+      <span style="--i: 16">R</span>
+      <span style="--i: 17">O</span>
+    </div>
+    <div class="gold-divider" style="margin:var(--space-6) auto;"></div>
+    <p class="hero-tagline" data-i18n="hero_tagline">"El lazo que nos une"</p>
+    <p class="hero-text" data-i18n="hero_text">Cuero · Hilo · Aguja · Cada llavero es una pieza única de arte portable.</p>
+    <div style="display:flex;flex-direction:column;gap:var(--space-4);align-items:center;justify-content:center;">
+      <div style="display:flex;flex-direction:column;sm:flex-direction:row;gap:var(--space-4);">
+        <a href="#catalogo" class="btn-primary" data-i18n="hero_explorar"><i class="fa-solid fa-arrow-right"></i> Explorar</a>
+        <a href="#historias" class="btn-secondary" data-i18n="hero_historias_btn"><i class="fa-solid fa-play"></i> Historias</a>
+      </div>
+    </div>
+    <div class="hero-social">
+      <a href="https://www.instagram.com/ioqueartesanias/" target="_blank" data-i18n="social_instagram">Instagram</a><span class="sep">/</span>
+      <a href="https://www.tiktok.com/@ioqueartesanias" target="_blank" data-i18n="social_tiktok">TikTok</a><span class="sep">/</span>
+      <a href="https://youtube.com/@ioqueartesanias" target="_blank" data-i18n="social_youtube">YouTube</a><span class="sep">/</span>
+      <a href="https://www.facebook.com/people/IOQUE-Artesanias/61581278192834/" target="_blank" data-i18n="social_facebook">Facebook</a>
+    </div>
+  </div>
+  <div class="bounce-chevron">
+    <i class="fa-solid fa-chevron-down"></i>
+  </div>
+</section>
+
+<!-- ESENCIA -->
+<section id="esencia" class="section">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="esencia_label">// 001</span>
+      <h2 class="section-title" data-i18n="esencia_title">La <span style="color:var(--accent);">materia</span> del arte</h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="esencia_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        No hay dos piezas iguales. Cada llavero es el resultado de un diálogo entre la mano y la materia.
+      </p>
+    </div>
+    <div class="value-grid">
+      <div class="value-card reveal" style="transition-delay:0.1s">
+        <div class="value-card-bg" style="background-image:url(/static/img/corte.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <span class="value-number">01</span>
+        <h3 class="value-title" data-i18n="esencia_valor1_title">Cuero</h3>
+        <p class="value-text" data-i18n="esencia_valor1_text">Seleccionado, cortado, trabajado. Cada pieza cuenta su propia historia antes de ser llavero.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.2s">
+        <div class="value-card-bg" style="background-image:url(/static/img/coser.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-link"></i></div>
+        <span class="value-number">02</span>
+        <h3 class="value-title" data-i18n="esencia_valor2_title">Hilo</h3>
+        <p class="value-text" data-i18n="esencia_valor2_text">Encerado, resistente. Cada puntada es deliberada, como cada palabra en una carta escrita a mano.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.3s">
+        <div class="value-card-bg" style="background-image:url(/static/img/llavero.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-dog"></i></div>
+        <span class="value-number">03</span>
+        <h3 class="value-title" data-i18n="esencia_valor3_title">Alma</h3>
+        <p class="value-text" data-i18n="esencia_valor3_text">Cada raza tiene un espíritu. Capturamos ese gesto, esa mirada, esa energía inconfundible.</p>
+      </div>
+    </div>
+    <div class="process-grid reveal" style="margin-top:var(--space-12);">
+      <div class="process-step">
+        <div class="process-number">01</div>
+        <p class="process-label" data-i18n="proceso_cortar">Cortar</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">02</div>
+        <p class="process-label" data-i18n="proceso_coser">Coser</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">03</div>
+        <p class="process-label" data-i18n="proceso_montar">Montar</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">04</div>
+        <p class="process-label" data-i18n="proceso_empacar">Empacar</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATÁLOGO -->
+<section id="catalogo" class="section section-dark">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="catalogo_label">// 002</span>
+      <h2 class="section-title" data-i18n="catalogo_title">Galería <span style="color:var(--accent);">Canina</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="catalogo_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        Una colección de retratos en cuero. Cada uno con su propia frecuencia.
+      </p>
+    </div>
+    <div id="catalog-grid" class="product-grid"></div>
+    <div id="catalog-pagination" class="pagination" style="display:none;justify-content:center;align-items:center;gap:var(--space-4);margin-top:var(--space-8);">
+      <button onclick="changePage(-1)" class="btn-pagination" id="prev-page" disabled>
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span id="page-info" style="font-family:var(--font-body);font-size:var(--text-sm);color:var(--muted);"></span>
+      <button onclick="changePage(1)" class="btn-pagination" id="next-page">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORIAS -->
+<section id="historias" class="section">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="historias_label">// 003</span>
+      <h2 class="section-title" data-i18n="historias_title">Leyendas <span style="color:var(--accent);">con patas</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="historias_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        Perros que cambiaron el mundo. Uno a su manera.
+      </p>
+    </div>
+    <div class="story-grid">
+      <div class="story-card reveal" style="transition-delay:0.05s" onclick="openStory('hachiko')">
+        <div class="story-card-inner">
+          <img src="" alt="Hachiko" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #c6a15b, #5c3a1e);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Akita Inu</span>
+            <h3 class="story-name">Hachiko</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+      <div class="story-card reveal" style="transition-delay:0.1s" onclick="openStory('balto')">
+        <div class="story-card-inner">
+          <img src="" alt="Balto" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #5a7a8a, #2a4a5a);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Husky</span>
+            <h3 class="story-name">Balto</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+      <div class="story-card reveal" style="transition-delay:0.15s" onclick="openStory('laika')">
+        <div class="story-card-inner">
+          <img src="" alt="Laika" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #2e3440, #1a1e28);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Pastor Ruso</span>
+            <h3 class="story-name">Laika</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY MODAL -->
+<div id="story-modal" class="modal-overlay" onclick="if(event.target===this)closeStory()">
+  <div class="modal-backdrop"></div>
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button onclick="closeStory()" class="modal-close"><i class="fa-solid fa-xmark" style="font-size:var(--text-lg);"></i></button>
+    <div id="story-content"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div id="cart-overlay" class="cart-overlay" onclick="if(event.target===this)toggleCart()">
+  <div class="cart-backdrop"></div>
+  <div id="cart-sidebar" class="cart-sidebar" onclick="event.stopPropagation()">
+    <div class="cart-header">
+      <h2><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="cart_title">Carrito</span></h2>
+      <button onclick="toggleCart()" class="nav-btn" style="width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.03);">
+        <i class="fa-solid fa-xmark" style="font-size:var(--text-lg);"></i>
+      </button>
+    </div>
+    <div id="cart-items" class="cart-items">
+      <div class="cart-empty">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <p data-i18n="cart_empty" style="font-size:var(--text-base);">Vacío</p>
+        <p data-i18n="cart_empty_sub" style="font-size:var(--text-sm);margin-top:var(--space-2);">Agrega productos del catálogo</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label" data-i18n="cart_total">Total</span>
+        <span id="cart-total" class="cart-total-amount">$0</span>
+      </div>
+      <div class="payment-tabs">
+        <button onclick="switchPaymentTab('cards',this)" class="payment-tab-btn active" data-i18n="pay_tarjetas">Tarjetas</button>
+        <button onclick="switchPaymentTab('paypal',this)" class="payment-tab-btn">PayPal</button>
+        <button onclick="switchPaymentTab('mercadopago',this)" class="payment-tab-btn" data-i18n="pay_mp">MP</button>
+      </div>
+      <div id="tab-cards" class="payment-panel">
+        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);">
+          <i class="fa-brands fa-cc-visa" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
+          <i class="fa-brands fa-cc-mastercard" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
+          <i class="fa-brands fa-cc-amex" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);">
+          <input type="text" data-i18n-placeholder="pay_num" placeholder="Número" class="form-input" style="grid-column:1/-1;">
+          <input type="text" data-i18n-placeholder="pay_venc" placeholder="Vencimiento" class="form-input">
+          <input type="text" data-i18n-placeholder="pay_cvc" placeholder="CVC" class="form-input">
+        </div>
+        <button onclick="processPayment()" class="btn-pay" data-i18n="pay_btn"><i class="fa-solid fa-lock"></i> Pagar ahora</button>
+      </div>
+      <div id="tab-paypal" class="payment-panel" style="display:none;">
+        <div style="text-align:center;padding:var(--space-6) 0;">
+          <i class="fa-brands fa-paypal" style="font-size:3rem;color:rgba(255,248,234,0.2);margin-bottom:var(--space-4);display:block;"></i>
+          <p data-i18n="pay_paypal_text" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">Pago seguro vía PayPal.</p>
+          <button onclick="processPayment()" class="btn-pay-paypal" data-i18n="pay_paypal_btn">Pagar con PayPal</button>
+        </div>
+      </div>
+      <div id="tab-mercadopago" class="payment-panel" style="display:none;">
+        <div style="text-align:center;padding:var(--space-6) 0;">
+          <div style="display:flex;justify-content:center;gap:var(--space-3);margin-bottom:var(--space-4);font-family:var(--font-display);font-size:var(--text-sm);color:rgba(255,248,234,0.35);">
+            MercadoPago <span style="opacity:0.3;">|</span> ePayco <span style="opacity:0.3;">|</span> PSE
+          </div>
+          <p data-i18n="pay_mp_text" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">Elige tu método de pago.</p>
+          <button onclick="processPayment()" class="btn-pay-mp" data-i18n="pay_mp_btn">Pagar</button>
+        </div>
+      </div>
+      <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contacto" class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">IOQUE</div>
+        <p class="footer-text" data-i18n="footer_desc">Artesanía en cuero. Hecho a mano desde Colombia.</p>
+        <p class="footer-tagline" data-i18n="hero_tagline">"El lazo que nos une"</p>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_nav">Navegación</h4>
+        <ul class="footer-links">
+          <li><a href="#hero" data-i18n="footer_inicio">Inicio</a></li>
+          <li><a href="#esencia" data-i18n="nav_esencia">Esencia</a></li>
+          <li><a href="#catalogo" data-i18n="nav_catalogo">Catálogo</a></li>
+          <li><a href="#historias" data-i18n="nav_historias">Historias</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_redes">Redes</h4>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/ioqueartesanias/" target="_blank" title="Instagram" onmouseover="this.style.borderColor='#E4405F';this.style.color='#E4405F'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://youtube.com/@ioqueartesanias" target="_blank" title="YouTube" onmouseover="this.style.borderColor='#FF0000';this.style.color='#FF0000'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@ioqueartesanias" target="_blank" title="TikTok" onmouseover="this.style.borderColor='#fff';this.style.color='#fff'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="https://www.facebook.com/people/IOQUE-Artesanias/61581278192834/" target="_blank" title="Facebook" onmouseover="this.style.borderColor='#1877F2';this.style.color='#1877F2'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_contacto">Contacto</h4>
+        <ul class="footer-links">
+          <li><a href="mailto:ioqueartesanias@gmail.com" style="color:var(--muted);font-size:var(--text-sm);text-decoration:none;">ioqueartesanias@gmail.com</a></li>
+          <li><a href="tel:+573177695006" style="color:var(--muted);font-size:var(--text-sm);text-decoration:none;">+57 317 7695006</a></li>
+        </ul>
+        <h4 class="footer-heading" data-i18n="footer_pagos" style="margin-top:var(--space-8);">Pagos</h4>
+        <div class="footer-payment">
+          <span>Visa</span><span>MC</span><span>PayPal</span><span>PSE</span><span>ePayco</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy" data-i18n="footer_copy">&copy; 2026 IOQUE · Hecho a mano</p>
+      <div class="footer-legal">
+        <span data-i18n="footer_terminos">Términos</span><span data-i18n="footer_privacidad">Privacidad</span><span data-i18n="footer_envios">Envíos</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const stories = {
+    hachiko: {
+      title: 'Hachiko',
+      breed: 'Akita Inu',
+      subtitle: 'La lealtad no entiende de tiempo',
+      bg: 'linear-gradient(135deg, #c6a15b, #5c3a1e)',
+      icon: 'fa-solid fa-star',
+      fullStory: 'Hachiko nació en 1923 en la prefectura de Akita, Japón. Fue adoptado por el profesor Hidesaburo Ueno, quien viajaba diariamente a la estación de Shibuya. Cada mañana, Hachiko acompañaba a su dueño a la estación y regresaba cada tarde para esperarlo.\n\nEl 21 de mayo de 1925, el profesor Ueno sufrió una hemorragia cerebral en la universidad y nunca regresó a casa. Pero Hachiko siguió yendo a la estación cada día, a la misma hora, esperando el regreso de su amigo.\n\nDurante nueve años, nueve meses y quince días, Hachiko esperó. Los comerciantes locales lo alimentaban y cuidaban. Su historia trascendió fronteras, convirtiéndose en un símbolo mundial de lealtad incondicional.\n\nHoy, una estatua de bronce de Hachiko lo espera para siempre en la estación de Shibuya, y su historia nos recuerda que el verdadero amor no entiende de despedidas.'
+    },
+    balto: {
+      title: 'Balto',
+      breed: 'Husky',
+      subtitle: 'Un héroe de cuatro patas',
+      bg: 'linear-gradient(135deg, #5a7a8a, #2a4a5a)',
+      icon: 'fa-solid fa-snowflake',
+      fullStory: 'En el invierno de 1925, la ciudad de Nome, Alaska, fue azotada por un brote de difteria. El único suero capaz de salvar a los niños estaba en Anchorage, a más de 1,000 kilómetros de distancia. La única forma de llevarlo era mediante un relevo de trineos tirados por perros.\n\nBalto, un husky siberiano de aspecto tosco pero corazón indomable, lideró el equipo de Gunnar Kaasen en la etapa final del trayecto. En medio de una tormenta de nieve con vientos de más de 80 km/h y temperaturas de -50°C, Balto guió al equipo a través de la oscuridad y el hielo.\n\nCuando finalmente llegaron a Nome, el suero había llegado a tiempo. Balto se convirtió en un héroe nacional, pero su verdadera grandeza no estaba en la fama, sino en la determinación de no rendirse nunca, incluso cuando todo parecía perdido.'
+    },
+    laika: {
+      title: 'Laika',
+      breed: 'Pastor Ruso',
+      subtitle: 'La primera viajera espacial',
+      bg: 'linear-gradient(135deg, #2e3440, #1a1e28)',
+      icon: 'fa-solid fa-rocket',
+      fullStory: 'Laika era una perra callejera recogida de las calles de Moscú. Pequeña, de mirada dulce, mestiza de pastor ruso. Nadie imaginaba que esta perrita tranquila se convertiría en la primera criatura terrestre en viajar al espacio exterior.\n\nEl 3 de noviembre de 1957, a bordo del Sputnik 2, Laika despegó hacia el cosmos. Su entrenamiento la preparó para soportar las fuerzas G y el confinamiento extremo. En sus primeros días en órbita, los sensores mostraron que Laika estaba tranquila, comiendo su comida especial.\n\nAunque su viaje no tuvo regreso, Laika abrió el camino para la exploración espacial humana. Su legado vive en cada estrella que miramos, recordándonos que los seres más humildes pueden lograr las hazañas más extraordinarias.'
+    }
+  };
+
+  let products = [];
+  let loading = false;
+  let currentPage = 1;
+  let totalPages = 1;
+
+  const FALLBACK_PHRASES = {
+    'Pug':'Alegría','Boston Terrier':'Elegancia','Boxer':'Energía','Bull Terrier':'Personalidad',
+    'Pastor de Montañas':'Fortaleza','Basset Hound':'Ternura','Yorkshire Terrier':'Carisma',
+    'Shar Pei':'Sabiduría','Akita Inu':'Lealtad eterna','Beagle':'Curiosidad','Pastor Alemán':'Coraje y lealtad',
+    'Border Collie':'Inteligencia','Bulldog Francés':'Encanto','Bulldog Inglés':'Perseverancia',
+    'Cane Corso':'Protección','Chihuahua':'Valentía','Chow Chow':'Dignidad','Corgi Galés':'Alegría',
+    'Dálmata':'Elegancia','Dogo Argentino':'Nobleza','Jack Russell':'Aventura','Kangal Turco':'Coraje',
+    'Pastor Belga Malinois':'Lealtad','Pitbull Terrier':'Fuerza','Pomerania':'Viveza','Rottweiler':'Confianza',
+    'Salchicha':'Persistencia','San Bernardo':'Bondad','Pinscher':'Alerta','Papillon':'Gracia',
+    'Terrier Escocés':'Carácter'
+  };
+
+  const FALLBACK_BG = {
+    'Pug':'#C49A6C','Boston Terrier':'#2A2A2A','Boxer':'#C4956A','Bull Terrier':'#D4B8A0',
+    'Pastor de Montañas':'#4A3520','Basset Hound':'#B8956A','Yorkshire Terrier':'#8A9A8A',
+    'Shar Pei':'#C4A070','Akita Inu':'#C49A6C','Beagle':'#E8C8A0','Pastor Alemán':'#5C4033',
+    'Border Collie':'#2A2A2A','Bulldog Francés':'#C49A6C','Bulldog Inglés':'#8B7355',
+    'Cane Corso':'#3A3020','Chihuahua':'#E8CBA0','Chow Chow':'#D4A060','Corgi Galés':'#E8B860',
+    'Dálmata':'#FFFFFF','Dogo Argentino':'#F0F0F0','Jack Russell':'#E8D8C0','Kangal Turco':'#8A7A60',
+    'Pastor Belga Malinois':'#8A6A40','Pitbull Terrier':'#C4A880','Pomerania':'#E8C880',
+    'Rottweiler':'#2A2018','Salchicha':'#B8885A','San Bernardo':'#D4A860','Pinscher':'#2A2018',
+    'Papillon':'#E8D8C0','Terrier Escocés':'#4A3A2A'
+  };
+
+  function getPhrase(name, lang) {
+    if (FALLBACK_PHRASES[name]) return FALLBACK_PHRASES[name];
+    const phrases = { es: 'Artesanía única', en: 'Unique craftsmanship', pt: 'Artesanato único', fr: 'Artisanat unique' };
+    return phrases[lang] || phrases.en;
+  }
+
+  function getBg(name) {
+    if (FALLBACK_BG[name]) return FALLBACK_BG[name];
+    const colors = ['#C49A6C','#2A2A2A','#C4956A','#D4B8A0','#4A3520','#B8956A','#8A9A8A','#C4A070','#5C4033','#8B7355','#3A3020','#E8CBA0','#D4A060','#E8B860','#FFFFFF','#E8D8C0','#8A7A60','#C4A880','#2A2018','#B8885A','#D4A860'];
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i);
+    return colors[Math.abs(h) % colors.length];
+  }
+
+  /* Cache de productos por idioma y página */
+  let productsCache = {};
+
+  async function loadProducts(page) {
+    if (loading) return;
+    var lang = currentLang || 'es';
+    page = page || 1;
+
+    var cacheKey = lang + '_p' + page;
+    if (productsCache[cacheKey]) {
+      var cached = productsCache[cacheKey];
+      products = cached.results || cached;
+      if (cached.count !== undefined) {
+        totalPages = Math.ceil(cached.count / 20) || 1;
+        currentPage = page;
+      }
+      renderCatalog();
+      return;
+    }
+
+    loading = true;
+    currentPage = page;
+    var grid = document.getElementById('catalog-grid');
+    if (grid) grid.innerHTML = '<div class="catalog-loading"><i class="fa-solid fa-paw"></i>Cargando productos...</div>';
+
+    try {
+      var res = await fetch('/api/products/?language=' + lang + '&page=' + page);
+      var json = await res.json();
+      if (Array.isArray(json)) {
+        products = json;
+        totalPages = 1;
+        productsCache[cacheKey] = json;
+      } else if (json && Array.isArray(json.results)) {
+        products = json.results;
+        totalPages = Math.ceil(json.count / 20) || 1;
+        productsCache[cacheKey] = json;
+      } else {
+        products = [];
+        totalPages = 1;
+      }
+    } catch (e) {
+      console.error('[IOQUE] Error loading products:', e);
+      products = [];
+      totalPages = 1;
+    }
+
+    loading = false;
+    renderCatalog();
+  }
+
+  function changePage(delta) {
+    var next = currentPage + delta;
+    if (next < 1 || next > totalPages) return;
+    loadProducts(next);
+  }
+
+  function renderCatalog() {
+    var grid = document.getElementById('catalog-grid');
+    if (!grid) return;
+
+    if (!products || products.length === 0) {
+      var msgs = { es: 'No hay productos disponibles', en: 'No products available', pt: 'Nenhum produto disponível', fr: 'Aucun produit disponible' };
+      var msg = msgs[currentLang] || msgs.en;
+      grid.innerHTML = '<div class="catalog-empty"><i class="fa-solid fa-paw"></i>' + msg + '</div>';
+      return;
+    }
+
+    var html = '';
+    products.forEach(function(p, i) {
+      var delay = Math.min(i * 0.03, 0.6).toFixed(2);
+      var realImg = null;
+      var keyImg = null;
+      if (p.images && p.images.length) {
+        realImg = p.images.find(function(img) { return img.type === 'REAL'; }) || null;
+        keyImg = p.images.find(function(img) { return img.type === 'KEYCHAIN'; }) || null;
+      }
+      var nokey = !keyImg;
+      var nobreed = !realImg;
+      var crossfade = !nokey && !nobreed ? 'crossfade' : '';
+      var frontSrc = (keyImg && keyImg.thumbnail) ? keyImg.thumbnail : (keyImg ? keyImg.url : (realImg && realImg.thumbnail ? realImg.thumbnail : (realImg ? realImg.url : '')));
+      var backSrc = (realImg && realImg.thumbnail) ? realImg.thumbnail : (realImg ? realImg.url : '');
+      var name = p.name || 'Producto';
+      var phrase = getPhrase(name, currentLang);
+      var bg = getBg(name);
+
+      html += '<div class="product-card reveal" style="transition-delay:' + delay + 's">'
+        + '<div class="product-img-wrap' + (crossfade ? ' crossfade' : '') + '">'
+        + '<img src="' + frontSrc + '" alt="' + name + '" class="product-img" loading="lazy" width="400" height="400" onerror="this.style.background=\'' + bg + '\';this.style.display=\'block\'">'
+        + (backSrc && !nokey ? '<img src="' + backSrc + '" alt="' + name + '" class="product-img-back" loading="lazy" width="400" height="400" onerror="this.style.display=\'none\'">' : '')
+        + '</div>'
+        + '<div class="product-info">'
+        + '<div class="product-header"><span class="product-name">' + name + '</span><span class="product-price">$' + (p.price || 0).toLocaleString('es-CO') + '</span></div>'
+        + '<p class="product-phrase">"' + phrase + '"</p>'
+        + '<button onclick="addToCart(\'' + name.replace(/'/g,"\\'") + '\',' + (p.price || 0) + ',this)" class="btn-gold-border"><i class="fa-solid fa-plus"></i> ' + ({ es: 'Añadir', en: 'Add', pt: 'Adicionar', fr: 'Ajouter' }[currentLang] || 'Add') + '</button>'
+        + '</div>'
+        + '</div>';
+    });
+
+    grid.innerHTML = html;
+
+    var pag = document.getElementById('catalog-pagination');
+    if (pag) {
+      if (totalPages > 1) {
+        pag.style.display = 'flex';
+        document.getElementById('prev-page').disabled = currentPage <= 1;
+        document.getElementById('next-page').disabled = currentPage >= totalPages;
+        var pageMsgs = { es: 'P\u00E1gina ' + currentPage + ' de ' + totalPages, en: 'Page ' + currentPage + ' of ' + totalPages, pt: 'P\u00E1gina ' + currentPage + ' de ' + totalPages, fr: 'Page ' + currentPage + ' sur ' + totalPages };
+        document.getElementById('page-info').textContent = pageMsgs[currentLang] || pageMsgs.en;
+      } else {
+        pag.style.display = 'none';
+      }
+    }
+
+    setTimeout(handleReveal, 100);
+  }
+
+  let cart = [];
+
+  function toggleCart() {
+    const o = document.getElementById('cart-overlay');
+    const s = document.getElementById('cart-sidebar');
+    o.classList.toggle('active');
+    s.classList.toggle('active');
+    document.body.style.overflow = o.classList.contains('active') ? 'hidden' : '';
+  }
+
+  function addToCart(name, price, btn) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) existing.qty += 1;
+    else cart.push({ name, price, qty: 1 });
+    renderCart();
+    showToast('✓ ' + name + (currentLang === 'es' ? ' añadido' : ' added'));
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> OK';
+      btn.style.background = 'rgba(198,161,91,0.15)';
+      btn.style.borderColor = 'var(--accent)';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.borderColor = ''; }, 1200);
+    }
+  }
+
+  function removeFromCart(name) {
+    cart = cart.filter(i => i.name !== name);
+    renderCart();
+  }
+
+  function updateQty(name, delta) {
+    const item = cart.find(i => i.name === name);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) removeFromCart(name);
+    else renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    const totalEl = document.getElementById('cart-total');
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cart-count-nav').textContent = count;
+    document.getElementById('cart-count-mob').textContent = count;
+
+    const t = translations[currentLang];
+
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="cart-empty"><i class="fa-solid fa-bag-shopping"></i><p style="font-size:var(--text-base);">' + t.cart_empty + '</p><p style="font-size:var(--text-sm);margin-top:var(--space-2);">' + t.cart_empty_sub + '</p></div>';
+      totalEl.textContent = '$0';
+      return;
+    }
+
+    let html = '';
+    cart.forEach(i => {
+      const lineTotal = i.price * i.qty;
+      html += '<div class="cart-item">'
+        + '<div class="cart-item-avatar">' + i.name.charAt(0) + '</div>'
+        + '<div class="cart-item-info">'
+        + '<div class="cart-item-name">' + i.name + '</div>'
+        + '<div class="cart-item-unit">$' + i.price.toLocaleString('es-CO') + (currentLang === 'es' ? ' c/u' : ' ea') + '</div>'
+        + '</div>'
+        + '<div class="cart-qty">'
+        + '<button onclick="updateQty(\'' + i.name + '\',-1)">−</button>'
+        + '<span>' + i.qty + '</span>'
+        + '<button onclick="updateQty(\'' + i.name + '\',1)">+</button>'
+        + '</div>'
+        + '<div class="cart-item-total">'
+        + '<div class="cart-item-price">$' + lineTotal.toLocaleString('es-CO') + '</div>'
+        + '<button onclick="removeFromCart(\'' + i.name + '\')" class="cart-item-remove">' + (currentLang === 'es' ? 'Eliminar' : 'Remove') + '</button>'
+        + '</div>'
+        + '</div>';
+    });
+    container.innerHTML = html;
+    totalEl.textContent = '$' + total.toLocaleString('es-CO');
+  }
+
+  function switchPaymentTab(tab, btn) {
+    document.querySelectorAll('.payment-panel').forEach(el => el.style.display = 'none');
+    document.getElementById('tab-' + tab).style.display = '';
+    document.querySelectorAll('.payment-tab-btn').forEach(el => {
+      el.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+  }
+
+  function processPayment() {
+    if (cart.length === 0) {
+      showToast(currentLang === 'es' ? 'Agrega productos al carrito' : 'Add products to cart');
+      return;
+    }
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
+    cart = [];
+    renderCart();
+    setTimeout(() => toggleCart(), 1500);
+  }
+
+  function openStory(id) {
+    const s = stories[id];
+    if (!s) return;
+    const modal = document.getElementById('story-modal');
+    const content = document.getElementById('story-content');
+    const paras = s.fullStory.split('\n\n').map(p => '<p>' + p + '</p>').join('');
+    content.innerHTML =
+      '<div class="modal-header" style="background:' + s.bg + ';">'
+      + '<div class="modal-header-overlay"></div>'
+      + '<i class="' + s.icon + ' modal-header-icon"></i>'
+      + '<div class="modal-header-text">'
+      + '<span class="modal-header-breed">' + s.breed + '</span>'
+      + '<h3 class="modal-header-title">' + s.title + '</h3>'
+      + '</div>'
+      + '<div class="modal-header-qr"><i class="fa-solid fa-qrcode"></i></div>'
+      + '</div>'
+      + '<div class="modal-body">'
+      + '<p class="modal-italics">"' + s.subtitle + '"</p>'
+      + '<div class="modal-body-divider"></div>'
+      + paras
+      + '<div class="modal-qr-box">'
+      + '<i class="fa-solid fa-qrcode"></i>'
+      + '<div><p>' + (currentLang === 'es' ? '<strong>¿Tienes el empaque?</strong> Escanea el QR para más contenido exclusivo.' : '<strong>Have the packaging?</strong> Scan the QR for exclusive content.') + '</p></div>'
+      + '</div>'
+      + '</div>';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeStory() {
+    document.getElementById('story-modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function toggleMobileMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+
+  function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
+
+  function handleReveal() {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.85) el.classList.add('visible');
+    });
+  }
+
+  window.addEventListener('scroll', handleReveal);
+  window.addEventListener('load', handleReveal);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (document.getElementById('story-modal').classList.contains('active')) closeStory();
+      else if (document.getElementById('cart-overlay').classList.contains('active')) toggleCart();
+    }
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ── Translations ── */
+  const translations = {
+    es: {
+      nav_esencia: 'Esencia', nav_catalogo: 'Catálogo', nav_historias: 'Historias', nav_contacto: 'Contacto',
+      theme_toggle: 'Tema',
+      hero_badge: 'Edición Limitada · Hecho a Mano', hero_subtitle: 'Artesanía en Cuero',
+      hero_tagline: '"El lazo que nos une"',
+      hero_text: 'Cuero · Hilo · Aguja · Cada llavero es una pieza única de arte portable.',
+      hero_explorar: 'Explorar', hero_historias_btn: 'Historias',
+      social_instagram: 'Instagram', social_tiktok: 'TikTok', social_youtube: 'YouTube', social_facebook: 'Facebook',
+      esencia_label: '// 001', esencia_title: 'La <span style="color:var(--accent);">materia</span> del arte',
+      esencia_desc: 'No hay dos piezas iguales. Cada llavero es el resultado de un diálogo entre la mano y la materia.',
+      esencia_valor1_title: 'Cuero', esencia_valor1_text: 'Seleccionado, cortado, trabajado. Cada pieza cuenta su propia historia antes de ser llavero.',
+      esencia_valor2_title: 'Hilo', esencia_valor2_text: 'Encerado, resistente. Cada puntada es deliberada, como cada palabra en una carta escrita a mano.',
+      esencia_valor3_title: 'Alma', esencia_valor3_text: 'Cada raza tiene un espíritu. Capturamos ese gesto, esa mirada, esa energía inconfundible.',
+      proceso_cortar: 'Cortar', proceso_coser: 'Coser', proceso_montar: 'Montar', proceso_empacar: 'Empacar',
+      catalogo_label: '// 002', catalogo_title: 'Galería <span style="color:var(--accent);">Canina</span>',
+      catalogo_desc: 'Una colección de retratos en cuero. Cada uno con su propia frecuencia.',
+      anadir: 'Añadir',
+      historias_label: '// 003', historias_title: 'Leyendas <span style="color:var(--accent);">con patas</span>',
+      historias_desc: 'Perros que cambiaron el mundo. Uno a su manera.',
+      cart_title: 'Carrito', cart_empty: 'Vacío', cart_empty_sub: 'Agrega productos del catálogo',
+      cart_total: 'Total',
+      pay_tarjetas: 'Tarjetas', pay_mp: 'MP', pay_btn: 'Pagar ahora',
+      pay_num: 'Número', pay_venc: 'Vencimiento', pay_cvc: 'CVC',
+      pay_paypal_text: 'Pago seguro vía PayPal.', pay_paypal_btn: 'Pagar con PayPal',
+      pay_mp_text: 'Elige tu método de pago.', pay_mp_btn: 'Pagar',
+      pay_secure: 'Pago seguro',
+      footer_desc: 'Artesanía en cuero. Hecho a mano desde Colombia.',
+      footer_nav: 'Navegación', footer_inicio: 'Inicio',
+      footer_redes: 'Redes', footer_contacto: 'Contacto', footer_pagos: 'Pagos',
+      footer_copy: '&copy; 2026 IOQUE · Hecho a mano',
+      footer_terminos: 'Términos', footer_privacidad: 'Privacidad', footer_envios: 'Envíos'
+    },
+    en: {
+      nav_esencia: 'Essence', nav_catalogo: 'Catalog', nav_historias: 'Stories', nav_contacto: 'Contact',
+      theme_toggle: 'Theme',
+      hero_badge: 'Limited Edition · Handmade', hero_subtitle: 'Craftsmanship in Leather',
+      hero_tagline: '"The bond that unites us"',
+      hero_text: 'Leather · Thread · Needle · Each keychain is a unique piece of portable art.',
+      hero_explorar: 'Explore', hero_historias_btn: 'Stories',
+      social_instagram: 'Instagram', social_tiktok: 'TikTok', social_youtube: 'YouTube', social_facebook: 'Facebook',
+      esencia_label: '// 001', esencia_title: 'The <span style="color:var(--accent);">matter</span> of art',
+      esencia_desc: 'No two pieces are alike. Each keychain is the result of a dialogue between hand and material.',
+      esencia_valor1_title: 'Leather', esencia_valor1_text: 'Selected, cut, worked. Each piece tells its own story before becoming a keychain.',
+      esencia_valor2_title: 'Thread', esencia_valor2_text: 'Waxed, durable. Every stitch is deliberate, like every word in a handwritten letter.',
+      esencia_valor3_title: 'Soul', esencia_valor3_text: 'Every breed has a spirit. We capture that gesture, that look, that unmistakable energy.',
+      proceso_cortar: 'Cut', proceso_coser: 'Sew', proceso_montar: 'Assemble', proceso_empacar: 'Pack',
+      catalogo_label: '// 002', catalogo_title: '<span style="color:var(--accent);">Canine</span> Gallery',
+      catalogo_desc: 'A collection of leather portraits. Each with its own frequency.',
+      anadir: 'Add',
+      historias_label: '// 003', historias_title: 'Legends <span style="color:var(--accent);">on paws</span>',
+      historias_desc: 'Dogs that changed the world. Each in their own way.',
+      cart_title: 'Cart', cart_empty: 'Empty', cart_empty_sub: 'Add products from the catalog',
+      cart_total: 'Total',
+      pay_tarjetas: 'Cards', pay_mp: 'MP', pay_btn: 'Pay now',
+      pay_num: 'Number', pay_venc: 'Expiry', pay_cvc: 'CVC',
+      pay_paypal_text: 'Secure payment via PayPal.', pay_paypal_btn: 'Pay with PayPal',
+      pay_mp_text: 'Choose your payment method.', pay_mp_btn: 'Pay',
+      pay_secure: 'Secure payment',
+      footer_desc: 'Leather craftsmanship. Handmade from Colombia.',
+      footer_nav: 'Navigation', footer_inicio: 'Home',
+      footer_redes: 'Social', footer_contacto: 'Contact', footer_pagos: 'Payments',
+      footer_copy: '&copy; 2026 IOQUE · Handmade',
+      footer_terminos: 'Terms', footer_privacidad: 'Privacy', footer_envios: 'Shipping'
+    },
+    pt: {
+      nav_esencia: 'Essência', nav_catalogo: 'Catálogo', nav_historias: 'Histórias', nav_contacto: 'Contato',
+      theme_toggle: 'Tema',
+      hero_badge: 'Edição Limitada · Feito à Mão', hero_subtitle: 'Artesanato em Couro',
+      hero_tagline: '"O laço que nos une"',
+      hero_text: 'Couro · Linha · Agulha · Cada chaveiro é uma peça única de arte portátil.',
+      hero_explorar: 'Explorar', hero_historias_btn: 'Histórias',
+      social_instagram: 'Instagram', social_tiktok: 'TikTok', social_youtube: 'YouTube', social_facebook: 'Facebook',
+      esencia_label: '// 001', esencia_title: 'A <span style="color:var(--accent);">matéria</span> da arte',
+      esencia_desc: 'Não há duas peças iguais. Cada chaveiro é o resultado de um diálogo entre a mão e a matéria.',
+      esencia_valor1_title: 'Couro', esencia_valor1_text: 'Selecionado, cortado, trabalhado. Cada peça conta sua própria história antes de se tornar um chaveiro.',
+      esencia_valor2_title: 'Linha', esencia_valor2_text: 'Encerada, resistente. Cada ponto é deliberado, como cada palavra em uma carta escrita à mão.',
+      esencia_valor3_title: 'Alma', esencia_valor3_text: 'Cada raça tem um espírito. Capturamos esse gesto, esse olhar, essa energia inconfundível.',
+      proceso_cortar: 'Cortar', proceso_coser: 'Costurar', proceso_montar: 'Montar', proceso_empacar: 'Empacotar',
+      catalogo_label: '// 002', catalogo_title: 'Galeria <span style="color:var(--accent);">Canina</span>',
+      catalogo_desc: 'Uma coleção de retratos em couro. Cada um com sua própria frequência.',
+      anadir: 'Adicionar',
+      historias_label: '// 003', historias_title: 'Lendas <span style="color:var(--accent);">de patas</span>',
+      historias_desc: 'Cães que mudaram o mundo. Cada um à sua maneira.',
+      cart_title: 'Carrinho', cart_empty: 'Vazio', cart_empty_sub: 'Adicione produtos do catálogo',
+      cart_total: 'Total',
+      pay_tarjetas: 'Cartões', pay_mp: 'MP', pay_btn: 'Pagar agora',
+      pay_num: 'Número', pay_venc: 'Vencimento', pay_cvc: 'CVC',
+      pay_paypal_text: 'Pagamento seguro via PayPal.', pay_paypal_btn: 'Pagar com PayPal',
+      pay_mp_text: 'Escolha seu método de pagamento.', pay_mp_btn: 'Pagar',
+      pay_secure: 'Pagamento seguro',
+      footer_desc: 'Artesanato em couro. Feito à mão desde a Colômbia.',
+      footer_nav: 'Navegação', footer_inicio: 'Início',
+      footer_redes: 'Redes', footer_contacto: 'Contato', footer_pagos: 'Pagamentos',
+      footer_copy: '&copy; 2026 IOQUE · Feito à mão',
+      footer_terminos: 'Termos', footer_privacidade: 'Privacidade', footer_envios: 'Envios'
+    },
+    fr: {
+      nav_esencia: 'Essence', nav_catalogo: 'Catalogue', nav_historias: 'Histoires', nav_contacto: 'Contact',
+      theme_toggle: 'Thème',
+      hero_badge: 'Édition Limitée · Fait à la Main', hero_subtitle: 'Artisanat en Cuir',
+      hero_tagline: '"Le lien qui nous unit"',
+      hero_text: 'Cuir · Fil · Aiguille · Chaque porte-clés est une pièce unique d\'art portable.',
+      hero_explorar: 'Explorer', hero_historias_btn: 'Histoires',
+      social_instagram: 'Instagram', social_tiktok: 'TikTok', social_youtube: 'YouTube', social_facebook: 'Facebook',
+      esencia_label: '// 001', esencia_title: 'La <span style="color:var(--accent);">matière</span> de l\'art',
+      esencia_desc: 'Il n\'y a pas deux pièces identiques. Chaque porte-clés est le résultat d\'un dialogue entre la main et la matière.',
+      esencia_valor1_title: 'Cuir', esencia_valor1_text: 'Sélectionné, coupé, travaillé. Chaque pièce raconte sa propre histoire avant de devenir un porte-clés.',
+      esencia_valor2_title: 'Fil', esencia_valor2_text: 'Ciré, résistant. Chaque point est délibéré, comme chaque mot dans une lettre écrite à la main.',
+      esencia_valor3_title: 'Âme', esencia_valor3_text: 'Chaque race a un esprit. Nous capturons ce geste, ce regard, cette énergie inimitable.',
+      proceso_cortar: 'Couper', proceso_coser: 'Coudre', proceso_montar: 'Assembler', proceso_empacar: 'Emballer',
+      catalogo_label: '// 002', catalogo_title: 'Galerie <span style="color:var(--accent);">Canine</span>',
+      catalogo_desc: 'Une collection de portraits en cuir. Chacun avec sa propre fréquence.',
+      anadir: 'Ajouter',
+      historias_label: '// 003', historias_title: 'Légendes <span style="color:var(--accent);">à pattes</span>',
+      historias_desc: 'Des chiens qui ont changé le monde. Chacun à sa manière.',
+      cart_title: 'Panier', cart_empty: 'Vide', cart_empty_sub: 'Ajoutez des produits du catalogue',
+      cart_total: 'Total',
+      pay_tarjetas: 'Cartes', pay_mp: 'MP', pay_btn: 'Payer maintenant',
+      pay_num: 'Numéro', pay_venc: 'Expiration', pay_cvc: 'CVC',
+      pay_paypal_text: 'Paiement sécurisé via PayPal.', pay_paypal_btn: 'Payer avec PayPal',
+      pay_mp_text: 'Choisissez votre méthode de paiement.', pay_mp_btn: 'Payer',
+      pay_secure: 'Paiement sécurisé',
+      footer_desc: 'Artisanat du cuir. Fait à la main depuis la Colombie.',
+      footer_nav: 'Navigation', footer_inicio: 'Accueil',
+      footer_redes: 'Réseaux', footer_contacto: 'Contact', footer_pagos: 'Paiements',
+      footer_copy: '&copy; 2026 IOQUE · Fait à la main',
+      footer_terminos: 'Conditions', footer_privacidad: 'Confidentialité', footer_envios: 'Livraison'
+    }
+  };
+
+  let currentLang = localStorage.getItem('ioque-lang') || 'es';
+  let subtitleBuilt = false;
+
+  function rebuildSubtitle(text) {
+    const container = document.querySelector('.hero-subtitle');
+    if (!container) return;
+    const baseDelay = subtitleBuilt ? 0.1 : 2.7;
+    const stagger = subtitleBuilt ? 0.05 : 0.08;
+    container.innerHTML = '';
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const span = document.createElement('span');
+      span.style.setProperty('--i', i);
+      span.style.animationDelay = `calc(${baseDelay}s + (var(--i) * ${stagger}s))`;
+      if (ch === ' ') {
+        span.className = 'hero-subtitle-space';
+        span.innerHTML = '&nbsp;';
+      } else {
+        span.textContent = ch;
+      }
+      container.appendChild(span);
+    }
+    subtitleBuilt = true;
+  }
+
+  function applyLang(lang) {
+    const t = translations[lang];
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) {
+        if (key === 'hero_subtitle') {
+          rebuildSubtitle(t[key]);
+        } else if (key === 'hero_tagline' || key === 'esencia_title' || key === 'catalogo_title' || key === 'historias_title') {
+          el.innerHTML = t[key];
+        } else {
+          el.textContent = t[key];
+        }
+      }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+
+    var selNav = document.getElementById('lang-select-nav');
+    var selMob = document.getElementById('lang-select-mob');
+    if (selNav) selNav.value = lang;
+    if (selMob) selMob.value = lang;
+
+    currentLang = lang;
+    localStorage.setItem('ioque-lang', lang);
+    loadProducts();
+  }
+
+  function changeLang(lang) {
+    applyLang(lang);
+  }
+
+  /* ── Theme ── */
+  let currentTheme = localStorage.getItem('ioque-theme') || 'dark';
+
+  function applyTheme(theme) {
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    const iconMob = document.getElementById('theme-icon-mob');
+    if (theme === 'warm') {
+      html.classList.add('theme-warm');
+      if (icon) icon.className = 'fa-solid fa-moon';
+      if (iconMob) iconMob.className = 'fa-solid fa-moon';
+    } else {
+      html.classList.remove('theme-warm');
+      if (icon) icon.className = 'fa-solid fa-sun';
+      if (iconMob) iconMob.className = 'fa-solid fa-sun';
+    }
+    currentTheme = theme;
+    localStorage.setItem('ioque-theme', theme);
+  }
+
+  function toggleTheme() {
+    applyTheme(currentTheme === 'dark' ? 'warm' : 'dark');
+  }
+
+  applyTheme(currentTheme);
+  applyLang(currentLang);
+
+  /* ── WhatsApp Widget (Web Component) ── */
+</script>
+<script type="module" src="/static/whatsapp-widget/widget.js"></script>
+</body>
+</html>
