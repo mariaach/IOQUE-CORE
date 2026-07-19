@@ -479,6 +479,24 @@
     .product-phrase { font-family: var(--font-body); font-size: var(--text-sm); color: var(--muted); font-style: italic; margin: var(--space-1) 0 var(--space-4); }
     .product-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-1); }
 
+    /* GALLERY BUTTON */
+    .gallery-btn {
+      position: absolute; top: 12px; right: 12px; z-index: 10;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--accent); color: var(--accent-on);
+      border: none; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1px; line-height: 1;
+      transition: transform 250ms ease, box-shadow 250ms ease;
+      box-shadow: 0 2px 12px rgba(198,161,91,0.25);
+    }
+    .gallery-btn i { font-size: 14px; }
+    .gallery-btn-count { font-family: var(--font-body); font-size: 9px; font-weight: 700; letter-spacing: 0.02em; }
+    .gallery-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 24px rgba(198,161,91,0.45);
+    }
+
     /* Loading state */
     .catalog-loading { text-align: center; padding: 60px 0; color: var(--muted); font-family: var(--font-body); }
     .catalog-loading i { font-size: 2rem; margin-bottom: var(--space-4); display: block; opacity: 0.3; }
@@ -663,6 +681,88 @@
     .btn-pay-mp:hover { background: rgba(95,163,106,0.15); border-color: var(--success); }
     .cart-security { text-align: center; font-size: var(--text-xs); color: rgba(255,248,234,0.12); margin-top: var(--space-3); }
 
+    /* GALLERY LIGHTBOX */
+    .lightbox-overlay {
+      position: fixed; inset: 0; z-index: 80;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+    .lightbox-overlay.active { opacity: 1; pointer-events: all; }
+    .lightbox-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .lightbox-container {
+      position: relative; width: 80%; max-width: 1200px;
+      border-radius: 18px; background: #17120E;
+      border: 1px solid rgba(212,175,55,.2);
+      box-shadow: 0 0 80px rgba(0,0,0,0.7);
+      transform: scale(0.95); transition: transform 250ms ease;
+      display: flex; flex-direction: column; overflow: hidden;
+      max-height: 90vh;
+    }
+    .lightbox-overlay.active .lightbox-container { transform: scale(1); }
+    .lightbox-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid rgba(212,175,55,.12);
+    }
+    .lightbox-header-left {
+      display: flex; align-items: center; gap: var(--space-3);
+    }
+    .lightbox-header-left > i { color: var(--accent); font-size: var(--text-lg); }
+    .lightbox-title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--fg); display: block; }
+    .lightbox-count { font-family: var(--font-body); font-size: var(--text-xs); color: var(--muted); }
+    .lightbox-close {
+      width: 44px; height: 44px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,248,234,0.5); cursor: pointer; transition: all var(--motion-fast);
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.08); color: var(--fg); }
+    .lightbox-main {
+      position: relative; display: flex; align-items: center;
+      flex: 1; min-height: 0; padding: var(--space-4);
+    }
+    .lightbox-image-wrap {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      min-height: 0; overflow: hidden;
+    }
+    .lightbox-image {
+      max-width: 100%; max-height: 60vh; object-fit: contain;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.03);
+      transition: opacity 200ms ease;
+    }
+    .lightbox-nav {
+      width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(20,20,20,.7); border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,248,234,0.5); cursor: pointer;
+      transition: all 250ms ease; font-size: var(--text-sm);
+      z-index: 2;
+    }
+    .lightbox-nav:hover { color: var(--accent); border-color: rgba(198,161,91,0.3); transform: scale(1.05); }
+    .lightbox-prev { margin-right: var(--space-3); }
+    .lightbox-next { margin-left: var(--space-3); }
+    .lightbox-thumbnails {
+      display: flex; gap: 10px; padding: var(--space-4) var(--space-6);
+      overflow-x: auto; justify-content: center;
+      border-top: 1px solid rgba(212,175,55,.12);
+      scrollbar-width: none;
+    }
+    .lightbox-thumbnails::-webkit-scrollbar { display: none; }
+    .lightbox-thumb {
+      width: 72px; height: 72px; border-radius: 10px; flex-shrink: 0;
+      object-fit: cover; cursor: pointer;
+      border: 2px solid transparent; opacity: 0.6;
+      transition: all 250ms ease;
+    }
+    .lightbox-thumb:hover { opacity: 1; transform: scale(1.03); }
+    .lightbox-thumb.active { border-color: var(--accent); opacity: 1; }
+    body.lightbox-open { overflow: hidden; }
+
     /* TOAST */
     .toast {
       position: fixed; bottom: var(--space-6); right: var(--space-6); z-index: 9999;
@@ -724,4 +824,17 @@
 
     @media (max-width: 767px) {
       .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .lightbox-container { width: 95%; border-radius: 12px; max-height: 95vh; }
+      .lightbox-main { padding: var(--space-2); }
+      .lightbox-nav { width: 40px; height: 40px; }
+      .lightbox-prev { margin-right: var(--space-1); }
+      .lightbox-next { margin-left: var(--space-1); }
+      .lightbox-thumbnails { padding: var(--space-3) var(--space-4); gap: 8px; }
+      .lightbox-thumb { width: 56px; height: 56px; }
+      .lightbox-header { padding: var(--space-3) var(--space-4); }
+      .lightbox-title { font-size: var(--text-base); }
+      .lightbox-image { max-height: 55vh; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .lightbox-container { width: 90%; }
     }

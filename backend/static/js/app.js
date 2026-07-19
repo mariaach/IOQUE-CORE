@@ -68,6 +68,7 @@
   /* Cache de productos por categoría */
   let productsCache = {};
   var categoryState = {};
+  var galleryProducts = {};
 
   function getPageKey(gridId) { return gridId + '_page'; }
 
@@ -146,10 +147,13 @@
       var name = p.name || 'Producto';
       var phrase = getPhrase(name, currentLang);
       var bg = getBg(name);
+      var imgCount = (p.images && p.images.length) ? p.images.length : 0;
+      galleryProducts[p.id] = p;
       html += '<div class="product-card reveal" style="transition-delay:' + delay + 's">'
         + '<div class="product-img-wrap' + (crossfade ? ' crossfade' : '') + '">'
         + '<img src="' + frontSrc + '" alt="' + name + '" class="product-img" loading="lazy" width="400" height="400" onerror="this.style.background=\'' + bg + '\';this.style.display=\'block\'">'
         + (backSrc && !nokey ? '<img src="' + backSrc + '" alt="' + name + '" class="product-img-back" loading="lazy" width="400" height="400" onerror="this.style.display=\'none\'">' : '')
+        + (imgCount > 0 ? '<button class="gallery-btn" data-product-id="' + p.id + '" aria-label="Ver galería de ' + name + '"><i class="fa-solid fa-camera"></i><span class="gallery-btn-count">+' + imgCount + '</span></button>' : '')
         + '</div>'
         + '<div class="product-info">'
         + '<div class="product-header"><span class="product-name">' + name + '</span><span class="product-price">$' + (p.price || 0).toLocaleString('es-CO') + '</span></div>'
@@ -191,6 +195,15 @@
     e.preventDefault();
     e.stopPropagation();
     changeCategoryPage(btn.dataset.grid, parseInt(btn.dataset.cat, 10), parseInt(btn.dataset.dir, 10));
+  });
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.gallery-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var productId = parseInt(btn.dataset.productId, 10);
+    openGallery(productId, 0);
   });
 
   let cart = [];
@@ -334,6 +347,97 @@
     t._timer = setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+  /* ── Gallery Lightbox ── */
+  var galleryState = { open: false, productId: null, images: [], index: 0, touchStartX: 0 };
+
+  function openGallery(productId, startIndex) {
+    var product = galleryProducts[productId];
+    if (!product || !product.images || !product.images.length) return;
+    var images = product.images.slice().sort(function(a, b) { return a.sort_order - b.sort_order; });
+    galleryState = { open: true, productId: productId, images: images, index: startIndex || 0, touchStartX: 0 };
+    var overlay = document.getElementById('gallery-lightbox');
+    var titleEl = overlay.querySelector('.lightbox-title');
+    var countEl = overlay.querySelector('.lightbox-count');
+    titleEl.textContent = product.name || 'Producto';
+    countEl.textContent = images.length + ' imagen' + (images.length !== 1 ? 'es' : '');
+    renderLightboxImage();
+    renderLightboxThumbs();
+    overlay.classList.add('active');
+    document.body.classList.add('lightbox-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGallery() {
+    var overlay = document.getElementById('gallery-lightbox');
+    overlay.classList.remove('active');
+    document.body.classList.remove('lightbox-open');
+    document.body.style.overflow = '';
+    galleryState.open = false;
+  }
+
+  function navigateGallery(direction) {
+    if (!galleryState.open) return;
+    var len = galleryState.images.length;
+    if (len <= 1) return;
+    galleryState.index = (galleryState.index + direction + len) % len;
+    renderLightboxImage();
+    renderLightboxThumbs();
+  }
+
+  function selectThumbnail(index) {
+    if (!galleryState.open) return;
+    galleryState.index = index;
+    renderLightboxImage();
+    renderLightboxThumbs();
+  }
+
+  function renderLightboxImage() {
+    var overlay = document.getElementById('gallery-lightbox');
+    var img = overlay.querySelector('.lightbox-image');
+    var data = galleryState.images[galleryState.index];
+    if (!data) return;
+    var src = data.medium || data.url || data.thumbnail || '';
+    img.style.opacity = '0';
+    setTimeout(function() {
+      img.src = src;
+      img.alt = data.alt || 'Imagen de producto';
+      img.onload = function() { img.style.opacity = '1'; };
+      if (img.complete) img.style.opacity = '1';
+    }, 100);
+    var prevBtn = overlay.querySelector('.lightbox-prev');
+    var nextBtn = overlay.querySelector('.lightbox-next');
+    if (prevBtn) prevBtn.style.display = galleryState.images.length <= 1 ? 'none' : '';
+    if (nextBtn) nextBtn.style.display = galleryState.images.length <= 1 ? 'none' : '';
+  }
+
+  function renderLightboxThumbs() {
+    var overlay = document.getElementById('gallery-lightbox');
+    var container = overlay.querySelector('.lightbox-thumbnails');
+    var html = '';
+    galleryState.images.forEach(function(img, i) {
+      var src = img.thumbnail || img.url || '';
+      var active = i === galleryState.index ? ' active' : '';
+      html += '<img class="lightbox-thumb' + active + '" src="' + src + '" alt="' + (img.alt || 'Miniatura') + '" onclick="selectThumbnail(' + i + ')" loading="lazy">';
+    });
+    container.innerHTML = html;
+    var activeThumb = container.querySelector('.lightbox-thumb.active');
+    if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  (function() {
+    var wrap = document.querySelector('.lightbox-image-wrap');
+    if (!wrap) return;
+    wrap.addEventListener('touchstart', function(e) {
+      galleryState.touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    wrap.addEventListener('touchend', function(e) {
+      var delta = e.changedTouches[0].clientX - galleryState.touchStartX;
+      if (Math.abs(delta) > 50) {
+        navigateGallery(delta > 0 ? -1 : 1);
+      }
+    }, { passive: true });
+  })();
+
   function toggleMobileMenu() {
     document.getElementById('mobile-menu').classList.toggle('open');
   }
@@ -354,8 +458,13 @@
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (document.getElementById('story-modal').classList.contains('active')) closeStory();
+      if (galleryState.open) closeGallery();
+      else if (document.getElementById('story-modal').classList.contains('active')) closeStory();
       else if (document.getElementById('cart-overlay').classList.contains('active')) toggleCart();
+    }
+    if (galleryState.open) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); navigateGallery(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); navigateGallery(1); }
     }
   });
 
