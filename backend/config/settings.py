@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_filters",
+    "drf_spectacular",
     "imagekit",
     # Local apps
     "apps.catalog.categories",
@@ -163,8 +164,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.openapi.AutoSchema",
-    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
@@ -173,6 +173,14 @@ REST_FRAMEWORK = {
         "anon": os.getenv("DRF_THROTTLE_ANON", "60/minute"),
         "user": os.getenv("DRF_THROTTLE_USER", "120/minute"),
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "IOQUE - API de Catálogo",
+    "DESCRIPTION": "API REST del catálogo de productos artesanales de IOQUE.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 LOGGING = {

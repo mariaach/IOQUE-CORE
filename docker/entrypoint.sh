@@ -66,10 +66,11 @@ echo ""
 
 exec gosu django gunicorn config.wsgi:application \
   --bind 0.0.0.0:8000 \
-  --workers 1 \
+  --workers 2 \
+  --threads 4 \
+  --worker-class gthread \
   --timeout 180 \
   --max-requests 200 \
   --max-requests-jitter 50 \
   --preload \
-  --worker-class sync \
   --log-level info

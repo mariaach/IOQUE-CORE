@@ -66,17 +66,8 @@ docker compose exec django python manage.py import_products
 
 ### Autenticación
 
-```bash
-# Obtener token
-curl -X POST http://localhost/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "admin123"}'
-
-# Refrescar token
-curl -X POST http://localhost/api/token/refresh/ \
-  -H "Content-Type: application/json" \
-  -d '{"refresh": "..."}'
-```
+La API de catálogo es **pública y de solo lectura**: no requiere token.
+La gestión de datos se hace desde el panel de administración (`/admin/`).
 
 ### Endpoints
 

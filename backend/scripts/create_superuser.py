@@ -20,4 +20,4 @@ else:
         email=email,
         password=password,
     )
-    print(f"Creating default superuser... {username} / {password}")
+    print(f"Creating default superuser... {username}")

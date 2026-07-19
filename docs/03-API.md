@@ -6,51 +6,33 @@
 http://localhost/api/
 ```
 
-## Autenticación JWT
+## Autenticación
 
-### Obtener token
+La API de catálogo es **pública y de solo lectura** (`AllowAny`). No requiere
+token para consultar productos, categorías ni el widget de contacto.
 
-```
-POST /api/token/
-Content-Type: application/json
+La escritura de datos (crear/editar productos, categorías, etc.) se realiza
+desde el **panel de administración de Django** (`/admin/`), que usa autenticación
+por sesión.
 
-{
-  "username": "admin",
-  "password": "admin123"
-}
-
-Response 200:
-{
-  "access": "...",
-  "refresh": "..."
-}
-```
-
-### Refrescar token
-
-```
-POST /api/token/refresh/
-Content-Type: application/json
-
-{
-  "refresh": "..."
-}
-```
-
-### Usar token
-
-```
-Authorization: Bearer <access_token>
-```
+> Nota: no hay autenticación JWT ni endpoints `/api/token/`. Si en el futuro se
+> requiere una API de escritura autenticada, se puede añadir
+> `djangorestframework-simplejwt` y exponer las rutas correspondientes.
 
 ## Permisos
 
 | Rol | Acceso API |
 |-----|-----------|
-| Admin | Lectura + escritura (admin) |
-| Editor | Lectura + escritura (vía API admin) |
-| Solo lectura | Lectura |
 | Anónimo | Lectura (público) |
+| Admin (sesión) | Escritura vía `/admin/` |
+
+## Límites de tasa (throttling)
+
+La API aplica throttling por defecto:
+- Anónimo: `60/minute`
+- Autenticado: `120/minute`
+
+Configurable con las variables `DRF_THROTTLE_ANON` y `DRF_THROTTLE_USER`.
 
 ## Endpoints
 
@@ -153,6 +135,6 @@ Busca productos por nombre.
 
 ## Documentación Swagger
 
-Disponible en:
+Generada automáticamente con **drf-spectacular**. Disponible en:
 - Swagger UI: http://localhost/api/docs/
-- Schema OpenAPI: http://localhost/api/schema/
+- Schema OpenAPI (YAML): http://localhost/api/schema/

@@ -64,6 +64,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ["price", "stock", "featured", "active"]
     list_per_page = 25
 
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("category")
+            .prefetch_related("translations", "images", "category__translations")
+        )
+
     def name_display(self, obj: Product) -> str:
         return str(obj)
 
@@ -77,8 +85,14 @@ class ProductAdmin(admin.ModelAdmin):
     category_display.short_description = "categoría"
     category_display.admin_order_field = "category"
 
+    def _first_image_by_type(self, obj: Product, image_type: str):
+        for img in obj.images.all():
+            if img.type == image_type:
+                return img
+        return None
+
     def image_real_thumb(self, obj: Product) -> str:
-        image = obj.images.filter(type=ProductImage.ImageType.REAL).first()
+        image = self._first_image_by_type(obj, ProductImage.ImageType.REAL)
         if image and image.image:
             return format_html(
                 '<img src="{}" style="max-height: 50px; max-width: 50px; border-radius: 4px;" />',
@@ -89,7 +103,7 @@ class ProductAdmin(admin.ModelAdmin):
     image_real_thumb.short_description = "Real"
 
     def image_keychain_thumb(self, obj: Product) -> str:
-        image = obj.images.filter(type=ProductImage.ImageType.KEYCHAIN).first()
+        image = self._first_image_by_type(obj, ProductImage.ImageType.KEYCHAIN)
         if image and image.image:
             return format_html(
                 '<img src="{}" style="max-height: 50px; max-width: 50px; border-radius: 4px;" />',
