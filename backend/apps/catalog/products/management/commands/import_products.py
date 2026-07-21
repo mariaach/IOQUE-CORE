@@ -44,7 +44,7 @@ class Command(BaseCommand):
             ))
             return
 
-        category = CategoryService.get_or_create_dogs_category()
+        category = CategoryService.get_or_create_mascotas_category()
 
         existing_slugs = set(
             ProductTranslation.objects

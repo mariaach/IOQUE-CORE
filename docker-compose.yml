@@ -40,7 +40,8 @@ services:
       - media_volume:/app/mediafiles
       - static_volume:/app/staticfiles
       #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
-      - /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
+      - /home/ubuntu/IOQUE/Recursos:/Recursos:ro
+      #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
     entrypoint:
       - /app/docker/entrypoint.sh
     env_file:

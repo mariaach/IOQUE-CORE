@@ -51,6 +51,10 @@ echo "Creating default superuser..."
 python scripts/create_superuser.py
 
 echo ""
+echo "Seeding categories..."
+python manage.py seed_categories
+
+echo ""
 echo "Importing products..."
 python manage.py import_products
 

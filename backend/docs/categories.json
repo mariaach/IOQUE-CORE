@@ -1,0 +1,46 @@
+[
+  {
+    "model": "catalog_categories.category",
+    "pk": 1,
+    "fields": { "active": true },
+    "translations": [
+      { "language": "es", "name": "Mascotas", "description": "Llaveros artesanales de razas de mascotas" },
+      { "language": "en", "name": "Pets", "description": "Handmade keychains of pet breeds" },
+      { "language": "pt", "name": "Animais de Estimação", "description": "Chaveiros artesanais de raças de animais de estimação" },
+      { "language": "fr", "name": "Animaux", "description": "Porte-clés artisanaux de races d'animaux" }
+    ]
+  },
+  {
+    "model": "catalog_categories.category",
+    "pk": 2,
+    "fields": { "active": true },
+    "translations": [
+      { "language": "es", "name": "Personalizados", "description": "Llaveros artesanales personalizados" },
+      { "language": "en", "name": "Custom", "description": "Custom handmade keychains" },
+      { "language": "pt", "name": "Personalizados", "description": "Chaveiros artesanais personalizados" },
+      { "language": "fr", "name": "Personnalisés", "description": "Porte-clés artisanaux personnalisés" }
+    ]
+  },
+  {
+    "model": "catalog_categories.category",
+    "pk": 3,
+    "fields": { "active": true },
+    "translations": [
+      { "language": "es", "name": "Religión", "description": "Llaveros artesanales religiosos" },
+      { "language": "en", "name": "Religion", "description": "Handmade religious keychains" },
+      { "language": "pt", "name": "Religião", "description": "Chaveiros artesanais religiosos" },
+      { "language": "fr", "name": "Religion", "description": "Porte-clés artisanaux religieux" }
+    ]
+  },
+  {
+    "model": "catalog_categories.category",
+    "pk": 4,
+    "fields": { "active": true },
+    "translations": [
+      { "language": "es", "name": "Cuyes", "description": "Llaveros artesanales de cuyes" },
+      { "language": "en", "name": "Guinea Pigs", "description": "Handmade guinea pig keychains" },
+      { "language": "pt", "name": "Porquinhos-da-índia", "description": "Chaveiros artesanais de porquinhos-da-índia" },
+      { "language": "fr", "name": "Cobayes", "description": "Porte-clés artisanaux de cobayes" }
+    ]
+  }
+]

@@ -13,21 +13,25 @@ class CategoryService:
         return Category.objects.filter(id=category_id).prefetch_related("translations").first()
 
     @staticmethod
-    def get_or_create_dogs_category() -> Category:
+    def get_or_create_mascotas_category() -> Category:
         category, created = Category.objects.get_or_create(
             id=1,
             defaults={"active": True},
         )
         if created:
             translations_data = [
-                {"language": "es", "name": "Perros", "description": ""},
-                {"language": "en", "name": "Dogs", "description": ""},
-                {"language": "pt", "name": "Cães", "description": ""},
-                {"language": "fr", "name": "Chiens", "description": ""},
+                {"language": "es", "name": "Mascotas", "description": "Llaveros artesanales de razas de mascotas"},
+                {"language": "en", "name": "Pets", "description": "Handmade keychains of pet breeds"},
+                {"language": "pt", "name": "Animais de Estimação", "description": "Chaveiros artesanais de raças de animais de estimação"},
+                {"language": "fr", "name": "Animaux", "description": "Porte-clés artisanaux de races d'animaux"},
             ]
             for data in translations_data:
                 CategoryTranslation.objects.create(category=category, **data)
         return category
+
+    @staticmethod
+    def get_or_create_dogs_category() -> Category:
+        return CategoryService.get_or_create_mascotas_category()
 
     @staticmethod
     def get_category_translation(

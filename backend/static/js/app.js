@@ -184,9 +184,9 @@
   }
 
   function loadAllCategories() {
-    loadCategoryProducts('catalog-grid', 2);
-    loadCategoryProducts('religion-grid', 4);
-    loadCategoryProducts('cuyes-grid', 3);
+    loadCategoryProducts('catalog-grid', 1);
+    loadCategoryProducts('religion-grid', 3);
+    loadCategoryProducts('cuyes-grid', 4);
   }
 
   document.addEventListener('click', function(e) {
@@ -660,7 +660,7 @@
         mobHtml += '<a href="#catalogo" onclick="event.stopPropagation();closeMobileMenu()"><i class="' + icon + '"></i> ' + c.name + '</a>';
       });
       mobile.innerHTML = mobHtml;
-      var mascotCat = cats.find(function(c) { return c.id === 2; });
+      var mascotCat = cats.find(function(c) { return c.id === 1; });
       if (mascotCat) {
         var titleEl = document.querySelector('[data-i18n="catalogo_title"]');
         if (titleEl) titleEl.innerHTML = 'Galería <span style="color:var(--accent);">' + mascotCat.name + '</span>';
