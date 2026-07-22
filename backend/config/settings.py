@@ -16,6 +16,25 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split("
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# --- Security hardened for production ---
+_INSECURE_KEYS = frozenset({
+    "insecure-dev-key-change-in-production",
+    "change-this-to-a-random-secret-key",
+})
+if not DEBUG and SECRET_KEY in _INSECURE_KEYS:
+    raise RuntimeError(
+        "SECRET_KEY inseguro en producción. "
+        "Define DJANGO_SECRET_KEY en las variables de entorno."
+    )
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() in ("true", "1", "yes")
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -94,12 +113,6 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
-if not DEBUG and SECRET_KEY == "insecure-dev-key-change-in-production":
-    raise RuntimeError(
-        "SECRET_KEY inseguro en producción. "
-        "Define DJANGO_SECRET_KEY en las variables de entorno."
-    )
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
@@ -115,8 +128,6 @@ LANGUAGES = [
     ("fr", "Français"),
 ]
 
-LOCALE_PATHS = [BASE_DIR / "locale"]
-
 TIME_ZONE = os.getenv("DJANGO_TIMEZONE", "America/Mexico_City")
 
 USE_I18N = True
@@ -128,12 +139,35 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
-IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.JustInTime"
-
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
+# Cloudflare R2 Storage Settings
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "auto")
+AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL") or None
+AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "False").lower() == "true"
+AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
+AWS_S3_ADDRESSING_STYLE = "path"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.JustInTime"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Limit request body and file upload sizes (10 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True

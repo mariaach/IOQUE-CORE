@@ -87,6 +87,9 @@ def product_image_upload_path(instance, filename: str) -> str:
 
 
 class ProductImage(models.Model):
+    MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5 MB
+    ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+
     class ImageType(models.TextChoices):
         REAL = "REAL", "Real"
         KEYCHAIN = "KEYCHAIN", "Llavero"
@@ -133,6 +136,22 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return f"{self.product.sku} - {self.type}"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        super().clean()
+        if self.image:
+            if self.image.size > self.MAX_UPLOAD_SIZE:
+                raise ValidationError(
+                    f"La imagen excede el tamaño máximo de "
+                    f"{self.MAX_UPLOAD_SIZE // (1024 * 1024)} MB."
+                )
+            content_type = getattr(self.image.file, "content_type", None)
+            if content_type and content_type not in self.ALLOWED_CONTENT_TYPES:
+                raise ValidationError(
+                    f"Tipo de archivo no permitido: {content_type}. "
+                    f"Use JPEG, PNG o WebP."
+                )
 
     @property
     def filename(self) -> str:

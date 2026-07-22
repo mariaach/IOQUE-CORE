@@ -1,16 +1,16 @@
 import os
 import re
+import json
 import hashlib
 import io
 from typing import Dict, Optional
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
-from PIL import Image
 from django.db import transaction
 from django.core.files import File
 
 from apps.catalog.products.models import Product, ProductTranslation, ProductImage
-from apps.catalog.categories.models import CategoryTranslation
 from apps.catalog.categories.services import CategoryService
 
 
@@ -46,6 +46,8 @@ class Command(BaseCommand):
 
         category = CategoryService.get_or_create_mascotas_category()
 
+        sku_map = self._load_sku_map()
+
         existing_slugs = set(
             ProductTranslation.objects
             .filter(language="es", slug__in=[self._slug(s) for s in all_stems])
@@ -55,21 +57,18 @@ class Command(BaseCommand):
         stems_to_import = [s for s in all_stems if self._slug(s) not in existing_slugs]
 
         if stems_to_import:
-            last_product = Product.objects.order_by("id").last()
-            start_index = (last_product.id + 1) if last_product else 1
-
             created = 0
             errors = []
 
             with transaction.atomic():
-                for i, stem in enumerate(stems_to_import, start=start_index):
+                for stem in stems_to_import:
                     try:
                         self._create_product(
                             stem=stem,
                             breed_file=breed_files.get(stem),
                             keychain_file=keychain_files.get(stem),
                             category=category,
-                            index=i,
+                            sku_map=sku_map,
                         )
                         created += 1
                     except Exception as e:
@@ -108,6 +107,21 @@ class Command(BaseCommand):
 
     def _generate_sku(self, index: int) -> str:
         return f"KEY-{index:06d}"
+
+    def _load_sku_map(self) -> Dict[str, str]:
+        products_json = os.path.join(settings.BASE_DIR, "docs", "products.json")
+        if not os.path.exists(products_json):
+            self.stdout.write(self.style.WARNING(
+                f"products.json no encontrado: {products_json}, se generarán SKUs automáticos."
+            ))
+            return {}
+        with open(products_json) as f:
+            data = json.load(f)
+        return {
+            p["translations"]["es"]["slug"]: p["sku"]
+            for p in data
+            if "translations" in p and "es" in p["translations"]
+        }
 
     def _translation_data(self, name: str, slug: str) -> dict:
         return {
@@ -224,12 +238,12 @@ class Command(BaseCommand):
         breed_file: Optional[str],
         keychain_file: Optional[str],
         category,
-        index: int,
+        sku_map: Dict[str, str],
     ):
         filename = breed_file or keychain_file
         product_name = self._product_name(filename)
         slug = self._slug(stem)
-        sku = self._generate_sku(index)
+        sku = sku_map.get(slug, self._generate_sku(0))
 
         price_points = [27000, 27500, 28000, 28500, 29000]
         price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)

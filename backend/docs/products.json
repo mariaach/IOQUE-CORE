@@ -1,302 +1,1292 @@
 [
   {
-    "sku": "KEY-000001", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "1-pug.png", "keychain_file": "1-pug.png",
+    "sku": "KEY-000070",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "1-pug.png",
+    "keychain_file": "1-pug.png",
     "translations": {
-      "es": { "name": "Pug", "slug": "pug", "short_description": "Llavero personalizado de Pug", "story": "Historia de Pug. Llavero artesanal personalizado.", "seo_title": "Pug", "seo_description": "Llavero personalizado de Pug. Producto artesanal único." },
-      "en": { "name": "Pug", "slug": "pug", "short_description": "Custom keychain of Pug", "story": "Story of Pug. Custom artisan keychain.", "seo_title": "Pug", "seo_description": "Custom keychain of Pug. Unique artisan product." },
-      "pt": { "name": "Pug", "slug": "pug", "short_description": "Chaveiro personalizado de Pug", "story": "História de Pug. Chaveiro artesanal personalizado.", "seo_title": "Pug", "seo_description": "Chaveiro personalizado de Pug. Produto artesanal único." },
-      "fr": { "name": "Pug", "slug": "pug", "short_description": "Porte-clés personnalisé de Pug", "story": "Histoire de Pug. Porte-clés artisanal personnalisé.", "seo_title": "Pug", "seo_description": "Porte-clés personnalisé de Pug. Produit artisanal unique." }
+      "es": {
+        "name": "Pug",
+        "slug": "pug",
+        "short_description": "Llavero personalizado de Pug",
+        "story": "Historia de Pug. Llavero artesanal personalizado.",
+        "seo_title": "Pug",
+        "seo_description": "Llavero personalizado de Pug. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pug",
+        "slug": "pug",
+        "short_description": "Custom keychain of Pug",
+        "story": "Story of Pug. Custom artisan keychain.",
+        "seo_title": "Pug",
+        "seo_description": "Custom keychain of Pug. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pug",
+        "slug": "pug",
+        "short_description": "Chaveiro personalizado de Pug",
+        "story": "História de Pug. Chaveiro artesanal personalizado.",
+        "seo_title": "Pug",
+        "seo_description": "Chaveiro personalizado de Pug. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pug",
+        "slug": "pug",
+        "short_description": "Porte-clés personnalisé de Pug",
+        "story": "Histoire de Pug. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pug",
+        "seo_description": "Porte-clés personnalisé de Pug. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000002", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "2-boston-terrier.png", "keychain_file": "2-boston-terrier.png",
+    "sku": "KEY-000071",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "2-boston-terrier.png",
+    "keychain_file": "2-boston-terrier.png",
     "translations": {
-      "es": { "name": "Boston Terrier", "slug": "boston-terrier", "short_description": "Llavero personalizado de Boston Terrier", "story": "Historia de Boston Terrier. Llavero artesanal personalizado.", "seo_title": "Boston Terrier", "seo_description": "Llavero personalizado de Boston Terrier. Producto artesanal único." },
-      "en": { "name": "Boston Terrier", "slug": "boston-terrier", "short_description": "Custom keychain of Boston Terrier", "story": "Story of Boston Terrier. Custom artisan keychain.", "seo_title": "Boston Terrier", "seo_description": "Custom keychain of Boston Terrier. Unique artisan product." },
-      "pt": { "name": "Boston Terrier", "slug": "boston-terrier", "short_description": "Chaveiro personalizado de Boston Terrier", "story": "História de Boston Terrier. Chaveiro artesanal personalizado.", "seo_title": "Boston Terrier", "seo_description": "Chaveiro personalizado de Boston Terrier. Produto artesanal único." },
-      "fr": { "name": "Boston Terrier", "slug": "boston-terrier", "short_description": "Porte-clés personnalisé de Boston Terrier", "story": "Histoire de Boston Terrier. Porte-clés artisanal personnalisé.", "seo_title": "Boston Terrier", "seo_description": "Porte-clés personnalisé de Boston Terrier. Produit artisanal unique." }
+      "es": {
+        "name": "Boston Terrier",
+        "slug": "boston-terrier",
+        "short_description": "Llavero personalizado de Boston Terrier",
+        "story": "Historia de Boston Terrier. Llavero artesanal personalizado.",
+        "seo_title": "Boston Terrier",
+        "seo_description": "Llavero personalizado de Boston Terrier. Producto artesanal único."
+      },
+      "en": {
+        "name": "Boston Terrier",
+        "slug": "boston-terrier",
+        "short_description": "Custom keychain of Boston Terrier",
+        "story": "Story of Boston Terrier. Custom artisan keychain.",
+        "seo_title": "Boston Terrier",
+        "seo_description": "Custom keychain of Boston Terrier. Unique artisan product."
+      },
+      "pt": {
+        "name": "Boston Terrier",
+        "slug": "boston-terrier",
+        "short_description": "Chaveiro personalizado de Boston Terrier",
+        "story": "História de Boston Terrier. Chaveiro artesanal personalizado.",
+        "seo_title": "Boston Terrier",
+        "seo_description": "Chaveiro personalizado de Boston Terrier. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Boston Terrier",
+        "slug": "boston-terrier",
+        "short_description": "Porte-clés personnalisé de Boston Terrier",
+        "story": "Histoire de Boston Terrier. Porte-clés artisanal personnalisé.",
+        "seo_title": "Boston Terrier",
+        "seo_description": "Porte-clés personnalisé de Boston Terrier. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000003", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "3-boxer.png", "keychain_file": "3-boxer.png",
+    "sku": "KEY-000072",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "3-boxer.png",
+    "keychain_file": "3-boxer.png",
     "translations": {
-      "es": { "name": "Boxer", "slug": "boxer", "short_description": "Llavero personalizado de Boxer", "story": "Historia de Boxer. Llavero artesanal personalizado.", "seo_title": "Boxer", "seo_description": "Llavero personalizado de Boxer. Producto artesanal único." },
-      "en": { "name": "Boxer", "slug": "boxer", "short_description": "Custom keychain of Boxer", "story": "Story of Boxer. Custom artisan keychain.", "seo_title": "Boxer", "seo_description": "Custom keychain of Boxer. Unique artisan product." },
-      "pt": { "name": "Boxer", "slug": "boxer", "short_description": "Chaveiro personalizado de Boxer", "story": "História de Boxer. Chaveiro artesanal personalizado.", "seo_title": "Boxer", "seo_description": "Chaveiro personalizado de Boxer. Produto artesanal único." },
-      "fr": { "name": "Boxer", "slug": "boxer", "short_description": "Porte-clés personnalisé de Boxer", "story": "Histoire de Boxer. Porte-clés artisanal personnalisé.", "seo_title": "Boxer", "seo_description": "Porte-clés personnalisé de Boxer. Produit artisanal unique." }
+      "es": {
+        "name": "Boxer",
+        "slug": "boxer",
+        "short_description": "Llavero personalizado de Boxer",
+        "story": "Historia de Boxer. Llavero artesanal personalizado.",
+        "seo_title": "Boxer",
+        "seo_description": "Llavero personalizado de Boxer. Producto artesanal único."
+      },
+      "en": {
+        "name": "Boxer",
+        "slug": "boxer",
+        "short_description": "Custom keychain of Boxer",
+        "story": "Story of Boxer. Custom artisan keychain.",
+        "seo_title": "Boxer",
+        "seo_description": "Custom keychain of Boxer. Unique artisan product."
+      },
+      "pt": {
+        "name": "Boxer",
+        "slug": "boxer",
+        "short_description": "Chaveiro personalizado de Boxer",
+        "story": "História de Boxer. Chaveiro artesanal personalizado.",
+        "seo_title": "Boxer",
+        "seo_description": "Chaveiro personalizado de Boxer. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Boxer",
+        "slug": "boxer",
+        "short_description": "Porte-clés personnalisé de Boxer",
+        "story": "Histoire de Boxer. Porte-clés artisanal personnalisé.",
+        "seo_title": "Boxer",
+        "seo_description": "Porte-clés personnalisé de Boxer. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000004", "price": 29000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "4-bull-terrier.png", "keychain_file": "4-bull-terrier.png",
+    "sku": "KEY-000073",
+    "price": 29000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "4-bull-terrier.png",
+    "keychain_file": "4-bull-terrier.png",
     "translations": {
-      "es": { "name": "Bull Terrier", "slug": "bull-terrier", "short_description": "Llavero personalizado de Bull Terrier", "story": "Historia de Bull Terrier. Llavero artesanal personalizado.", "seo_title": "Bull Terrier", "seo_description": "Llavero personalizado de Bull Terrier. Producto artesanal único." },
-      "en": { "name": "Bull Terrier", "slug": "bull-terrier", "short_description": "Custom keychain of Bull Terrier", "story": "Story of Bull Terrier. Custom artisan keychain.", "seo_title": "Bull Terrier", "seo_description": "Custom keychain of Bull Terrier. Unique artisan product." },
-      "pt": { "name": "Bull Terrier", "slug": "bull-terrier", "short_description": "Chaveiro personalizado de Bull Terrier", "story": "História de Bull Terrier. Chaveiro artesanal personalizado.", "seo_title": "Bull Terrier", "seo_description": "Chaveiro personalizado de Bull Terrier. Produto artesanal único." },
-      "fr": { "name": "Bull Terrier", "slug": "bull-terrier", "short_description": "Porte-clés personnalisé de Bull Terrier", "story": "Histoire de Bull Terrier. Porte-clés artisanal personnalisé.", "seo_title": "Bull Terrier", "seo_description": "Porte-clés personnalisé de Bull Terrier. Produit artisanal unique." }
+      "es": {
+        "name": "Bull Terrier",
+        "slug": "bull-terrier",
+        "short_description": "Llavero personalizado de Bull Terrier",
+        "story": "Historia de Bull Terrier. Llavero artesanal personalizado.",
+        "seo_title": "Bull Terrier",
+        "seo_description": "Llavero personalizado de Bull Terrier. Producto artesanal único."
+      },
+      "en": {
+        "name": "Bull Terrier",
+        "slug": "bull-terrier",
+        "short_description": "Custom keychain of Bull Terrier",
+        "story": "Story of Bull Terrier. Custom artisan keychain.",
+        "seo_title": "Bull Terrier",
+        "seo_description": "Custom keychain of Bull Terrier. Unique artisan product."
+      },
+      "pt": {
+        "name": "Bull Terrier",
+        "slug": "bull-terrier",
+        "short_description": "Chaveiro personalizado de Bull Terrier",
+        "story": "História de Bull Terrier. Chaveiro artesanal personalizado.",
+        "seo_title": "Bull Terrier",
+        "seo_description": "Chaveiro personalizado de Bull Terrier. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Bull Terrier",
+        "slug": "bull-terrier",
+        "short_description": "Porte-clés personnalisé de Bull Terrier",
+        "story": "Histoire de Bull Terrier. Porte-clés artisanal personnalisé.",
+        "seo_title": "Bull Terrier",
+        "seo_description": "Porte-clés personnalisé de Bull Terrier. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000005", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "5-pastor-de-montañas.png", "keychain_file": "5-pastor-de-montañas.png",
+    "sku": "KEY-000074",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "5-pastor-de-montañas.png",
+    "keychain_file": "5-pastor-de-montañas.png",
     "translations": {
-      "es": { "name": "Pastor de Montañas", "slug": "pastor-de-montanas", "short_description": "Llavero personalizado de Pastor de Montañas", "story": "Historia de Pastor de Montañas. Llavero artesanal personalizado.", "seo_title": "Pastor de Montañas", "seo_description": "Llavero personalizado de Pastor de Montañas. Producto artesanal único." },
-      "en": { "name": "Pastor de Montañas", "slug": "pastor-de-montanas", "short_description": "Custom keychain of Pastor de Montañas", "story": "Story of Pastor de Montañas. Custom artisan keychain.", "seo_title": "Pastor de Montañas", "seo_description": "Custom keychain of Pastor de Montañas. Unique artisan product." },
-      "pt": { "name": "Pastor de Montañas", "slug": "pastor-de-montanas", "short_description": "Chaveiro personalizado de Pastor de Montañas", "story": "História de Pastor de Montañas. Chaveiro artesanal personalizado.", "seo_title": "Pastor de Montañas", "seo_description": "Chaveiro personalizado de Pastor de Montañas. Produto artesanal único." },
-      "fr": { "name": "Pastor de Montañas", "slug": "pastor-de-montanas", "short_description": "Porte-clés personnalisé de Pastor de Montañas", "story": "Histoire de Pastor de Montañas. Porte-clés artisanal personnalisé.", "seo_title": "Pastor de Montañas", "seo_description": "Porte-clés personnalisé de Pastor de Montañas. Produit artisanal unique." }
+      "es": {
+        "name": "Pastor de Montañas",
+        "slug": "pastor-de-montanas",
+        "short_description": "Llavero personalizado de Pastor de Montañas",
+        "story": "Historia de Pastor de Montañas. Llavero artesanal personalizado.",
+        "seo_title": "Pastor de Montañas",
+        "seo_description": "Llavero personalizado de Pastor de Montañas. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pastor de Montañas",
+        "slug": "pastor-de-montanas",
+        "short_description": "Custom keychain of Pastor de Montañas",
+        "story": "Story of Pastor de Montañas. Custom artisan keychain.",
+        "seo_title": "Pastor de Montañas",
+        "seo_description": "Custom keychain of Pastor de Montañas. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pastor de Montañas",
+        "slug": "pastor-de-montanas",
+        "short_description": "Chaveiro personalizado de Pastor de Montañas",
+        "story": "História de Pastor de Montañas. Chaveiro artesanal personalizado.",
+        "seo_title": "Pastor de Montañas",
+        "seo_description": "Chaveiro personalizado de Pastor de Montañas. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pastor de Montañas",
+        "slug": "pastor-de-montanas",
+        "short_description": "Porte-clés personnalisé de Pastor de Montañas",
+        "story": "Histoire de Pastor de Montañas. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pastor de Montañas",
+        "seo_description": "Porte-clés personnalisé de Pastor de Montañas. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000006", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "6-Basset-Hound.png", "keychain_file": "6-Basset-Hound.png",
+    "sku": "KEY-000075",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "6-Basset-Hound.png",
+    "keychain_file": "6-Basset-Hound.png",
     "translations": {
-      "es": { "name": "Basset Hound", "slug": "basset-hound", "short_description": "Llavero personalizado de Basset Hound", "story": "Historia de Basset Hound. Llavero artesanal personalizado.", "seo_title": "Basset Hound", "seo_description": "Llavero personalizado de Basset Hound. Producto artesanal único." },
-      "en": { "name": "Basset Hound", "slug": "basset-hound", "short_description": "Custom keychain of Basset Hound", "story": "Story of Basset Hound. Custom artisan keychain.", "seo_title": "Basset Hound", "seo_description": "Custom keychain of Basset Hound. Unique artisan product." },
-      "pt": { "name": "Basset Hound", "slug": "basset-hound", "short_description": "Chaveiro personalizado de Basset Hound", "story": "História de Basset Hound. Chaveiro artesanal personalizado.", "seo_title": "Basset Hound", "seo_description": "Chaveiro personalizado de Basset Hound. Produto artesanal único." },
-      "fr": { "name": "Basset Hound", "slug": "basset-hound", "short_description": "Porte-clés personnalisé de Basset Hound", "story": "Histoire de Basset Hound. Porte-clés artisanal personnalisé.", "seo_title": "Basset Hound", "seo_description": "Porte-clés personnalisé de Basset Hound. Produit artisanal unique." }
+      "es": {
+        "name": "Basset Hound",
+        "slug": "basset-hound",
+        "short_description": "Llavero personalizado de Basset Hound",
+        "story": "Historia de Basset Hound. Llavero artesanal personalizado.",
+        "seo_title": "Basset Hound",
+        "seo_description": "Llavero personalizado de Basset Hound. Producto artesanal único."
+      },
+      "en": {
+        "name": "Basset Hound",
+        "slug": "basset-hound",
+        "short_description": "Custom keychain of Basset Hound",
+        "story": "Story of Basset Hound. Custom artisan keychain.",
+        "seo_title": "Basset Hound",
+        "seo_description": "Custom keychain of Basset Hound. Unique artisan product."
+      },
+      "pt": {
+        "name": "Basset Hound",
+        "slug": "basset-hound",
+        "short_description": "Chaveiro personalizado de Basset Hound",
+        "story": "História de Basset Hound. Chaveiro artesanal personalizado.",
+        "seo_title": "Basset Hound",
+        "seo_description": "Chaveiro personalizado de Basset Hound. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Basset Hound",
+        "slug": "basset-hound",
+        "short_description": "Porte-clés personnalisé de Basset Hound",
+        "story": "Histoire de Basset Hound. Porte-clés artisanal personnalisé.",
+        "seo_title": "Basset Hound",
+        "seo_description": "Porte-clés personnalisé de Basset Hound. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000007", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "7-Yorkshire-terrier.png", "keychain_file": "7-Yorkshire-terrier.png",
+    "sku": "KEY-000076",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "7-Yorkshire-terrier.png",
+    "keychain_file": "7-Yorkshire-terrier.png",
     "translations": {
-      "es": { "name": "Yorkshire Terrier", "slug": "yorkshire-terrier", "short_description": "Llavero personalizado de Yorkshire Terrier", "story": "Historia de Yorkshire Terrier. Llavero artesanal personalizado.", "seo_title": "Yorkshire Terrier", "seo_description": "Llavero personalizado de Yorkshire Terrier. Producto artesanal único." },
-      "en": { "name": "Yorkshire Terrier", "slug": "yorkshire-terrier", "short_description": "Custom keychain of Yorkshire Terrier", "story": "Story of Yorkshire Terrier. Custom artisan keychain.", "seo_title": "Yorkshire Terrier", "seo_description": "Custom keychain of Yorkshire Terrier. Unique artisan product." },
-      "pt": { "name": "Yorkshire Terrier", "slug": "yorkshire-terrier", "short_description": "Chaveiro personalizado de Yorkshire Terrier", "story": "História de Yorkshire Terrier. Chaveiro artesanal personalizado.", "seo_title": "Yorkshire Terrier", "seo_description": "Chaveiro personalizado de Yorkshire Terrier. Produto artesanal único." },
-      "fr": { "name": "Yorkshire Terrier", "slug": "yorkshire-terrier", "short_description": "Porte-clés personnalisé de Yorkshire Terrier", "story": "Histoire de Yorkshire Terrier. Porte-clés artisanal personnalisé.", "seo_title": "Yorkshire Terrier", "seo_description": "Porte-clés personnalisé de Yorkshire Terrier. Produit artisanal unique." }
+      "es": {
+        "name": "Yorkshire Terrier",
+        "slug": "yorkshire-terrier",
+        "short_description": "Llavero personalizado de Yorkshire Terrier",
+        "story": "Historia de Yorkshire Terrier. Llavero artesanal personalizado.",
+        "seo_title": "Yorkshire Terrier",
+        "seo_description": "Llavero personalizado de Yorkshire Terrier. Producto artesanal único."
+      },
+      "en": {
+        "name": "Yorkshire Terrier",
+        "slug": "yorkshire-terrier",
+        "short_description": "Custom keychain of Yorkshire Terrier",
+        "story": "Story of Yorkshire Terrier. Custom artisan keychain.",
+        "seo_title": "Yorkshire Terrier",
+        "seo_description": "Custom keychain of Yorkshire Terrier. Unique artisan product."
+      },
+      "pt": {
+        "name": "Yorkshire Terrier",
+        "slug": "yorkshire-terrier",
+        "short_description": "Chaveiro personalizado de Yorkshire Terrier",
+        "story": "História de Yorkshire Terrier. Chaveiro artesanal personalizado.",
+        "seo_title": "Yorkshire Terrier",
+        "seo_description": "Chaveiro personalizado de Yorkshire Terrier. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Yorkshire Terrier",
+        "slug": "yorkshire-terrier",
+        "short_description": "Porte-clés personnalisé de Yorkshire Terrier",
+        "story": "Histoire de Yorkshire Terrier. Porte-clés artisanal personnalisé.",
+        "seo_title": "Yorkshire Terrier",
+        "seo_description": "Porte-clés personnalisé de Yorkshire Terrier. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000008", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "8-shar-pei.png", "keychain_file": "8-shar-pei.png",
+    "sku": "KEY-000077",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "8-shar-pei.png",
+    "keychain_file": "8-shar-pei.png",
     "translations": {
-      "es": { "name": "Shar Pei", "slug": "shar-pei", "short_description": "Llavero personalizado de Shar Pei", "story": "Historia de Shar Pei. Llavero artesanal personalizado.", "seo_title": "Shar Pei", "seo_description": "Llavero personalizado de Shar Pei. Producto artesanal único." },
-      "en": { "name": "Shar Pei", "slug": "shar-pei", "short_description": "Custom keychain of Shar Pei", "story": "Story of Shar Pei. Custom artisan keychain.", "seo_title": "Shar Pei", "seo_description": "Custom keychain of Shar Pei. Unique artisan product." },
-      "pt": { "name": "Shar Pei", "slug": "shar-pei", "short_description": "Chaveiro personalizado de Shar Pei", "story": "História de Shar Pei. Chaveiro artesanal personalizado.", "seo_title": "Shar Pei", "seo_description": "Chaveiro personalizado de Shar Pei. Produto artesanal único." },
-      "fr": { "name": "Shar Pei", "slug": "shar-pei", "short_description": "Porte-clés personnalisé de Shar Pei", "story": "Histoire de Shar Pei. Porte-clés artisanal personnalisé.", "seo_title": "Shar Pei", "seo_description": "Porte-clés personnalisé de Shar Pei. Produit artisanal unique." }
+      "es": {
+        "name": "Shar Pei",
+        "slug": "shar-pei",
+        "short_description": "Llavero personalizado de Shar Pei",
+        "story": "Historia de Shar Pei. Llavero artesanal personalizado.",
+        "seo_title": "Shar Pei",
+        "seo_description": "Llavero personalizado de Shar Pei. Producto artesanal único."
+      },
+      "en": {
+        "name": "Shar Pei",
+        "slug": "shar-pei",
+        "short_description": "Custom keychain of Shar Pei",
+        "story": "Story of Shar Pei. Custom artisan keychain.",
+        "seo_title": "Shar Pei",
+        "seo_description": "Custom keychain of Shar Pei. Unique artisan product."
+      },
+      "pt": {
+        "name": "Shar Pei",
+        "slug": "shar-pei",
+        "short_description": "Chaveiro personalizado de Shar Pei",
+        "story": "História de Shar Pei. Chaveiro artesanal personalizado.",
+        "seo_title": "Shar Pei",
+        "seo_description": "Chaveiro personalizado de Shar Pei. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Shar Pei",
+        "slug": "shar-pei",
+        "short_description": "Porte-clés personnalisé de Shar Pei",
+        "story": "Histoire de Shar Pei. Porte-clés artisanal personnalisé.",
+        "seo_title": "Shar Pei",
+        "seo_description": "Porte-clés personnalisé de Shar Pei. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000009", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "9-akita-inu.png", "keychain_file": "9-akita-inu.jpeg",
+    "sku": "KEY-000078",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "9-akita-inu.png",
+    "keychain_file": "9-akita-inu.jpeg",
     "translations": {
-      "es": { "name": "Akita Inu", "slug": "akita-inu", "short_description": "Llavero personalizado de Akita Inu", "story": "Historia de Akita Inu. Llavero artesanal personalizado.", "seo_title": "Akita Inu", "seo_description": "Llavero personalizado de Akita Inu. Producto artesanal único." },
-      "en": { "name": "Akita Inu", "slug": "akita-inu", "short_description": "Custom keychain of Akita Inu", "story": "Story of Akita Inu. Custom artisan keychain.", "seo_title": "Akita Inu", "seo_description": "Custom keychain of Akita Inu. Unique artisan product." },
-      "pt": { "name": "Akita Inu", "slug": "akita-inu", "short_description": "Chaveiro personalizado de Akita Inu", "story": "História de Akita Inu. Chaveiro artesanal personalizado.", "seo_title": "Akita Inu", "seo_description": "Chaveiro personalizado de Akita Inu. Produto artesanal único." },
-      "fr": { "name": "Akita Inu", "slug": "akita-inu", "short_description": "Porte-clés personnalisé de Akita Inu", "story": "Histoire de Akita Inu. Porte-clés artisanal personnalisé.", "seo_title": "Akita Inu", "seo_description": "Porte-clés personnalisé de Akita Inu. Produit artisanal unique." }
+      "es": {
+        "name": "Akita Inu",
+        "slug": "akita-inu",
+        "short_description": "Llavero personalizado de Akita Inu",
+        "story": "Historia de Akita Inu. Llavero artesanal personalizado.",
+        "seo_title": "Akita Inu",
+        "seo_description": "Llavero personalizado de Akita Inu. Producto artesanal único."
+      },
+      "en": {
+        "name": "Akita Inu",
+        "slug": "akita-inu",
+        "short_description": "Custom keychain of Akita Inu",
+        "story": "Story of Akita Inu. Custom artisan keychain.",
+        "seo_title": "Akita Inu",
+        "seo_description": "Custom keychain of Akita Inu. Unique artisan product."
+      },
+      "pt": {
+        "name": "Akita Inu",
+        "slug": "akita-inu",
+        "short_description": "Chaveiro personalizado de Akita Inu",
+        "story": "História de Akita Inu. Chaveiro artesanal personalizado.",
+        "seo_title": "Akita Inu",
+        "seo_description": "Chaveiro personalizado de Akita Inu. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Akita Inu",
+        "slug": "akita-inu",
+        "short_description": "Porte-clés personnalisé de Akita Inu",
+        "story": "Histoire de Akita Inu. Porte-clés artisanal personnalisé.",
+        "seo_title": "Akita Inu",
+        "seo_description": "Porte-clés personnalisé de Akita Inu. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000010", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "10-beagle.png", "keychain_file": "10-beagle.png",
+    "sku": "KEY-000079",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "10-beagle.png",
+    "keychain_file": "10-beagle.png",
     "translations": {
-      "es": { "name": "Beagle", "slug": "beagle", "short_description": "Llavero personalizado de Beagle", "story": "Historia de Beagle. Llavero artesanal personalizado.", "seo_title": "Beagle", "seo_description": "Llavero personalizado de Beagle. Producto artesanal único." },
-      "en": { "name": "Beagle", "slug": "beagle", "short_description": "Custom keychain of Beagle", "story": "Story of Beagle. Custom artisan keychain.", "seo_title": "Beagle", "seo_description": "Custom keychain of Beagle. Unique artisan product." },
-      "pt": { "name": "Beagle", "slug": "beagle", "short_description": "Chaveiro personalizado de Beagle", "story": "História de Beagle. Chaveiro artesanal personalizado.", "seo_title": "Beagle", "seo_description": "Chaveiro personalizado de Beagle. Produto artesanal único." },
-      "fr": { "name": "Beagle", "slug": "beagle", "short_description": "Porte-clés personnalisé de Beagle", "story": "Histoire de Beagle. Porte-clés artisanal personnalisé.", "seo_title": "Beagle", "seo_description": "Porte-clés personnalisé de Beagle. Produit artisanal unique." }
+      "es": {
+        "name": "Beagle",
+        "slug": "beagle",
+        "short_description": "Llavero personalizado de Beagle",
+        "story": "Historia de Beagle. Llavero artesanal personalizado.",
+        "seo_title": "Beagle",
+        "seo_description": "Llavero personalizado de Beagle. Producto artesanal único."
+      },
+      "en": {
+        "name": "Beagle",
+        "slug": "beagle",
+        "short_description": "Custom keychain of Beagle",
+        "story": "Story of Beagle. Custom artisan keychain.",
+        "seo_title": "Beagle",
+        "seo_description": "Custom keychain of Beagle. Unique artisan product."
+      },
+      "pt": {
+        "name": "Beagle",
+        "slug": "beagle",
+        "short_description": "Chaveiro personalizado de Beagle",
+        "story": "História de Beagle. Chaveiro artesanal personalizado.",
+        "seo_title": "Beagle",
+        "seo_description": "Chaveiro personalizado de Beagle. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Beagle",
+        "slug": "beagle",
+        "short_description": "Porte-clés personnalisé de Beagle",
+        "story": "Histoire de Beagle. Porte-clés artisanal personnalisé.",
+        "seo_title": "Beagle",
+        "seo_description": "Porte-clés personnalisé de Beagle. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000011", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "11-pastor-aleman.png", "keychain_file": "11-pastor-aleman.png",
+    "sku": "KEY-000080",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "11-pastor-aleman.png",
+    "keychain_file": "11-pastor-aleman.png",
     "translations": {
-      "es": { "name": "Pastor Alemán", "slug": "pastor-aleman", "short_description": "Llavero personalizado de Pastor Alemán", "story": "Historia de Pastor Alemán. Llavero artesanal personalizado.", "seo_title": "Pastor Alemán", "seo_description": "Llavero personalizado de Pastor Alemán. Producto artesanal único." },
-      "en": { "name": "Pastor Alemán", "slug": "pastor-aleman", "short_description": "Custom keychain of Pastor Alemán", "story": "Story of Pastor Alemán. Custom artisan keychain.", "seo_title": "Pastor Alemán", "seo_description": "Custom keychain of Pastor Alemán. Unique artisan product." },
-      "pt": { "name": "Pastor Alemán", "slug": "pastor-aleman", "short_description": "Chaveiro personalizado de Pastor Alemán", "story": "História de Pastor Alemán. Chaveiro artesanal personalizado.", "seo_title": "Pastor Alemán", "seo_description": "Chaveiro personalizado de Pastor Alemán. Produto artesanal único." },
-      "fr": { "name": "Pastor Alemán", "slug": "pastor-aleman", "short_description": "Porte-clés personnalisé de Pastor Alemán", "story": "Histoire de Pastor Alemán. Porte-clés artisanal personnalisé.", "seo_title": "Pastor Alemán", "seo_description": "Porte-clés personnalisé de Pastor Alemán. Produit artisanal unique." }
+      "es": {
+        "name": "Pastor Alemán",
+        "slug": "pastor-aleman",
+        "short_description": "Llavero personalizado de Pastor Alemán",
+        "story": "Historia de Pastor Alemán. Llavero artesanal personalizado.",
+        "seo_title": "Pastor Alemán",
+        "seo_description": "Llavero personalizado de Pastor Alemán. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pastor Alemán",
+        "slug": "pastor-aleman",
+        "short_description": "Custom keychain of Pastor Alemán",
+        "story": "Story of Pastor Alemán. Custom artisan keychain.",
+        "seo_title": "Pastor Alemán",
+        "seo_description": "Custom keychain of Pastor Alemán. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pastor Alemán",
+        "slug": "pastor-aleman",
+        "short_description": "Chaveiro personalizado de Pastor Alemán",
+        "story": "História de Pastor Alemán. Chaveiro artesanal personalizado.",
+        "seo_title": "Pastor Alemán",
+        "seo_description": "Chaveiro personalizado de Pastor Alemán. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pastor Alemán",
+        "slug": "pastor-aleman",
+        "short_description": "Porte-clés personnalisé de Pastor Alemán",
+        "story": "Histoire de Pastor Alemán. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pastor Alemán",
+        "seo_description": "Porte-clés personnalisé de Pastor Alemán. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000012", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "12-border-collie.png", "keychain_file": "12-border-collie.png",
+    "sku": "KEY-000081",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "12-border-collie.png",
+    "keychain_file": "12-border-collie.png",
     "translations": {
-      "es": { "name": "Border Collie", "slug": "border-collie", "short_description": "Llavero personalizado de Border Collie", "story": "Historia de Border Collie. Llavero artesanal personalizado.", "seo_title": "Border Collie", "seo_description": "Llavero personalizado de Border Collie. Producto artesanal único." },
-      "en": { "name": "Border Collie", "slug": "border-collie", "short_description": "Custom keychain of Border Collie", "story": "Story of Border Collie. Custom artisan keychain.", "seo_title": "Border Collie", "seo_description": "Custom keychain of Border Collie. Unique artisan product." },
-      "pt": { "name": "Border Collie", "slug": "border-collie", "short_description": "Chaveiro personalizado de Border Collie", "story": "História de Border Collie. Chaveiro artesanal personalizado.", "seo_title": "Border Collie", "seo_description": "Chaveiro personalizado de Border Collie. Produto artesanal único." },
-      "fr": { "name": "Border Collie", "slug": "border-collie", "short_description": "Porte-clés personnalisé de Border Collie", "story": "Histoire de Border Collie. Porte-clés artisanal personnalisé.", "seo_title": "Border Collie", "seo_description": "Porte-clés personnalisé de Border Collie. Produit artisanal unique." }
+      "es": {
+        "name": "Border Collie",
+        "slug": "border-collie",
+        "short_description": "Llavero personalizado de Border Collie",
+        "story": "Historia de Border Collie. Llavero artesanal personalizado.",
+        "seo_title": "Border Collie",
+        "seo_description": "Llavero personalizado de Border Collie. Producto artesanal único."
+      },
+      "en": {
+        "name": "Border Collie",
+        "slug": "border-collie",
+        "short_description": "Custom keychain of Border Collie",
+        "story": "Story of Border Collie. Custom artisan keychain.",
+        "seo_title": "Border Collie",
+        "seo_description": "Custom keychain of Border Collie. Unique artisan product."
+      },
+      "pt": {
+        "name": "Border Collie",
+        "slug": "border-collie",
+        "short_description": "Chaveiro personalizado de Border Collie",
+        "story": "História de Border Collie. Chaveiro artesanal personalizado.",
+        "seo_title": "Border Collie",
+        "seo_description": "Chaveiro personalizado de Border Collie. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Border Collie",
+        "slug": "border-collie",
+        "short_description": "Porte-clés personnalisé de Border Collie",
+        "story": "Histoire de Border Collie. Porte-clés artisanal personnalisé.",
+        "seo_title": "Border Collie",
+        "seo_description": "Porte-clés personnalisé de Border Collie. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000013", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "13-buldog-frances.png", "keychain_file": "13-buldog-frances.png",
+    "sku": "KEY-000082",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "13-buldog-frances.png",
+    "keychain_file": "13-buldog-frances.png",
     "translations": {
-      "es": { "name": "Bulldog Francés", "slug": "bulldog-frances", "short_description": "Llavero personalizado de Bulldog Francés", "story": "Historia de Bulldog Francés. Llavero artesanal personalizado.", "seo_title": "Bulldog Francés", "seo_description": "Llavero personalizado de Bulldog Francés. Producto artesanal único." },
-      "en": { "name": "Bulldog Francés", "slug": "bulldog-frances", "short_description": "Custom keychain of Bulldog Francés", "story": "Story of Bulldog Francés. Custom artisan keychain.", "seo_title": "Bulldog Francés", "seo_description": "Custom keychain of Bulldog Francés. Unique artisan product." },
-      "pt": { "name": "Bulldog Francés", "slug": "bulldog-frances", "short_description": "Chaveiro personalizado de Bulldog Francés", "story": "História de Bulldog Francés. Chaveiro artesanal personalizado.", "seo_title": "Bulldog Francés", "seo_description": "Chaveiro personalizado de Bulldog Francés. Produto artesanal único." },
-      "fr": { "name": "Bulldog Francés", "slug": "bulldog-frances", "short_description": "Porte-clés personnalisé de Bulldog Francés", "story": "Histoire de Bulldog Francés. Porte-clés artisanal personnalisé.", "seo_title": "Bulldog Francés", "seo_description": "Porte-clés personnalisé de Bulldog Francés. Produit artisanal unique." }
+      "es": {
+        "name": "Bulldog Francés",
+        "slug": "bulldog-frances",
+        "short_description": "Llavero personalizado de Bulldog Francés",
+        "story": "Historia de Bulldog Francés. Llavero artesanal personalizado.",
+        "seo_title": "Bulldog Francés",
+        "seo_description": "Llavero personalizado de Bulldog Francés. Producto artesanal único."
+      },
+      "en": {
+        "name": "Bulldog Francés",
+        "slug": "bulldog-frances",
+        "short_description": "Custom keychain of Bulldog Francés",
+        "story": "Story of Bulldog Francés. Custom artisan keychain.",
+        "seo_title": "Bulldog Francés",
+        "seo_description": "Custom keychain of Bulldog Francés. Unique artisan product."
+      },
+      "pt": {
+        "name": "Bulldog Francés",
+        "slug": "bulldog-frances",
+        "short_description": "Chaveiro personalizado de Bulldog Francés",
+        "story": "História de Bulldog Francés. Chaveiro artesanal personalizado.",
+        "seo_title": "Bulldog Francés",
+        "seo_description": "Chaveiro personalizado de Bulldog Francés. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Bulldog Francés",
+        "slug": "bulldog-frances",
+        "short_description": "Porte-clés personnalisé de Bulldog Francés",
+        "story": "Histoire de Bulldog Francés. Porte-clés artisanal personnalisé.",
+        "seo_title": "Bulldog Francés",
+        "seo_description": "Porte-clés personnalisé de Bulldog Francés. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000014", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "14-bulldog-ingles.png", "keychain_file": "14-bulldog-ingles.jpeg",
+    "sku": "KEY-000083",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "14-bulldog-ingles.png",
+    "keychain_file": "14-bulldog-ingles.jpeg",
     "translations": {
-      "es": { "name": "Bulldog Inglés", "slug": "bulldog-ingles", "short_description": "Llavero personalizado de Bulldog Inglés", "story": "Historia de Bulldog Inglés. Llavero artesanal personalizado.", "seo_title": "Bulldog Inglés", "seo_description": "Llavero personalizado de Bulldog Inglés. Producto artesanal único." },
-      "en": { "name": "Bulldog Inglés", "slug": "bulldog-ingles", "short_description": "Custom keychain of Bulldog Inglés", "story": "Story of Bulldog Inglés. Custom artisan keychain.", "seo_title": "Bulldog Inglés", "seo_description": "Custom keychain of Bulldog Inglés. Unique artisan product." },
-      "pt": { "name": "Bulldog Inglés", "slug": "bulldog-ingles", "short_description": "Chaveiro personalizado de Bulldog Inglés", "story": "História de Bulldog Inglés. Chaveiro artesanal personalizado.", "seo_title": "Bulldog Inglés", "seo_description": "Chaveiro personalizado de Bulldog Inglés. Produto artesanal único." },
-      "fr": { "name": "Bulldog Inglés", "slug": "bulldog-ingles", "short_description": "Porte-clés personnalisé de Bulldog Inglés", "story": "Histoire de Bulldog Inglés. Porte-clés artisanal personnalisé.", "seo_title": "Bulldog Inglés", "seo_description": "Porte-clés personnalisé de Bulldog Inglés. Produit artisanal unique." }
+      "es": {
+        "name": "Bulldog Inglés",
+        "slug": "bulldog-ingles",
+        "short_description": "Llavero personalizado de Bulldog Inglés",
+        "story": "Historia de Bulldog Inglés. Llavero artesanal personalizado.",
+        "seo_title": "Bulldog Inglés",
+        "seo_description": "Llavero personalizado de Bulldog Inglés. Producto artesanal único."
+      },
+      "en": {
+        "name": "Bulldog Inglés",
+        "slug": "bulldog-ingles",
+        "short_description": "Custom keychain of Bulldog Inglés",
+        "story": "Story of Bulldog Inglés. Custom artisan keychain.",
+        "seo_title": "Bulldog Inglés",
+        "seo_description": "Custom keychain of Bulldog Inglés. Unique artisan product."
+      },
+      "pt": {
+        "name": "Bulldog Inglés",
+        "slug": "bulldog-ingles",
+        "short_description": "Chaveiro personalizado de Bulldog Inglés",
+        "story": "História de Bulldog Inglés. Chaveiro artesanal personalizado.",
+        "seo_title": "Bulldog Inglés",
+        "seo_description": "Chaveiro personalizado de Bulldog Inglés. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Bulldog Inglés",
+        "slug": "bulldog-ingles",
+        "short_description": "Porte-clés personnalisé de Bulldog Inglés",
+        "story": "Histoire de Bulldog Inglés. Porte-clés artisanal personnalisé.",
+        "seo_title": "Bulldog Inglés",
+        "seo_description": "Porte-clés personnalisé de Bulldog Inglés. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000015", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "15-cane-corso.png", "keychain_file": "15-cane-corso.png",
+    "sku": "KEY-000084",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "15-cane-corso.png",
+    "keychain_file": "15-cane-corso.png",
     "translations": {
-      "es": { "name": "Cane Corso", "slug": "cane-corso", "short_description": "Llavero personalizado de Cane Corso", "story": "Historia de Cane Corso. Llavero artesanal personalizado.", "seo_title": "Cane Corso", "seo_description": "Llavero personalizado de Cane Corso. Producto artesanal único." },
-      "en": { "name": "Cane Corso", "slug": "cane-corso", "short_description": "Custom keychain of Cane Corso", "story": "Story of Cane Corso. Custom artisan keychain.", "seo_title": "Cane Corso", "seo_description": "Custom keychain of Cane Corso. Unique artisan product." },
-      "pt": { "name": "Cane Corso", "slug": "cane-corso", "short_description": "Chaveiro personalizado de Cane Corso", "story": "História de Cane Corso. Chaveiro artesanal personalizado.", "seo_title": "Cane Corso", "seo_description": "Chaveiro personalizado de Cane Corso. Produto artesanal único." },
-      "fr": { "name": "Cane Corso", "slug": "cane-corso", "short_description": "Porte-clés personnalisé de Cane Corso", "story": "Histoire de Cane Corso. Porte-clés artisanal personnalisé.", "seo_title": "Cane Corso", "seo_description": "Porte-clés personnalisé de Cane Corso. Produit artisanal unique." }
+      "es": {
+        "name": "Cane Corso",
+        "slug": "cane-corso",
+        "short_description": "Llavero personalizado de Cane Corso",
+        "story": "Historia de Cane Corso. Llavero artesanal personalizado.",
+        "seo_title": "Cane Corso",
+        "seo_description": "Llavero personalizado de Cane Corso. Producto artesanal único."
+      },
+      "en": {
+        "name": "Cane Corso",
+        "slug": "cane-corso",
+        "short_description": "Custom keychain of Cane Corso",
+        "story": "Story of Cane Corso. Custom artisan keychain.",
+        "seo_title": "Cane Corso",
+        "seo_description": "Custom keychain of Cane Corso. Unique artisan product."
+      },
+      "pt": {
+        "name": "Cane Corso",
+        "slug": "cane-corso",
+        "short_description": "Chaveiro personalizado de Cane Corso",
+        "story": "História de Cane Corso. Chaveiro artesanal personalizado.",
+        "seo_title": "Cane Corso",
+        "seo_description": "Chaveiro personalizado de Cane Corso. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Cane Corso",
+        "slug": "cane-corso",
+        "short_description": "Porte-clés personnalisé de Cane Corso",
+        "story": "Histoire de Cane Corso. Porte-clés artisanal personnalisé.",
+        "seo_title": "Cane Corso",
+        "seo_description": "Porte-clés personnalisé de Cane Corso. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000016", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "16-chihuahua.png", "keychain_file": "16-chihuahua.png",
+    "sku": "KEY-000085",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "16-chihuahua.png",
+    "keychain_file": "16-chihuahua.png",
     "translations": {
-      "es": { "name": "Chihuahua", "slug": "chihuahua", "short_description": "Llavero personalizado de Chihuahua", "story": "Historia de Chihuahua. Llavero artesanal personalizado.", "seo_title": "Chihuahua", "seo_description": "Llavero personalizado de Chihuahua. Producto artesanal único." },
-      "en": { "name": "Chihuahua", "slug": "chihuahua", "short_description": "Custom keychain of Chihuahua", "story": "Story of Chihuahua. Custom artisan keychain.", "seo_title": "Chihuahua", "seo_description": "Custom keychain of Chihuahua. Unique artisan product." },
-      "pt": { "name": "Chihuahua", "slug": "chihuahua", "short_description": "Chaveiro personalizado de Chihuahua", "story": "História de Chihuahua. Chaveiro artesanal personalizado.", "seo_title": "Chihuahua", "seo_description": "Chaveiro personalizado de Chihuahua. Produto artesanal único." },
-      "fr": { "name": "Chihuahua", "slug": "chihuahua", "short_description": "Porte-clés personnalisé de Chihuahua", "story": "Histoire de Chihuahua. Porte-clés artisanal personnalisé.", "seo_title": "Chihuahua", "seo_description": "Porte-clés personnalisé de Chihuahua. Produit artisanal unique." }
+      "es": {
+        "name": "Chihuahua",
+        "slug": "chihuahua",
+        "short_description": "Llavero personalizado de Chihuahua",
+        "story": "Historia de Chihuahua. Llavero artesanal personalizado.",
+        "seo_title": "Chihuahua",
+        "seo_description": "Llavero personalizado de Chihuahua. Producto artesanal único."
+      },
+      "en": {
+        "name": "Chihuahua",
+        "slug": "chihuahua",
+        "short_description": "Custom keychain of Chihuahua",
+        "story": "Story of Chihuahua. Custom artisan keychain.",
+        "seo_title": "Chihuahua",
+        "seo_description": "Custom keychain of Chihuahua. Unique artisan product."
+      },
+      "pt": {
+        "name": "Chihuahua",
+        "slug": "chihuahua",
+        "short_description": "Chaveiro personalizado de Chihuahua",
+        "story": "História de Chihuahua. Chaveiro artesanal personalizado.",
+        "seo_title": "Chihuahua",
+        "seo_description": "Chaveiro personalizado de Chihuahua. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Chihuahua",
+        "slug": "chihuahua",
+        "short_description": "Porte-clés personnalisé de Chihuahua",
+        "story": "Histoire de Chihuahua. Porte-clés artisanal personnalisé.",
+        "seo_title": "Chihuahua",
+        "seo_description": "Porte-clés personnalisé de Chihuahua. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000017", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "17-chow-chow.png", "keychain_file": "17-chow-chow.png",
+    "sku": "KEY-000086",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "17-chow-chow.png",
+    "keychain_file": "17-chow-chow.png",
     "translations": {
-      "es": { "name": "Chow Chow", "slug": "chow-chow", "short_description": "Llavero personalizado de Chow Chow", "story": "Historia de Chow Chow. Llavero artesanal personalizado.", "seo_title": "Chow Chow", "seo_description": "Llavero personalizado de Chow Chow. Producto artesanal único." },
-      "en": { "name": "Chow Chow", "slug": "chow-chow", "short_description": "Custom keychain of Chow Chow", "story": "Story of Chow Chow. Custom artisan keychain.", "seo_title": "Chow Chow", "seo_description": "Custom keychain of Chow Chow. Unique artisan product." },
-      "pt": { "name": "Chow Chow", "slug": "chow-chow", "short_description": "Chaveiro personalizado de Chow Chow", "story": "História de Chow Chow. Chaveiro artesanal personalizado.", "seo_title": "Chow Chow", "seo_description": "Chaveiro personalizado de Chow Chow. Produto artesanal único." },
-      "fr": { "name": "Chow Chow", "slug": "chow-chow", "short_description": "Porte-clés personnalisé de Chow Chow", "story": "Histoire de Chow Chow. Porte-clés artisanal personnalisé.", "seo_title": "Chow Chow", "seo_description": "Porte-clés personnalisé de Chow Chow. Produit artisanal unique." }
+      "es": {
+        "name": "Chow Chow",
+        "slug": "chow-chow",
+        "short_description": "Llavero personalizado de Chow Chow",
+        "story": "Historia de Chow Chow. Llavero artesanal personalizado.",
+        "seo_title": "Chow Chow",
+        "seo_description": "Llavero personalizado de Chow Chow. Producto artesanal único."
+      },
+      "en": {
+        "name": "Chow Chow",
+        "slug": "chow-chow",
+        "short_description": "Custom keychain of Chow Chow",
+        "story": "Story of Chow Chow. Custom artisan keychain.",
+        "seo_title": "Chow Chow",
+        "seo_description": "Custom keychain of Chow Chow. Unique artisan product."
+      },
+      "pt": {
+        "name": "Chow Chow",
+        "slug": "chow-chow",
+        "short_description": "Chaveiro personalizado de Chow Chow",
+        "story": "História de Chow Chow. Chaveiro artesanal personalizado.",
+        "seo_title": "Chow Chow",
+        "seo_description": "Chaveiro personalizado de Chow Chow. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Chow Chow",
+        "slug": "chow-chow",
+        "short_description": "Porte-clés personnalisé de Chow Chow",
+        "story": "Histoire de Chow Chow. Porte-clés artisanal personnalisé.",
+        "seo_title": "Chow Chow",
+        "seo_description": "Porte-clés personnalisé de Chow Chow. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000018", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "18-corgi-gales.png", "keychain_file": "18-corgi-gales.png",
+    "sku": "KEY-000087",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "18-corgi-gales.png",
+    "keychain_file": "18-corgi-gales.png",
     "translations": {
-      "es": { "name": "Corgi Gales", "slug": "corgi-gales", "short_description": "Llavero personalizado de Corgi Gales", "story": "Historia de Corgi Gales. Llavero artesanal personalizado.", "seo_title": "Corgi Gales", "seo_description": "Llavero personalizado de Corgi Gales. Producto artesanal único." },
-      "en": { "name": "Corgi Gales", "slug": "corgi-gales", "short_description": "Custom keychain of Corgi Gales", "story": "Story of Corgi Gales. Custom artisan keychain.", "seo_title": "Corgi Gales", "seo_description": "Custom keychain of Corgi Gales. Unique artisan product." },
-      "pt": { "name": "Corgi Gales", "slug": "corgi-gales", "short_description": "Chaveiro personalizado de Corgi Gales", "story": "História de Corgi Gales. Chaveiro artesanal personalizado.", "seo_title": "Corgi Gales", "seo_description": "Chaveiro personalizado de Corgi Gales. Produto artesanal único." },
-      "fr": { "name": "Corgi Gales", "slug": "corgi-gales", "short_description": "Porte-clés personnalisé de Corgi Gales", "story": "Histoire de Corgi Gales. Porte-clés artisanal personnalisé.", "seo_title": "Corgi Gales", "seo_description": "Porte-clés personnalisé de Corgi Gales. Produit artisanal unique." }
+      "es": {
+        "name": "Corgi Gales",
+        "slug": "corgi-gales",
+        "short_description": "Llavero personalizado de Corgi Gales",
+        "story": "Historia de Corgi Gales. Llavero artesanal personalizado.",
+        "seo_title": "Corgi Gales",
+        "seo_description": "Llavero personalizado de Corgi Gales. Producto artesanal único."
+      },
+      "en": {
+        "name": "Corgi Gales",
+        "slug": "corgi-gales",
+        "short_description": "Custom keychain of Corgi Gales",
+        "story": "Story of Corgi Gales. Custom artisan keychain.",
+        "seo_title": "Corgi Gales",
+        "seo_description": "Custom keychain of Corgi Gales. Unique artisan product."
+      },
+      "pt": {
+        "name": "Corgi Gales",
+        "slug": "corgi-gales",
+        "short_description": "Chaveiro personalizado de Corgi Gales",
+        "story": "História de Corgi Gales. Chaveiro artesanal personalizado.",
+        "seo_title": "Corgi Gales",
+        "seo_description": "Chaveiro personalizado de Corgi Gales. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Corgi Gales",
+        "slug": "corgi-gales",
+        "short_description": "Porte-clés personnalisé de Corgi Gales",
+        "story": "Histoire de Corgi Gales. Porte-clés artisanal personnalisé.",
+        "seo_title": "Corgi Gales",
+        "seo_description": "Porte-clés personnalisé de Corgi Gales. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000019", "price": 27000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "19-dalmata.png", "keychain_file": "19-dalmata.png",
+    "sku": "KEY-000088",
+    "price": 27000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "19-dalmata.png",
+    "keychain_file": "19-dalmata.png",
     "translations": {
-      "es": { "name": "Dálmata", "slug": "dalmata", "short_description": "Llavero personalizado de Dálmata", "story": "Historia de Dálmata. Llavero artesanal personalizado.", "seo_title": "Dálmata", "seo_description": "Llavero personalizado de Dálmata. Producto artesanal único." },
-      "en": { "name": "Dálmata", "slug": "dalmata", "short_description": "Custom keychain of Dálmata", "story": "Story of Dálmata. Custom artisan keychain.", "seo_title": "Dálmata", "seo_description": "Custom keychain of Dálmata. Unique artisan product." },
-      "pt": { "name": "Dálmata", "slug": "dalmata", "short_description": "Chaveiro personalizado de Dálmata", "story": "História de Dálmata. Chaveiro artesanal personalizado.", "seo_title": "Dálmata", "seo_description": "Chaveiro personalizado de Dálmata. Produto artesanal único." },
-      "fr": { "name": "Dálmata", "slug": "dalmata", "short_description": "Porte-clés personnalisé de Dálmata", "story": "Histoire de Dálmata. Porte-clés artisanal personnalisé.", "seo_title": "Dálmata", "seo_description": "Porte-clés personnalisé de Dálmata. Produit artisanal unique." }
+      "es": {
+        "name": "Dálmata",
+        "slug": "dalmata",
+        "short_description": "Llavero personalizado de Dálmata",
+        "story": "Historia de Dálmata. Llavero artesanal personalizado.",
+        "seo_title": "Dálmata",
+        "seo_description": "Llavero personalizado de Dálmata. Producto artesanal único."
+      },
+      "en": {
+        "name": "Dálmata",
+        "slug": "dalmata",
+        "short_description": "Custom keychain of Dálmata",
+        "story": "Story of Dálmata. Custom artisan keychain.",
+        "seo_title": "Dálmata",
+        "seo_description": "Custom keychain of Dálmata. Unique artisan product."
+      },
+      "pt": {
+        "name": "Dálmata",
+        "slug": "dalmata",
+        "short_description": "Chaveiro personalizado de Dálmata",
+        "story": "História de Dálmata. Chaveiro artesanal personalizado.",
+        "seo_title": "Dálmata",
+        "seo_description": "Chaveiro personalizado de Dálmata. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Dálmata",
+        "slug": "dalmata",
+        "short_description": "Porte-clés personnalisé de Dálmata",
+        "story": "Histoire de Dálmata. Porte-clés artisanal personnalisé.",
+        "seo_title": "Dálmata",
+        "seo_description": "Porte-clés personnalisé de Dálmata. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000020", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "20-dogo-argentino.png", "keychain_file": "20-dogo-argentino.jpeg",
+    "sku": "KEY-000089",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "20-dogo-argentino.png",
+    "keychain_file": "20-dogo-argentino.jpeg",
     "translations": {
-      "es": { "name": "Dogo Argentino", "slug": "dogo-argentino", "short_description": "Llavero personalizado de Dogo Argentino", "story": "Historia de Dogo Argentino. Llavero artesanal personalizado.", "seo_title": "Dogo Argentino", "seo_description": "Llavero personalizado de Dogo Argentino. Producto artesanal único." },
-      "en": { "name": "Dogo Argentino", "slug": "dogo-argentino", "short_description": "Custom keychain of Dogo Argentino", "story": "Story of Dogo Argentino. Custom artisan keychain.", "seo_title": "Dogo Argentino", "seo_description": "Custom keychain of Dogo Argentino. Unique artisan product." },
-      "pt": { "name": "Dogo Argentino", "slug": "dogo-argentino", "short_description": "Chaveiro personalizado de Dogo Argentino", "story": "História de Dogo Argentino. Chaveiro artesanal personalizado.", "seo_title": "Dogo Argentino", "seo_description": "Chaveiro personalizado de Dogo Argentino. Produto artesanal único." },
-      "fr": { "name": "Dogo Argentino", "slug": "dogo-argentino", "short_description": "Porte-clés personnalisé de Dogo Argentino", "story": "Histoire de Dogo Argentino. Porte-clés artisanal personnalisé.", "seo_title": "Dogo Argentino", "seo_description": "Porte-clés personnalisé de Dogo Argentino. Produit artisanal unique." }
+      "es": {
+        "name": "Dogo Argentino",
+        "slug": "dogo-argentino",
+        "short_description": "Llavero personalizado de Dogo Argentino",
+        "story": "Historia de Dogo Argentino. Llavero artesanal personalizado.",
+        "seo_title": "Dogo Argentino",
+        "seo_description": "Llavero personalizado de Dogo Argentino. Producto artesanal único."
+      },
+      "en": {
+        "name": "Dogo Argentino",
+        "slug": "dogo-argentino",
+        "short_description": "Custom keychain of Dogo Argentino",
+        "story": "Story of Dogo Argentino. Custom artisan keychain.",
+        "seo_title": "Dogo Argentino",
+        "seo_description": "Custom keychain of Dogo Argentino. Unique artisan product."
+      },
+      "pt": {
+        "name": "Dogo Argentino",
+        "slug": "dogo-argentino",
+        "short_description": "Chaveiro personalizado de Dogo Argentino",
+        "story": "História de Dogo Argentino. Chaveiro artesanal personalizado.",
+        "seo_title": "Dogo Argentino",
+        "seo_description": "Chaveiro personalizado de Dogo Argentino. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Dogo Argentino",
+        "slug": "dogo-argentino",
+        "short_description": "Porte-clés personnalisé de Dogo Argentino",
+        "story": "Histoire de Dogo Argentino. Porte-clés artisanal personnalisé.",
+        "seo_title": "Dogo Argentino",
+        "seo_description": "Porte-clés personnalisé de Dogo Argentino. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000021", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "21-jack-rusell.png", "keychain_file": "21-jack-rusell.png",
+    "sku": "KEY-000090",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "21-jack-rusell.png",
+    "keychain_file": "21-jack-rusell.png",
     "translations": {
-      "es": { "name": "Jack Russell", "slug": "jack-rusell", "short_description": "Llavero personalizado de Jack Russell", "story": "Historia de Jack Russell. Llavero artesanal personalizado.", "seo_title": "Jack Russell", "seo_description": "Llavero personalizado de Jack Russell. Producto artesanal único." },
-      "en": { "name": "Jack Russell", "slug": "jack-rusell", "short_description": "Custom keychain of Jack Russell", "story": "Story of Jack Russell. Custom artisan keychain.", "seo_title": "Jack Russell", "seo_description": "Custom keychain of Jack Russell. Unique artisan product." },
-      "pt": { "name": "Jack Russell", "slug": "jack-rusell", "short_description": "Chaveiro personalizado de Jack Russell", "story": "História de Jack Russell. Chaveiro artesanal personalizado.", "seo_title": "Jack Russell", "seo_description": "Chaveiro personalizado de Jack Russell. Produto artesanal único." },
-      "fr": { "name": "Jack Russell", "slug": "jack-rusell", "short_description": "Porte-clés personnalisé de Jack Russell", "story": "Histoire de Jack Russell. Porte-clés artisanal personnalisé.", "seo_title": "Jack Russell", "seo_description": "Porte-clés personnalisé de Jack Russell. Produit artisanal unique." }
+      "es": {
+        "name": "Jack Russell",
+        "slug": "jack-rusell",
+        "short_description": "Llavero personalizado de Jack Russell",
+        "story": "Historia de Jack Russell. Llavero artesanal personalizado.",
+        "seo_title": "Jack Russell",
+        "seo_description": "Llavero personalizado de Jack Russell. Producto artesanal único."
+      },
+      "en": {
+        "name": "Jack Russell",
+        "slug": "jack-rusell",
+        "short_description": "Custom keychain of Jack Russell",
+        "story": "Story of Jack Russell. Custom artisan keychain.",
+        "seo_title": "Jack Russell",
+        "seo_description": "Custom keychain of Jack Russell. Unique artisan product."
+      },
+      "pt": {
+        "name": "Jack Russell",
+        "slug": "jack-rusell",
+        "short_description": "Chaveiro personalizado de Jack Russell",
+        "story": "História de Jack Russell. Chaveiro artesanal personalizado.",
+        "seo_title": "Jack Russell",
+        "seo_description": "Chaveiro personalizado de Jack Russell. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Jack Russell",
+        "slug": "jack-rusell",
+        "short_description": "Porte-clés personnalisé de Jack Russell",
+        "story": "Histoire de Jack Russell. Porte-clés artisanal personnalisé.",
+        "seo_title": "Jack Russell",
+        "seo_description": "Porte-clés personnalisé de Jack Russell. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000022", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "21-kangal-turco.png", "keychain_file": "21-kangal-turco.jpeg",
+    "sku": "KEY-000091",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "21-kangal-turco.png",
+    "keychain_file": "21-kangal-turco.jpeg",
     "translations": {
-      "es": { "name": "Kangal Turco", "slug": "kangal-turco", "short_description": "Llavero personalizado de Kangal Turco", "story": "Historia de Kangal Turco. Llavero artesanal personalizado.", "seo_title": "Kangal Turco", "seo_description": "Llavero personalizado de Kangal Turco. Producto artesanal único." },
-      "en": { "name": "Kangal Turco", "slug": "kangal-turco", "short_description": "Custom keychain of Kangal Turco", "story": "Story of Kangal Turco. Custom artisan keychain.", "seo_title": "Kangal Turco", "seo_description": "Custom keychain of Kangal Turco. Unique artisan product." },
-      "pt": { "name": "Kangal Turco", "slug": "kangal-turco", "short_description": "Chaveiro personalizado de Kangal Turco", "story": "História de Kangal Turco. Chaveiro artesanal personalizado.", "seo_title": "Kangal Turco", "seo_description": "Chaveiro personalizado de Kangal Turco. Produto artesanal único." },
-      "fr": { "name": "Kangal Turco", "slug": "kangal-turco", "short_description": "Porte-clés personnalisé de Kangal Turco", "story": "Histoire de Kangal Turco. Porte-clés artisanal personnalisé.", "seo_title": "Kangal Turco", "seo_description": "Porte-clés personnalisé de Kangal Turco. Produit artisanal unique." }
+      "es": {
+        "name": "Kangal Turco",
+        "slug": "kangal-turco",
+        "short_description": "Llavero personalizado de Kangal Turco",
+        "story": "Historia de Kangal Turco. Llavero artesanal personalizado.",
+        "seo_title": "Kangal Turco",
+        "seo_description": "Llavero personalizado de Kangal Turco. Producto artesanal único."
+      },
+      "en": {
+        "name": "Kangal Turco",
+        "slug": "kangal-turco",
+        "short_description": "Custom keychain of Kangal Turco",
+        "story": "Story of Kangal Turco. Custom artisan keychain.",
+        "seo_title": "Kangal Turco",
+        "seo_description": "Custom keychain of Kangal Turco. Unique artisan product."
+      },
+      "pt": {
+        "name": "Kangal Turco",
+        "slug": "kangal-turco",
+        "short_description": "Chaveiro personalizado de Kangal Turco",
+        "story": "História de Kangal Turco. Chaveiro artesanal personalizado.",
+        "seo_title": "Kangal Turco",
+        "seo_description": "Chaveiro personalizado de Kangal Turco. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Kangal Turco",
+        "slug": "kangal-turco",
+        "short_description": "Porte-clés personnalisé de Kangal Turco",
+        "story": "Histoire de Kangal Turco. Porte-clés artisanal personnalisé.",
+        "seo_title": "Kangal Turco",
+        "seo_description": "Porte-clés personnalisé de Kangal Turco. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000023", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "22-Pastor-Belga-Malinois.png", "keychain_file": "22-Pastor-Belga-Malinois.jpeg",
+    "sku": "KEY-000092",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "22-Pastor-Belga-Malinois.png",
+    "keychain_file": "22-Pastor-Belga-Malinois.jpeg",
     "translations": {
-      "es": { "name": "Pastor Belga Malinois", "slug": "pastor-belga-malinois", "short_description": "Llavero personalizado de Pastor Belga Malinois", "story": "Historia de Pastor Belga Malinois. Llavero artesanal personalizado.", "seo_title": "Pastor Belga Malinois", "seo_description": "Llavero personalizado de Pastor Belga Malinois. Producto artesanal único." },
-      "en": { "name": "Pastor Belga Malinois", "slug": "pastor-belga-malinois", "short_description": "Custom keychain of Pastor Belga Malinois", "story": "Story of Pastor Belga Malinois. Custom artisan keychain.", "seo_title": "Pastor Belga Malinois", "seo_description": "Custom keychain of Pastor Belga Malinois. Unique artisan product." },
-      "pt": { "name": "Pastor Belga Malinois", "slug": "pastor-belga-malinois", "short_description": "Chaveiro personalizado de Pastor Belga Malinois", "story": "História de Pastor Belga Malinois. Chaveiro artesanal personalizado.", "seo_title": "Pastor Belga Malinois", "seo_description": "Chaveiro personalizado de Pastor Belga Malinois. Produto artesanal único." },
-      "fr": { "name": "Pastor Belga Malinois", "slug": "pastor-belga-malinois", "short_description": "Porte-clés personnalisé de Pastor Belga Malinois", "story": "Histoire de Pastor Belga Malinois. Porte-clés artisanal personnalisé.", "seo_title": "Pastor Belga Malinois", "seo_description": "Porte-clés personnalisé de Pastor Belga Malinois. Produit artisanal unique." }
+      "es": {
+        "name": "Pastor Belga Malinois",
+        "slug": "pastor-belga-malinois",
+        "short_description": "Llavero personalizado de Pastor Belga Malinois",
+        "story": "Historia de Pastor Belga Malinois. Llavero artesanal personalizado.",
+        "seo_title": "Pastor Belga Malinois",
+        "seo_description": "Llavero personalizado de Pastor Belga Malinois. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pastor Belga Malinois",
+        "slug": "pastor-belga-malinois",
+        "short_description": "Custom keychain of Pastor Belga Malinois",
+        "story": "Story of Pastor Belga Malinois. Custom artisan keychain.",
+        "seo_title": "Pastor Belga Malinois",
+        "seo_description": "Custom keychain of Pastor Belga Malinois. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pastor Belga Malinois",
+        "slug": "pastor-belga-malinois",
+        "short_description": "Chaveiro personalizado de Pastor Belga Malinois",
+        "story": "História de Pastor Belga Malinois. Chaveiro artesanal personalizado.",
+        "seo_title": "Pastor Belga Malinois",
+        "seo_description": "Chaveiro personalizado de Pastor Belga Malinois. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pastor Belga Malinois",
+        "slug": "pastor-belga-malinois",
+        "short_description": "Porte-clés personnalisé de Pastor Belga Malinois",
+        "story": "Histoire de Pastor Belga Malinois. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pastor Belga Malinois",
+        "seo_description": "Porte-clés personnalisé de Pastor Belga Malinois. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000024", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "23-pitbull-terrier.png", "keychain_file": "23-pitbull-terrier.png",
+    "sku": "KEY-000093",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "23-pitbull-terrier.png",
+    "keychain_file": "23-pitbull-terrier.png",
     "translations": {
-      "es": { "name": "Pitbull Terrier", "slug": "pitbull-terrier", "short_description": "Llavero personalizado de Pitbull Terrier", "story": "Historia de Pitbull Terrier. Llavero artesanal personalizado.", "seo_title": "Pitbull Terrier", "seo_description": "Llavero personalizado de Pitbull Terrier. Producto artesanal único." },
-      "en": { "name": "Pitbull Terrier", "slug": "pitbull-terrier", "short_description": "Custom keychain of Pitbull Terrier", "story": "Story of Pitbull Terrier. Custom artisan keychain.", "seo_title": "Pitbull Terrier", "seo_description": "Custom keychain of Pitbull Terrier. Unique artisan product." },
-      "pt": { "name": "Pitbull Terrier", "slug": "pitbull-terrier", "short_description": "Chaveiro personalizado de Pitbull Terrier", "story": "História de Pitbull Terrier. Chaveiro artesanal personalizado.", "seo_title": "Pitbull Terrier", "seo_description": "Chaveiro personalizado de Pitbull Terrier. Produto artesanal único." },
-      "fr": { "name": "Pitbull Terrier", "slug": "pitbull-terrier", "short_description": "Porte-clés personnalisé de Pitbull Terrier", "story": "Histoire de Pitbull Terrier. Porte-clés artisanal personnalisé.", "seo_title": "Pitbull Terrier", "seo_description": "Porte-clés personnalisé de Pitbull Terrier. Produit artisanal unique." }
+      "es": {
+        "name": "Pitbull Terrier",
+        "slug": "pitbull-terrier",
+        "short_description": "Llavero personalizado de Pitbull Terrier",
+        "story": "Historia de Pitbull Terrier. Llavero artesanal personalizado.",
+        "seo_title": "Pitbull Terrier",
+        "seo_description": "Llavero personalizado de Pitbull Terrier. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pitbull Terrier",
+        "slug": "pitbull-terrier",
+        "short_description": "Custom keychain of Pitbull Terrier",
+        "story": "Story of Pitbull Terrier. Custom artisan keychain.",
+        "seo_title": "Pitbull Terrier",
+        "seo_description": "Custom keychain of Pitbull Terrier. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pitbull Terrier",
+        "slug": "pitbull-terrier",
+        "short_description": "Chaveiro personalizado de Pitbull Terrier",
+        "story": "História de Pitbull Terrier. Chaveiro artesanal personalizado.",
+        "seo_title": "Pitbull Terrier",
+        "seo_description": "Chaveiro personalizado de Pitbull Terrier. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pitbull Terrier",
+        "slug": "pitbull-terrier",
+        "short_description": "Porte-clés personnalisé de Pitbull Terrier",
+        "story": "Histoire de Pitbull Terrier. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pitbull Terrier",
+        "seo_description": "Porte-clés personnalisé de Pitbull Terrier. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000025", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "24-pomerania.png", "keychain_file": "24-pomerania.png",
+    "sku": "KEY-000094",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "24-pomerania.png",
+    "keychain_file": "24-pomerania.png",
     "translations": {
-      "es": { "name": "Pomerania", "slug": "pomerania", "short_description": "Llavero personalizado de Pomerania", "story": "Historia de Pomerania. Llavero artesanal personalizado.", "seo_title": "Pomerania", "seo_description": "Llavero personalizado de Pomerania. Producto artesanal único." },
-      "en": { "name": "Pomerania", "slug": "pomerania", "short_description": "Custom keychain of Pomerania", "story": "Story of Pomerania. Custom artisan keychain.", "seo_title": "Pomerania", "seo_description": "Custom keychain of Pomerania. Unique artisan product." },
-      "pt": { "name": "Pomerania", "slug": "pomerania", "short_description": "Chaveiro personalizado de Pomerania", "story": "História de Pomerania. Chaveiro artesanal personalizado.", "seo_title": "Pomerania", "seo_description": "Chaveiro personalizado de Pomerania. Produto artesanal único." },
-      "fr": { "name": "Pomerania", "slug": "pomerania", "short_description": "Porte-clés personnalisé de Pomerania", "story": "Histoire de Pomerania. Porte-clés artisanal personnalisé.", "seo_title": "Pomerania", "seo_description": "Porte-clés personnalisé de Pomerania. Produit artisanal unique." }
+      "es": {
+        "name": "Pomerania",
+        "slug": "pomerania",
+        "short_description": "Llavero personalizado de Pomerania",
+        "story": "Historia de Pomerania. Llavero artesanal personalizado.",
+        "seo_title": "Pomerania",
+        "seo_description": "Llavero personalizado de Pomerania. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pomerania",
+        "slug": "pomerania",
+        "short_description": "Custom keychain of Pomerania",
+        "story": "Story of Pomerania. Custom artisan keychain.",
+        "seo_title": "Pomerania",
+        "seo_description": "Custom keychain of Pomerania. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pomerania",
+        "slug": "pomerania",
+        "short_description": "Chaveiro personalizado de Pomerania",
+        "story": "História de Pomerania. Chaveiro artesanal personalizado.",
+        "seo_title": "Pomerania",
+        "seo_description": "Chaveiro personalizado de Pomerania. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pomerania",
+        "slug": "pomerania",
+        "short_description": "Porte-clés personnalisé de Pomerania",
+        "story": "Histoire de Pomerania. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pomerania",
+        "seo_description": "Porte-clés personnalisé de Pomerania. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000026", "price": 28500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "25-rotwailer.png", "keychain_file": "25-rotwailer.png",
+    "sku": "KEY-000095",
+    "price": 28500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "25-rotwailer.png",
+    "keychain_file": "25-rotwailer.png",
     "translations": {
-      "es": { "name": "Rottweiler", "slug": "rotwailer", "short_description": "Llavero personalizado de Rottweiler", "story": "Historia de Rottweiler. Llavero artesanal personalizado.", "seo_title": "Rottweiler", "seo_description": "Llavero personalizado de Rottweiler. Producto artesanal único." },
-      "en": { "name": "Rottweiler", "slug": "rotwailer", "short_description": "Custom keychain of Rottweiler", "story": "Story of Rottweiler. Custom artisan keychain.", "seo_title": "Rottweiler", "seo_description": "Custom keychain of Rottweiler. Unique artisan product." },
-      "pt": { "name": "Rottweiler", "slug": "rotwailer", "short_description": "Chaveiro personalizado de Rottweiler", "story": "História de Rottweiler. Chaveiro artesanal personalizado.", "seo_title": "Rottweiler", "seo_description": "Chaveiro personalizado de Rottweiler. Produto artesanal único." },
-      "fr": { "name": "Rottweiler", "slug": "rotwailer", "short_description": "Porte-clés personnalisé de Rottweiler", "story": "Histoire de Rottweiler. Porte-clés artisanal personnalisé.", "seo_title": "Rottweiler", "seo_description": "Porte-clés personnalisé de Rottweiler. Produit artisanal unique." }
+      "es": {
+        "name": "Rottweiler",
+        "slug": "rotwailer",
+        "short_description": "Llavero personalizado de Rottweiler",
+        "story": "Historia de Rottweiler. Llavero artesanal personalizado.",
+        "seo_title": "Rottweiler",
+        "seo_description": "Llavero personalizado de Rottweiler. Producto artesanal único."
+      },
+      "en": {
+        "name": "Rottweiler",
+        "slug": "rotwailer",
+        "short_description": "Custom keychain of Rottweiler",
+        "story": "Story of Rottweiler. Custom artisan keychain.",
+        "seo_title": "Rottweiler",
+        "seo_description": "Custom keychain of Rottweiler. Unique artisan product."
+      },
+      "pt": {
+        "name": "Rottweiler",
+        "slug": "rotwailer",
+        "short_description": "Chaveiro personalizado de Rottweiler",
+        "story": "História de Rottweiler. Chaveiro artesanal personalizado.",
+        "seo_title": "Rottweiler",
+        "seo_description": "Chaveiro personalizado de Rottweiler. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Rottweiler",
+        "slug": "rotwailer",
+        "short_description": "Porte-clés personnalisé de Rottweiler",
+        "story": "Histoire de Rottweiler. Porte-clés artisanal personnalisé.",
+        "seo_title": "Rottweiler",
+        "seo_description": "Porte-clés personnalisé de Rottweiler. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000027", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "26-salchicha.png", "keychain_file": "26-salchicha.png",
+    "sku": "KEY-000096",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "26-salchicha.png",
+    "keychain_file": "26-salchicha.png",
     "translations": {
-      "es": { "name": "Salchicha", "slug": "salchicha", "short_description": "Llavero personalizado de Salchicha", "story": "Historia de Salchicha. Llavero artesanal personalizado.", "seo_title": "Salchicha", "seo_description": "Llavero personalizado de Salchicha. Producto artesanal único." },
-      "en": { "name": "Salchicha", "slug": "salchicha", "short_description": "Custom keychain of Salchicha", "story": "Story of Salchicha. Custom artisan keychain.", "seo_title": "Salchicha", "seo_description": "Custom keychain of Salchicha. Unique artisan product." },
-      "pt": { "name": "Salchicha", "slug": "salchicha", "short_description": "Chaveiro personalizado de Salchicha", "story": "História de Salchicha. Chaveiro artesanal personalizado.", "seo_title": "Salchicha", "seo_description": "Chaveiro personalizado de Salchicha. Produto artesanal único." },
-      "fr": { "name": "Salchicha", "slug": "salchicha", "short_description": "Porte-clés personnalisé de Salchicha", "story": "Histoire de Salchicha. Porte-clés artisanal personnalisé.", "seo_title": "Salchicha", "seo_description": "Porte-clés personnalisé de Salchicha. Produit artisanal unique." }
+      "es": {
+        "name": "Salchicha",
+        "slug": "salchicha",
+        "short_description": "Llavero personalizado de Salchicha",
+        "story": "Historia de Salchicha. Llavero artesanal personalizado.",
+        "seo_title": "Salchicha",
+        "seo_description": "Llavero personalizado de Salchicha. Producto artesanal único."
+      },
+      "en": {
+        "name": "Salchicha",
+        "slug": "salchicha",
+        "short_description": "Custom keychain of Salchicha",
+        "story": "Story of Salchicha. Custom artisan keychain.",
+        "seo_title": "Salchicha",
+        "seo_description": "Custom keychain of Salchicha. Unique artisan product."
+      },
+      "pt": {
+        "name": "Salchicha",
+        "slug": "salchicha",
+        "short_description": "Chaveiro personalizado de Salchicha",
+        "story": "História de Salchicha. Chaveiro artesanal personalizado.",
+        "seo_title": "Salchicha",
+        "seo_description": "Chaveiro personalizado de Salchicha. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Salchicha",
+        "slug": "salchicha",
+        "short_description": "Porte-clés personnalisé de Salchicha",
+        "story": "Histoire de Salchicha. Porte-clés artisanal personnalisé.",
+        "seo_title": "Salchicha",
+        "seo_description": "Porte-clés personnalisé de Salchicha. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000028", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "27-san-bernardo.png", "keychain_file": "27-san-bernardo.png",
+    "sku": "KEY-000097",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "27-san-bernardo.png",
+    "keychain_file": "27-san-bernardo.png",
     "translations": {
-      "es": { "name": "San Bernardo", "slug": "san-bernardo", "short_description": "Llavero personalizado de San Bernardo", "story": "Historia de San Bernardo. Llavero artesanal personalizado.", "seo_title": "San Bernardo", "seo_description": "Llavero personalizado de San Bernardo. Producto artesanal único." },
-      "en": { "name": "San Bernardo", "slug": "san-bernardo", "short_description": "Custom keychain of San Bernardo", "story": "Story of San Bernardo. Custom artisan keychain.", "seo_title": "San Bernardo", "seo_description": "Custom keychain of San Bernardo. Unique artisan product." },
-      "pt": { "name": "San Bernardo", "slug": "san-bernardo", "short_description": "Chaveiro personalizado de San Bernardo", "story": "História de San Bernardo. Chaveiro artesanal personalizado.", "seo_title": "San Bernardo", "seo_description": "Chaveiro personalizado de San Bernardo. Produto artesanal único." },
-      "fr": { "name": "San Bernardo", "slug": "san-bernardo", "short_description": "Porte-clés personnalisé de San Bernardo", "story": "Histoire de San Bernardo. Porte-clés artisanal personnalisé.", "seo_title": "San Bernardo", "seo_description": "Porte-clés personnalisé de San Bernardo. Produit artisanal unique." }
+      "es": {
+        "name": "San Bernardo",
+        "slug": "san-bernardo",
+        "short_description": "Llavero personalizado de San Bernardo",
+        "story": "Historia de San Bernardo. Llavero artesanal personalizado.",
+        "seo_title": "San Bernardo",
+        "seo_description": "Llavero personalizado de San Bernardo. Producto artesanal único."
+      },
+      "en": {
+        "name": "San Bernardo",
+        "slug": "san-bernardo",
+        "short_description": "Custom keychain of San Bernardo",
+        "story": "Story of San Bernardo. Custom artisan keychain.",
+        "seo_title": "San Bernardo",
+        "seo_description": "Custom keychain of San Bernardo. Unique artisan product."
+      },
+      "pt": {
+        "name": "San Bernardo",
+        "slug": "san-bernardo",
+        "short_description": "Chaveiro personalizado de San Bernardo",
+        "story": "História de San Bernardo. Chaveiro artesanal personalizado.",
+        "seo_title": "San Bernardo",
+        "seo_description": "Chaveiro personalizado de San Bernardo. Produto artesanal único."
+      },
+      "fr": {
+        "name": "San Bernardo",
+        "slug": "san-bernardo",
+        "short_description": "Porte-clés personnalisé de San Bernardo",
+        "story": "Histoire de San Bernardo. Porte-clés artisanal personnalisé.",
+        "seo_title": "San Bernardo",
+        "seo_description": "Porte-clés personnalisé de San Bernardo. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000029", "price": 27500, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "28-pinsher.png", "keychain_file": "28-pinsher.jpeg",
+    "sku": "KEY-000098",
+    "price": 27500,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "28-pinsher.png",
+    "keychain_file": "28-pinsher.jpeg",
     "translations": {
-      "es": { "name": "Pinscher", "slug": "pinsher", "short_description": "Llavero personalizado de Pinscher", "story": "Historia de Pinscher. Llavero artesanal personalizado.", "seo_title": "Pinscher", "seo_description": "Llavero personalizado de Pinscher. Producto artesanal único." },
-      "en": { "name": "Pinscher", "slug": "pinsher", "short_description": "Custom keychain of Pinscher", "story": "Story of Pinscher. Custom artisan keychain.", "seo_title": "Pinscher", "seo_description": "Custom keychain of Pinscher. Unique artisan product." },
-      "pt": { "name": "Pinscher", "slug": "pinsher", "short_description": "Chaveiro personalizado de Pinscher", "story": "História de Pinscher. Chaveiro artesanal personalizado.", "seo_title": "Pinscher", "seo_description": "Chaveiro personalizado de Pinscher. Produto artesanal único." },
-      "fr": { "name": "Pinscher", "slug": "pinsher", "short_description": "Porte-clés personnalisé de Pinscher", "story": "Histoire de Pinscher. Porte-clés artisanal personnalisé.", "seo_title": "Pinscher", "seo_description": "Porte-clés personnalisé de Pinscher. Produit artisanal unique." }
+      "es": {
+        "name": "Pinscher",
+        "slug": "pinsher",
+        "short_description": "Llavero personalizado de Pinscher",
+        "story": "Historia de Pinscher. Llavero artesanal personalizado.",
+        "seo_title": "Pinscher",
+        "seo_description": "Llavero personalizado de Pinscher. Producto artesanal único."
+      },
+      "en": {
+        "name": "Pinscher",
+        "slug": "pinsher",
+        "short_description": "Custom keychain of Pinscher",
+        "story": "Story of Pinscher. Custom artisan keychain.",
+        "seo_title": "Pinscher",
+        "seo_description": "Custom keychain of Pinscher. Unique artisan product."
+      },
+      "pt": {
+        "name": "Pinscher",
+        "slug": "pinsher",
+        "short_description": "Chaveiro personalizado de Pinscher",
+        "story": "História de Pinscher. Chaveiro artesanal personalizado.",
+        "seo_title": "Pinscher",
+        "seo_description": "Chaveiro personalizado de Pinscher. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Pinscher",
+        "slug": "pinsher",
+        "short_description": "Porte-clés personnalisé de Pinscher",
+        "story": "Histoire de Pinscher. Porte-clés artisanal personnalisé.",
+        "seo_title": "Pinscher",
+        "seo_description": "Porte-clés personnalisé de Pinscher. Produit artisanal unique."
+      }
     }
   },
   {
-    "sku": "KEY-000030", "price": 28000, "stock": 1, "featured": false, "category": 1,
-    "breed_file": "papillon.png", "keychain_file": null,
+    "sku": "KEY-000099",
+    "price": 28000,
+    "stock": 1,
+    "featured": false,
+    "category": 1,
+    "breed_file": "papillon.png",
+    "keychain_file": null,
     "translations": {
-      "es": { "name": "Papillon", "slug": "papillon", "short_description": "Llavero personalizado de Papillon", "story": "Historia de Papillon. Llavero artesanal personalizado.", "seo_title": "Papillon", "seo_description": "Llavero personalizado de Papillon. Producto artesanal único." },
-      "en": { "name": "Papillon", "slug": "papillon", "short_description": "Custom keychain of Papillon", "story": "Story of Papillon. Custom artisan keychain.", "seo_title": "Papillon", "seo_description": "Custom keychain of Papillon. Unique artisan product." },
-      "pt": { "name": "Papillon", "slug": "papillon", "short_description": "Chaveiro personalizado de Papillon", "story": "História de Papillon. Chaveiro artesanal personalizado.", "seo_title": "Papillon", "seo_description": "Chaveiro personalizado de Papillon. Produto artesanal único." },
-      "fr": { "name": "Papillon", "slug": "papillon", "short_description": "Porte-clés personnalisé de Papillon", "story": "Histoire de Papillon. Porte-clés artisanal personnalisé.", "seo_title": "Papillon", "seo_description": "Porte-clés personnalisé de Papillon. Produit artisanal unique." }
+      "es": {
+        "name": "Papillon",
+        "slug": "papillon",
+        "short_description": "Llavero personalizado de Papillon",
+        "story": "Historia de Papillon. Llavero artesanal personalizado.",
+        "seo_title": "Papillon",
+        "seo_description": "Llavero personalizado de Papillon. Producto artesanal único."
+      },
+      "en": {
+        "name": "Papillon",
+        "slug": "papillon",
+        "short_description": "Custom keychain of Papillon",
+        "story": "Story of Papillon. Custom artisan keychain.",
+        "seo_title": "Papillon",
+        "seo_description": "Custom keychain of Papillon. Unique artisan product."
+      },
+      "pt": {
+        "name": "Papillon",
+        "slug": "papillon",
+        "short_description": "Chaveiro personalizado de Papillon",
+        "story": "História de Papillon. Chaveiro artesanal personalizado.",
+        "seo_title": "Papillon",
+        "seo_description": "Chaveiro personalizado de Papillon. Produto artesanal único."
+      },
+      "fr": {
+        "name": "Papillon",
+        "slug": "papillon",
+        "short_description": "Porte-clés personnalisé de Papillon",
+        "story": "Histoire de Papillon. Porte-clés artisanal personnalisé.",
+        "seo_title": "Papillon",
+        "seo_description": "Porte-clés personnalisé de Papillon. Produit artisanal unique."
+      }
     }
   }
 ]
