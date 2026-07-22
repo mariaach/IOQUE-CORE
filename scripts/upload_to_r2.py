@@ -3,9 +3,12 @@
 Script standalone para subir imágenes de productos a Cloudflare R2.
 
 Uso:
-  1. pip install boto3 Pillow python-dotenv
+  1. pip install boto3 Pillow python-dotenv psycopg2-binary
   2. Configurar variables en .env (ver .env.example)
-  3. python scripts/upload_to_r2.py [--dry-run] [--force]
+  3. python scripts/upload_to_r2.py [--dry-run] [--force] [--extra-dir TYPE:PATH]
+
+Ejemplo para subir imágenes de religión:
+  python scripts/upload_to_r2.py --extra-dir REAL:/Recursos/img-religion
 
 Este script NO depende de Django — opera directamente con boto3 y la DB vía psycopg2.
 """
@@ -184,23 +187,31 @@ def get_products_from_db(conn):
     return cur.fetchall()
 
 
-def update_image_path_in_db(conn, image_id, new_path):
-    cur = conn.cursor()
-    cur.execute(
-        "UPDATE catalog_products_productimage SET image = %s WHERE id = %s",
-        (new_path, image_id)
-    )
-    conn.commit()
-
-
 def main():
     parser = argparse.ArgumentParser(description="Subir imágenes de productos a R2")
     parser.add_argument("--dry-run", action="store_true", help="Mostrar qué se subiría sin hacer cambios")
     parser.add_argument("--force", action="store_true", help="Re-subir aunque exista en R2")
     parser.add_argument("--breeds-dir", default=BREEDS_DIR, help="Directorio de imágenes de razas")
     parser.add_argument("--keychain-dir", default=KEYCHAIN_DIR, help="Directorio de imágenes de llaveros")
+    parser.add_argument("--extra-dir", action="append", dest="extra_dirs", metavar="TYPE:PATH",
+                        help="Directorio adicional como TYPE:PATH (ej: REAL:/Recursos/img-religion). Puede repetirse.")
     parser.add_argument("--db-host", default=DB_HOST, help="Host de PostgreSQL")
     args = parser.parse_args()
+
+    # Construir mapa tipo→directorios
+    type_dirs = {
+        "REAL": args.breeds_dir,
+        "KEYCHAIN": args.keychain_dir,
+    }
+    if args.extra_dirs:
+        for entry in args.extra_dirs:
+            if ":" not in entry:
+                print(f"ERROR: Formato inválido: '{entry}'. Usa TYPE:PATH")
+                sys.exit(1)
+            img_type, path = entry.split(":", 1)
+            type_dirs[img_type.upper()] = path
+
+    print(f"Directorios: {type_dirs}")
 
     print("Conectando a R2...")
     s3 = get_r2_client()
@@ -221,12 +232,10 @@ def main():
         if not img_type or not image_path:
             continue
 
-        # Determinar directorio según tipo
-        if img_type == "REAL":
-            local_dir = args.breeds_dir
-        elif img_type == "KEYCHAIN":
-            local_dir = args.keychain_dir
-        else:
+        local_dir = type_dirs.get(img_type)
+        if not local_dir:
+            print(f"  WARN: {sku} - {name_es} [{img_type}] no hay directorio configurado para tipo '{img_type}'")
+            errors += 1
             continue
 
         ext = Path(image_path).suffix.lower() or ".jpg"

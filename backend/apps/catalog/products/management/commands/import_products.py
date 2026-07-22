@@ -3,7 +3,7 @@ import re
 import json
 import hashlib
 import io
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -15,28 +15,61 @@ from apps.catalog.categories.services import CategoryService
 
 
 class Command(BaseCommand):
-    help = "Importa productos desde los directorios img-breeds e img-keychain"
+    help = "Importa productos desde directorios de imágenes de Recursos"
 
     PRODUCT_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
-    BREEDS_DIR = "/Recursos/img-breeds"
-    KEYCHAIN_DIR = "/Recursos/img-keychain"
+
+    DEFAULT_DIRS = {
+        "1": [("REAL", "/Recursos/img-breeds"), ("KEYCHAIN", "/Recursos/img-keychain")],
+        "3": [("REAL", "/Recursos/img-religion")],
+    }
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--category-id",
+            type=int,
+            default=1,
+            help="ID de la categoría (default: 1=Mascotas)",
+        )
+        parser.add_argument(
+            "--dir",
+            action="append",
+            dest="image_dirs",
+            metavar="TYPE:PATH",
+            help=(
+                "Directorio de imágenes como TYPE:PATH (ej: KEYCHAIN:/Recursos/img-religion). "
+                "Puede repetirse. Si no se indica, usa los directorios por defecto de la categoría."
+            ),
+        )
 
     def handle(self, *args, **options):
-        if not os.path.isdir(self.BREEDS_DIR):
+        category_id = options["category_id"]
+        image_dirs = self._parse_dirs(options.get("image_dirs"), category_id)
+
+        if not image_dirs:
             self.stderr.write(self.style.ERROR(
-                f"Directorio no encontrado: {self.BREEDS_DIR}"
+                f"No hay directorios configurados para categoría {category_id}. "
+                f"Usa --dir TYPE:PATH para especificar."
             ))
             return
 
-        if not os.path.isdir(self.KEYCHAIN_DIR):
-            self.stderr.write(self.style.ERROR(
-                f"Directorio no encontrado: {self.KEYCHAIN_DIR}"
-            ))
-            return
+        # Validar que todos los directorios existan
+        for img_type, dir_path in image_dirs:
+            if not os.path.isdir(dir_path):
+                self.stderr.write(self.style.ERROR(
+                    f"Directorio no encontrado: {dir_path} (tipo: {img_type})"
+                ))
+                return
 
-        breed_files = self._get_files(self.BREEDS_DIR)
-        keychain_files = self._get_files(self.KEYCHAIN_DIR)
-        all_stems = sorted(set(breed_files.keys()) | set(keychain_files.keys()))
+        # Escanear archivos de todos los directorios
+        files_by_type: Dict[str, Dict[str, str]] = {}
+        all_stems = set()
+        for img_type, dir_path in image_dirs:
+            files = self._get_files(dir_path)
+            files_by_type[img_type] = files
+            all_stems.update(files.keys())
+
+        all_stems = sorted(all_stems)
 
         if not all_stems:
             self.stdout.write(self.style.WARNING(
@@ -44,8 +77,7 @@ class Command(BaseCommand):
             ))
             return
 
-        category = CategoryService.get_or_create_mascotas_category()
-
+        category = self._get_category(category_id)
         sku_map = self._load_sku_map()
 
         existing_slugs = set(
@@ -65,8 +97,8 @@ class Command(BaseCommand):
                     try:
                         self._create_product(
                             stem=stem,
-                            breed_file=breed_files.get(stem),
-                            keychain_file=keychain_files.get(stem),
+                            files_by_type=files_by_type,
+                            image_dirs=image_dirs,
                             category=category,
                             sku_map=sku_map,
                         )
@@ -82,8 +114,33 @@ class Command(BaseCommand):
                     self.stderr.write(self.style.WARNING(f"  Error: {error}"))
 
         self._regenerate_thumbnails()
-
         self._fill_missing_translations()
+
+    def _parse_dirs(
+        self, raw_dirs: Optional[List[str]], category_id: int
+    ) -> List[Tuple[str, str]]:
+        if raw_dirs:
+            result = []
+            for entry in raw_dirs:
+                if ":" not in entry:
+                    self.stderr.write(self.style.ERROR(
+                        f"Formato inválido: '{entry}'. Usa TYPE:PATH (ej: KEYCHAIN:/Recursos/img-religion)"
+                    ))
+                    return []
+                img_type, path = entry.split(":", 1)
+                result.append((img_type.upper(), path))
+            return result
+        return self.DEFAULT_DIRS.get(str(category_id), [])
+
+    def _get_category(self, category_id: int):
+        if category_id == 1:
+            return CategoryService.get_or_create_mascotas_category()
+        from apps.catalog.categories.models import Category
+        category, _ = Category.objects.get_or_create(
+            id=category_id,
+            defaults={"active": True},
+        )
+        return category
 
     def _get_files(self, directory: str) -> Dict[str, str]:
         result = {}
@@ -105,8 +162,19 @@ class Command(BaseCommand):
         stem = re.sub(r"^\d+-", "", stem)
         return stem.replace("_", "-").lower()
 
-    def _generate_sku(self, index: int) -> str:
-        return f"KEY-{index:06d}"
+    def _generate_sku(self) -> str:
+        last = (
+            Product.objects
+            .filter(sku__startswith="KEY-")
+            .order_by("-sku")
+            .values_list("sku", flat=True)
+            .first()
+        )
+        if last:
+            num = int(last.split("-")[1]) + 1
+        else:
+            num = 1
+        return f"KEY-{num:06d}"
 
     def _load_sku_map(self) -> Dict[str, str]:
         products_json = os.path.join(settings.BASE_DIR, "docs", "products.json")
@@ -235,15 +303,23 @@ class Command(BaseCommand):
     def _create_product(
         self,
         stem: str,
-        breed_file: Optional[str],
-        keychain_file: Optional[str],
+        files_by_type: Dict[str, Dict[str, str]],
+        image_dirs: List[Tuple[str, str]],
         category,
         sku_map: Dict[str, str],
     ):
-        filename = breed_file or keychain_file
-        product_name = self._product_name(filename)
+        # Find first available file for naming
+        first_file = None
+        for img_type, _ in image_dirs:
+            if stem in files_by_type.get(img_type, {}):
+                first_file = files_by_type[img_type][stem]
+                break
+        if not first_file:
+            return
+
+        product_name = self._product_name(first_file)
         slug = self._slug(stem)
-        sku = sku_map.get(slug, self._generate_sku(0))
+        sku = sku_map.get(slug, self._generate_sku())
 
         price_points = [27000, 27500, 28000, 28500, 29000]
         price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)
@@ -269,26 +345,19 @@ class Command(BaseCommand):
                 seo_description=name_translated["seo_description"],
             )
 
-        if breed_file:
-            path = os.path.join(self.BREEDS_DIR, breed_file)
-            img_file = self._open_and_resize(path, breed_file)
+        sort_order = 0
+        for img_type, dir_path in image_dirs:
+            filename = files_by_type.get(img_type, {}).get(stem)
+            if not filename:
+                continue
+            path = os.path.join(dir_path, filename)
+            img_file = self._open_and_resize(path, filename)
             img = ProductImage.objects.create(
                 product=product,
-                type=ProductImage.ImageType.REAL,
-                sort_order=0,
+                type=img_type,
+                sort_order=sort_order,
             )
-            img.image.save(breed_file, img_file, save=True)
+            img.image.save(filename, img_file, save=True)
             img_file.close()
             self._generate_thumbnails(img)
-
-        if keychain_file:
-            path = os.path.join(self.KEYCHAIN_DIR, keychain_file)
-            img_file = self._open_and_resize(path, keychain_file)
-            img = ProductImage.objects.create(
-                product=product,
-                type=ProductImage.ImageType.KEYCHAIN,
-                sort_order=1,
-            )
-            img.image.save(keychain_file, img_file, save=True)
-            img_file.close()
-            self._generate_thumbnails(img)
+            sort_order += 1
