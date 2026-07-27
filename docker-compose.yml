@@ -62,6 +62,8 @@ services:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/app/staticfiles:ro
       - media_volume:/app/mediafiles:ro
+      - altamoda_static:/app/altamoda_static:ro
+      - altamoda_media:/app/altamoda_media:ro
     depends_on:
       - django
 
@@ -88,3 +90,7 @@ volumes:
   postgres_data:
   media_volume:
   static_volume:
+  altamoda_static:
+    external: true
+  altamoda_media:
+    external: true
