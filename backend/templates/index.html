@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
-  <link rel="stylesheet" href="/static/css/style.css?v=4">
+  <link rel="stylesheet" href="/static/css/style.css?v=6">
 </head>
 <body>
 
@@ -340,9 +340,9 @@
         <span id="cart-total" class="cart-total-amount">$0</span>
       </div>
       <div class="payment-tabs">
-        <button onclick="switchPaymentTab('cards',this)" class="payment-tab-btn active" data-i18n="pay_tarjetas">Tarjetas</button>
-        <button onclick="switchPaymentTab('paypal',this)" class="payment-tab-btn">PayPal</button>
-        <button onclick="switchPaymentTab('mercadopago',this)" class="payment-tab-btn" data-i18n="pay_mp">MP</button>
+        <button onclick="switchPaymentTab('cards',this)" class="payment-tab-btn active" data-method="card" data-i18n="pay_tarjetas">Tarjetas</button>
+        <button onclick="switchPaymentTab('paypal',this)" class="payment-tab-btn" data-method="paypal">PayPal</button>
+        <button onclick="switchPaymentTab('nequi',this)" class="payment-tab-btn" data-method="nequi">Nequi</button>
       </div>
       <div id="tab-cards" class="payment-panel">
         <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);">
@@ -350,12 +350,10 @@
           <i class="fa-brands fa-cc-mastercard" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
           <i class="fa-brands fa-cc-amex" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);">
-          <input type="text" data-i18n-placeholder="pay_num" placeholder="Número" class="form-input" style="grid-column:1/-1;">
-          <input type="text" data-i18n-placeholder="pay_venc" placeholder="Vencimiento" class="form-input">
-          <input type="text" data-i18n-placeholder="pay_cvc" placeholder="CVC" class="form-input">
+        <div id="stripe-card-element" style="padding:var(--space-3);background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:var(--space-4);">
         </div>
-        <button onclick="processPayment()" class="btn-pay" data-i18n="pay_btn"><i class="fa-solid fa-lock"></i> Pagar ahora</button>
+        <div id="stripe-card-errors" style="font-size:var(--text-sm);color:#ef4444;margin-bottom:var(--space-3);min-height:20px;"></div>
+        <button id="pay-btn" onclick="processPayment()" class="btn-pay" data-i18n="pay_btn"><i class="fa-solid fa-lock"></i> Pagar ahora</button>
       </div>
       <div id="tab-paypal" class="payment-panel" style="display:none;">
         <div style="text-align:center;padding:var(--space-6) 0;">
@@ -364,13 +362,17 @@
           <button onclick="processPayment()" class="btn-pay-paypal" data-i18n="pay_paypal_btn">Pagar con PayPal</button>
         </div>
       </div>
-      <div id="tab-mercadopago" class="payment-panel" style="display:none;">
+      <div id="tab-nequi" class="payment-panel" style="display:none;">
         <div style="text-align:center;padding:var(--space-6) 0;">
-          <div style="display:flex;justify-content:center;gap:var(--space-3);margin-bottom:var(--space-4);font-family:var(--font-display);font-size:var(--text-sm);color:rgba(255,248,234,0.35);">
-            MercadoPago <span style="opacity:0.3;">|</span> ePayco <span style="opacity:0.3;">|</span> PSE
+          <div style="font-size:3rem;margin-bottom:var(--space-4);color:rgba(198,161,91,0.5);">
+            <i class="fa-solid fa-mobile-screen-button"></i>
           </div>
-          <p data-i18n="pay_mp_text" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">Elige tu método de pago.</p>
-          <button onclick="processPayment()" class="btn-pay-mp" data-i18n="pay_mp_btn">Pagar</button>
+          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">
+            Paga con Nequi — 0% comisión. Ingresa tu número y recibe la notificación en tu app.
+          </p>
+          <input type="tel" id="nequi-phone" placeholder="300 123 4567" class="form-input" style="width:100%;margin-bottom:var(--space-3);text-align:center;font-size:var(--text-lg);">
+          <div id="nequi-status-msg" style="font-size:var(--text-sm);margin-bottom:var(--space-3);min-height:20px;"></div>
+          <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-mp">Pagar con Nequi</button>
         </div>
       </div>
       <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
@@ -413,7 +415,7 @@
         </ul>
         <h4 class="footer-heading" data-i18n="footer_pagos" style="margin-top:var(--space-8);">Pagos</h4>
         <div class="footer-payment">
-          <span>Visa</span><span>MC</span><span>PayPal</span><span>PSE</span><span>ePayco</span>
+          <span>Visa</span><span>MC</span><span>Nequi</span><span>PayPal</span><span>PSE</span>
         </div>
       </div>
     </div>
@@ -451,7 +453,9 @@
   </div>
 </div>
 
-  <script src="/static/js/app.js?v=4"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>const STRIPE_PK = '{{ STRIPE_PUBLISHABLE_KEY }}';</script>
+  <script src="/static/js/app.js?v=6"></script>
 <script type="module" src="/static/whatsapp-widget/widget.js"></script>
 </body>
 </html>

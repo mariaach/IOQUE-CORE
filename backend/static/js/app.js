@@ -72,25 +72,41 @@
 
   function getPageKey(gridId) { return gridId + '_page'; }
 
+  function isLatestCategoryRequest(gridId, requestId) {
+    return !!categoryState[gridId] && categoryState[gridId].requestId === requestId;
+  }
+
   async function loadCategoryProducts(gridId, categoryId, page) {
     var lang = currentLang || 'es';
     page = page || 1;
     var cacheKey = lang + '_c' + categoryId + '_p' + page;
     var grid = document.getElementById(gridId);
     if (!grid) return;
-    if (categoryState[gridId] && categoryState[gridId].loading) return;
 
-    if (productsCache[cacheKey]) {
-      var cached = productsCache[cacheKey];
-      renderCategoryProducts(gridId, cached.items, cached.count, page, categoryId);
-      return;
-    }
+    var prev = categoryState[gridId];
+    var isInitial = !prev || !prev.currentPage;
+    var requestId = (prev && prev.requestId || 0) + 1;
 
-    var isInitial = !categoryState[gridId] || !categoryState[gridId].currentPage;
-    categoryState[gridId] = { loading: true, currentPage: page, totalPages: (categoryState[gridId] && categoryState[gridId].totalPages) || 1 };
+    categoryState[gridId] = {
+      loading: true,
+      currentPage: page,
+      requestId: requestId,
+      totalPages: (prev && prev.totalPages) || 1
+    };
 
     if (isInitial) {
       grid.innerHTML = '<div class="catalog-loading"><i class="fa-solid fa-paw"></i>Cargando productos...</div>';
+    }
+
+    if (productsCache[cacheKey]) {
+      var cached = productsCache[cacheKey];
+      if (isLatestCategoryRequest(gridId, requestId)) {
+        renderCategoryProducts(gridId, cached.items, cached.count, page, categoryId);
+      }
+      if (categoryState[gridId] && categoryState[gridId].requestId === requestId) {
+        categoryState[gridId].loading = false;
+      }
+      return;
     }
 
     try {
@@ -99,12 +115,18 @@
       var items = json.results || json;
       var count = json.count || items.length;
       productsCache[cacheKey] = { items: items, count: count };
-      renderCategoryProducts(gridId, items, count, page, categoryId);
+      if (isLatestCategoryRequest(gridId, requestId)) {
+        renderCategoryProducts(gridId, items, count, page, categoryId);
+      }
     } catch (e) {
       console.error('[IOQUE] Error loading category ' + categoryId + ':', e);
-      grid.innerHTML = '<div class="catalog-empty"><i class="fa-solid fa-paw"></i>Error al cargar</div>';
+      if (isLatestCategoryRequest(gridId, requestId)) {
+        grid.innerHTML = '<div class="catalog-empty"><i class="fa-solid fa-paw"></i>Error al cargar</div>';
+      }
     }
-    if (categoryState[gridId]) categoryState[gridId].loading = false;
+    if (categoryState[gridId] && categoryState[gridId].requestId === requestId) {
+      categoryState[gridId].loading = false;
+    }
   }
 
   function changeCategoryPage(gridId, categoryId, delta) {
@@ -113,9 +135,6 @@
     var totalPages = state.totalPages || 1;
     var next = currentPage + delta;
     if (next < 1 || next > totalPages) return;
-    if (categoryState[gridId]) categoryState[gridId].loading = false;
-    var lang = currentLang || 'es';
-    productsCache[lang + '_c' + categoryId + '_p' + currentPage] = null;
     loadCategoryProducts(gridId, categoryId, next);
   }
 
@@ -162,7 +181,6 @@
         + '</div></div>';
     });
     grid.innerHTML = html;
-
     var pag = document.getElementById(gridId + '-pagination');
     if (pag) {
       if (totalPages > 1) {
@@ -293,16 +311,140 @@
     if (btn) btn.classList.add('active');
   }
 
-  function processPayment() {
+  async function processPayment() {
     if (cart.length === 0) {
       showToast(currentLang === 'es' ? 'Agrega productos al carrito' : 'Add products to cart');
       return;
     }
+
+    const activeTab = document.querySelector('.payment-tab-btn.active');
+    const method = activeTab ? activeTab.getAttribute('data-method') || 'card' : 'card';
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
-    cart = [];
-    renderCart();
-    setTimeout(() => toggleCart(), 1500);
+
+    if (method === 'card') {
+      if (!stripeCardElement) {
+        showToast('❌ Stripe no está disponible');
+        return;
+      }
+
+      const payBtn = document.getElementById('pay-btn');
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Procesando...' : 'Processing...');
+
+      try {
+        const res = await fetch('/api/payments/create-payment-intent/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: total,
+            currency: 'COP',
+            cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Error al crear el pago');
+        }
+
+        const data = await res.json();
+        const stripe = Stripe(data.publishable_key);
+
+        const { error } = await stripe.confirmCardPayment(data.client_secret, {
+          payment_method: { card: stripeCardElement },
+        });
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
+        cart = [];
+        renderCart();
+        setTimeout(() => toggleCart(), 1500);
+      } catch (e) {
+        showToast('❌ ' + e.message);
+      } finally {
+        payBtn.disabled = false;
+        payBtn.innerHTML = '<i class="fa-solid fa-lock"></i> ' + (currentLang === 'es' ? 'Pagar ahora' : 'Pay now');
+      }
+    } else if (method === 'nequi') {
+      const phoneInput = document.getElementById('nequi-phone');
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const statusMsg = document.getElementById('nequi-status-msg');
+      const payBtn = document.getElementById('nequi-pay-btn');
+
+      if (!phone || phone.length < 7) {
+        showToast('❌ ' + (currentLang === 'es' ? 'Ingresa tu número de Nequi' : 'Enter your Nequi phone number'));
+        return;
+      }
+
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Enviando...' : 'Sending...');
+      if (statusMsg) statusMsg.textContent = '';
+
+      try {
+        const res = await fetch('/api/payments/nequi-pay/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone_number: phone,
+            amount: total,
+            currency: 'COP',
+            cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Error al crear el pago');
+        }
+
+        if (statusMsg) {
+          statusMsg.innerHTML = '<span style="color:#22c55e;">✓ ' + (currentLang === 'es' ? 'Revisa tu app de Nequi y aprueba el pago' : 'Check your Nequi app and approve the payment') + '</span>';
+        }
+
+        const paymentId = data.payment_id;
+        const maxAttempts = 30;
+        let attempts = 0;
+
+        const poll = setInterval(async () => {
+          attempts++;
+          try {
+            const sr = await fetch('/api/payments/nequi-status/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ payment_id: paymentId }),
+            });
+            const sd = await sr.json();
+            if (sd.status === 'succeeded') {
+              clearInterval(poll);
+              showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
+              cart = [];
+              renderCart();
+              setTimeout(() => toggleCart(), 1500);
+            } else if (sd.status === 'failed' || sd.status === 'canceled') {
+              clearInterval(poll);
+              showToast('❌ ' + (currentLang === 'es' ? 'Pago rechazado' : 'Payment rejected'));
+            }
+          } catch (e) {
+            // continue polling
+          }
+          if (attempts >= maxAttempts) {
+            clearInterval(poll);
+            showToast('⏱️ ' + (currentLang === 'es' ? 'Tiempo de espera agotado' : 'Timeout'));
+          }
+        }, 3000);
+      } catch (e) {
+        showToast('❌ ' + e.message);
+      } finally {
+        payBtn.disabled = false;
+        payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> ' + (currentLang === 'es' ? 'Pagar con Nequi' : 'Pay with Nequi');
+      }
+    } else {
+      showToast('ℹ️ ' + (currentLang === 'es' ? 'Método no implementado aún' : 'Method not implemented yet'));
+    }
   }
 
   function openStory(id) {
@@ -753,5 +895,32 @@
 
   applyTheme(currentTheme);
   applyLang(currentLang);
+
+  /* ── Stripe Elements ── */
+  let stripeCardElement = null;
+  (function initStripe() {
+    if (typeof Stripe === 'undefined' || !STRIPE_PK) return;
+    const container = document.getElementById('stripe-card-element');
+    if (!container) return;
+
+    const stripe = Stripe(STRIPE_PK);
+    const elements = stripe.elements();
+    const style = {
+      base: {
+        color: '#FFF8EA',
+        fontFamily: '"Inter", sans-serif',
+        fontSize: '14px',
+        '::placeholder': { color: 'rgba(255,248,234,0.3)' },
+      },
+      invalid: { color: '#ef4444' },
+    };
+    stripeCardElement = elements.create('card', { style });
+    stripeCardElement.mount('#stripe-card-element');
+
+    stripeCardElement.on('change', function(event) {
+      const displayError = document.getElementById('stripe-card-errors');
+      displayError.textContent = event.error ? event.error.message : '';
+    });
+  })();
 
   /* ── WhatsApp Widget (Web Component) ── */

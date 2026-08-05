@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "apps.catalog.common",
     "apps.api",
     "apps.contact",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -216,6 +217,20 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+# Stripe
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
+# Nequi
+NEQUI_CLIENT_ID = os.getenv("NEQUI_CLIENT_ID", "")
+NEQUI_CLIENT_SECRET = os.getenv("NEQUI_CLIENT_SECRET", "")
+NEQUI_API_KEY = os.getenv("NEQUI_API_KEY", "")
+NEQUI_MERCHANT_CODE = os.getenv("NEQUI_MERCHANT_CODE", "")
+NEQUI_AUTH_URI = os.getenv("NEQUI_AUTH_URI", "https://oauth.sandbox.nequi.com/token")
+NEQUI_API_BASE_PATH = os.getenv("NEQUI_API_BASE_PATH", "https://api.sandbox.nequi.com/payments/v2")
+NEQUI_NOTIFICATION_URL = os.getenv("NEQUI_NOTIFICATION_URL", "")
 
 LOGGING = {
     "version": 1,

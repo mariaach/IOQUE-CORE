@@ -63,10 +63,12 @@ class Command(BaseCommand):
 
         # Escanear archivos de todos los directorios
         files_by_type: Dict[str, Dict[str, str]] = {}
+        list_by_dir: Dict[str, Dict[int, dict]] = {}
         all_stems = set()
         for img_type, dir_path in image_dirs:
             files = self._get_files(dir_path)
             files_by_type[img_type] = files
+            list_by_dir[dir_path] = self._parse_list_file(dir_path)
             all_stems.update(files.keys())
 
         all_stems = sorted(all_stems)
@@ -101,6 +103,7 @@ class Command(BaseCommand):
                             image_dirs=image_dirs,
                             category=category,
                             sku_map=sku_map,
+                            list_by_dir=list_by_dir,
                         )
                         created += 1
                     except Exception as e:
@@ -162,6 +165,52 @@ class Command(BaseCommand):
         stem = re.sub(r"^\d+-", "", stem)
         return stem.replace("_", "-").lower()
 
+    def _find_list_file(self, image_dir: str) -> Optional[str]:
+        for f in os.listdir(image_dir):
+            if os.path.isfile(os.path.join(image_dir, f)):
+                if os.path.splitext(f)[0].lower().startswith("lista"):
+                    return os.path.join(image_dir, f)
+        return None
+
+    def _parse_list_file(self, image_dir: str) -> Dict[int, dict]:
+        entries: Dict[int, dict] = {}
+        list_path = self._find_list_file(image_dir)
+        if not list_path:
+            return entries
+        with open(list_path, encoding="utf-8") as fh:
+            for line_no, raw in enumerate(fh, start=1):
+                line = raw.strip()
+                if not line or ";" not in line:
+                    continue
+                parts = [part.strip() for part in line.split(";")]
+                index = -1
+                if parts and re.fullmatch(r"\d+", parts[0]):
+                    index = int(parts[0])
+                    parts = parts[1:]
+                if not parts:
+                    continue
+                price_part = parts[0]
+                desc = ";".join(parts[1:]).strip() if len(parts) > 1 else ""
+                if not desc:
+                    continue
+                price = None
+                price_match = re.search(r"(\d[\d.,]*)", price_part)
+                if price_match:
+                    parsed = re.sub(r"[^\d]", "", price_match.group(1))
+                    if parsed:
+                        price = int(parsed)
+                name = re.split(r"\s*\(", desc, maxsplit=1)[0].strip().rstrip(".") or desc
+                entries.setdefault(index if index != -1 else line_no, {
+                    "price": price,
+                    "name": name,
+                    "description": desc,
+                })
+        return entries
+
+    def _image_index(self, stem: str) -> int:
+        match = re.match(r"^\s*(\d+)", stem)
+        return int(match.group(1)) if match else -1
+
     def _generate_sku(self) -> str:
         last = (
             Product.objects
@@ -191,7 +240,17 @@ class Command(BaseCommand):
             if "translations" in p and "es" in p["translations"]
         }
 
-    def _translation_data(self, name: str, slug: str) -> dict:
+    def _translation_data(self, name: str, slug: str, description: Optional[str] = None) -> dict:
+        if description:
+            desc = {
+                "name": name,
+                "slug": slug,
+                "short_description": description,
+                "story": description,
+                "seo_title": name,
+                "seo_description": description,
+            }
+            return {lang: dict(desc) for lang in ("es", "en", "pt", "fr")}
         return {
             "es": {
                 "name": name,
@@ -307,23 +366,38 @@ class Command(BaseCommand):
         image_dirs: List[Tuple[str, str]],
         category,
         sku_map: Dict[str, str],
+        list_by_dir: Dict[str, Dict[int, dict]] = None,
     ):
+        list_by_dir = list_by_dir or {}
         # Find first available file for naming
         first_file = None
-        for img_type, _ in image_dirs:
+        first_dir = None
+        for img_type, dir_path in image_dirs:
             if stem in files_by_type.get(img_type, {}):
                 first_file = files_by_type[img_type][stem]
+                first_dir = dir_path
                 break
         if not first_file:
             return
 
-        product_name = self._product_name(first_file)
+        entry = list_by_dir.get(first_dir, {}).get(self._image_index(stem))
+
+        if entry:
+            product_name = entry["name"]
+            description = entry["description"]
+            price = entry["price"]
+        else:
+            product_name = self._product_name(first_file)
+            description = None
+            price = None
+
         slug = self._slug(stem)
         sku = sku_map.get(slug, self._generate_sku())
 
-        price_points = [27000, 27500, 28000, 28500, 29000]
-        price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)
-        price = price_points[price_idx]
+        if not price:
+            price_points = [27000, 27500, 28000, 28500, 29000]
+            price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)
+            price = price_points[price_idx]
 
         product = Product.objects.create(
             category=category,
@@ -333,7 +407,7 @@ class Command(BaseCommand):
             active=True,
         )
 
-        for lang, name_translated in self._translation_data(product_name, slug).items():
+        for lang, name_translated in self._translation_data(product_name, slug, description).items():
             ProductTranslation.objects.create(
                 product=product,
                 language=lang,

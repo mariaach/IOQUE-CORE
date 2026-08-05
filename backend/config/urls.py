@@ -1,13 +1,19 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import render
 from django.urls import path, include
-from django.views.generic import TemplateView
+
+def index(request):
+    return render(request, "index.html", {
+        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLISHABLE_KEY,
+    })
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html"), name="index"),
+    path("", index, name="index"),
     path("admin/", admin.site.urls),
     path("api/", include("apps.api.urls")),
+    path("api/", include("apps.payments.urls")),
 ]
 
 if settings.DEBUG:

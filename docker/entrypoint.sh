@@ -57,6 +57,7 @@ python manage.py seed_categories
 echo ""
 echo "Importing products..."
 python manage.py import_products
+python manage.py import_religion
 
 echo ""
 echo "Seeding WhatsApp widget..."

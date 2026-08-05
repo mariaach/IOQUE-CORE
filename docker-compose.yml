@@ -40,7 +40,7 @@ services:
       - media_volume:/app/mediafiles
       - static_volume:/app/staticfiles
       #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
-      - /home/ubuntu/IOQUE/Recursos:/Recursos:ro
+      - /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
       #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
     entrypoint:
       - /app/docker/entrypoint.sh
@@ -48,6 +48,16 @@ services:
       - .env
     environment:
       POSTGRES_HOST: postgres
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      NEQUI_CLIENT_ID: ${NEQUI_CLIENT_ID}
+      NEQUI_CLIENT_SECRET: ${NEQUI_CLIENT_SECRET}
+      NEQUI_API_KEY: ${NEQUI_API_KEY}
+      NEQUI_MERCHANT_CODE: ${NEQUI_MERCHANT_CODE}
+      NEQUI_AUTH_URI: ${NEQUI_AUTH_URI}
+      NEQUI_API_BASE_PATH: ${NEQUI_API_BASE_PATH}
+      NEQUI_NOTIFICATION_URL: ${NEQUI_NOTIFICATION_URL}
     depends_on:
       postgres:
         condition: service_healthy
