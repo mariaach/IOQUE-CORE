@@ -60,6 +60,10 @@ python manage.py import_products
 python manage.py import_religion
 
 echo ""
+echo "Regenerating thumbnails..."
+python manage.py regenerate_thumbnails
+
+echo ""
 echo "Seeding WhatsApp widget..."
 python manage.py seed_widget
 

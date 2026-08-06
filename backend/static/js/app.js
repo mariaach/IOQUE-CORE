@@ -267,8 +267,10 @@
     const totalEl = document.getElementById('cart-total');
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const count = cart.reduce((s, i) => s + i.qty, 0);
-    document.getElementById('cart-count-nav').textContent = count;
-    document.getElementById('cart-count-mob').textContent = count;
+    const navCount = document.getElementById('cart-count-nav');
+    const mobCount = document.getElementById('cart-count-mob');
+    if (navCount) navCount.textContent = count;
+    if (mobCount) mobCount.textContent = count;
 
     const t = translations[currentLang];
 
@@ -317,133 +319,80 @@
       return;
     }
 
-    const activeTab = document.querySelector('.payment-tab-btn.active');
-    const method = activeTab ? activeTab.getAttribute('data-method') || 'card' : 'card';
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-    if (method === 'card') {
-      if (!stripeCardElement) {
-        showToast('❌ Stripe no está disponible');
-        return;
+    const phoneInput = document.getElementById('nequi-phone');
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const statusMsg = document.getElementById('nequi-status-msg');
+    const payBtn = document.getElementById('nequi-pay-btn');
+
+    if (!phone || phone.length < 7) {
+      showToast('❌ ' + (currentLang === 'es' ? 'Ingresa tu número de Nequi' : 'Enter your Nequi phone number'));
+      return;
+    }
+
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Enviando...' : 'Sending...');
+    if (statusMsg) statusMsg.textContent = '';
+
+    try {
+      const res = await fetch('/api/payments/nequi-pay/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone_number: phone,
+          amount: total,
+          currency: 'COP',
+          cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al crear el pago');
       }
 
-      const payBtn = document.getElementById('pay-btn');
-      payBtn.disabled = true;
-      payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Procesando...' : 'Processing...');
-
-      try {
-        const res = await fetch('/api/payments/create-payment-intent/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: total,
-            currency: 'COP',
-            cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
-          }),
-        });
-
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Error al crear el pago');
-        }
-
-        const data = await res.json();
-        const stripe = Stripe(data.publishable_key);
-
-        const { error } = await stripe.confirmCardPayment(data.client_secret, {
-          payment_method: { card: stripeCardElement },
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
-        cart = [];
-        renderCart();
-        setTimeout(() => toggleCart(), 1500);
-      } catch (e) {
-        showToast('❌ ' + e.message);
-      } finally {
-        payBtn.disabled = false;
-        payBtn.innerHTML = '<i class="fa-solid fa-lock"></i> ' + (currentLang === 'es' ? 'Pagar ahora' : 'Pay now');
-      }
-    } else if (method === 'nequi') {
-      const phoneInput = document.getElementById('nequi-phone');
-      const phone = phoneInput ? phoneInput.value.trim() : '';
-      const statusMsg = document.getElementById('nequi-status-msg');
-      const payBtn = document.getElementById('nequi-pay-btn');
-
-      if (!phone || phone.length < 7) {
-        showToast('❌ ' + (currentLang === 'es' ? 'Ingresa tu número de Nequi' : 'Enter your Nequi phone number'));
-        return;
+      if (statusMsg) {
+        statusMsg.innerHTML = '<span style="color:#22c55e;">✓ ' + (currentLang === 'es' ? 'Revisa tu app de Nequi y aprueba el pago' : 'Check your Nequi app and approve the payment') + '</span>';
       }
 
-      payBtn.disabled = true;
-      payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Enviando...' : 'Sending...');
-      if (statusMsg) statusMsg.textContent = '';
+      const paymentId = data.payment_id;
+      const maxAttempts = 30;
+      let attempts = 0;
 
-      try {
-        const res = await fetch('/api/payments/nequi-pay/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phone_number: phone,
-            amount: total,
-            currency: 'COP',
-            cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Error al crear el pago');
-        }
-
-        if (statusMsg) {
-          statusMsg.innerHTML = '<span style="color:#22c55e;">✓ ' + (currentLang === 'es' ? 'Revisa tu app de Nequi y aprueba el pago' : 'Check your Nequi app and approve the payment') + '</span>';
-        }
-
-        const paymentId = data.payment_id;
-        const maxAttempts = 30;
-        let attempts = 0;
-
-        const poll = setInterval(async () => {
-          attempts++;
-          try {
-            const sr = await fetch('/api/payments/nequi-status/', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ payment_id: paymentId }),
-            });
-            const sd = await sr.json();
-            if (sd.status === 'succeeded') {
-              clearInterval(poll);
-              showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
-              cart = [];
-              renderCart();
-              setTimeout(() => toggleCart(), 1500);
-            } else if (sd.status === 'failed' || sd.status === 'canceled') {
-              clearInterval(poll);
-              showToast('❌ ' + (currentLang === 'es' ? 'Pago rechazado' : 'Payment rejected'));
-            }
-          } catch (e) {
-            // continue polling
-          }
-          if (attempts >= maxAttempts) {
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const sr = await fetch('/api/payments/nequi-status/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ payment_id: paymentId }),
+          });
+          const sd = await sr.json();
+          if (sd.status === 'succeeded') {
             clearInterval(poll);
-            showToast('⏱️ ' + (currentLang === 'es' ? 'Tiempo de espera agotado' : 'Timeout'));
+            showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
+            cart = [];
+            renderCart();
+            setTimeout(() => toggleCart(), 1500);
+          } else if (sd.status === 'failed' || sd.status === 'canceled') {
+            clearInterval(poll);
+            showToast('❌ ' + (currentLang === 'es' ? 'Pago rechazado' : 'Payment rejected'));
           }
-        }, 3000);
-      } catch (e) {
-        showToast('❌ ' + e.message);
-      } finally {
-        payBtn.disabled = false;
-        payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> ' + (currentLang === 'es' ? 'Pagar con Nequi' : 'Pay with Nequi');
-      }
-    } else {
-      showToast('ℹ️ ' + (currentLang === 'es' ? 'Método no implementado aún' : 'Method not implemented yet'));
+        } catch (e) {
+          // continue polling
+        }
+        if (attempts >= maxAttempts) {
+          clearInterval(poll);
+          showToast('⏱️ ' + (currentLang === 'es' ? 'Tiempo de espera agotado' : 'Timeout'));
+        }
+      }, 3000);
+    } catch (e) {
+      showToast('❌ ' + e.message);
+    } finally {
+      payBtn.disabled = false;
+      payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> ' + (currentLang === 'es' ? 'Pagar con Nequi' : 'Pay with Nequi');
     }
   }
 
@@ -643,9 +592,6 @@
       historias_desc: 'Perros que cambiaron el mundo. Uno a su manera.',
       cart_title: 'Carrito', cart_empty: 'Vacío', cart_empty_sub: 'Agrega productos del catálogo',
       cart_total: 'Total',
-      pay_tarjetas: 'Tarjetas', pay_mp: 'MP', pay_btn: 'Pagar ahora',
-      pay_num: 'Número', pay_venc: 'Vencimiento', pay_cvc: 'CVC',
-      pay_paypal_text: 'Pago seguro vía PayPal.', pay_paypal_btn: 'Pagar con PayPal',
       pay_mp_text: 'Elige tu método de pago.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pago seguro',
       footer_desc: 'Artesanía en cuero. Hecho a mano desde Colombia.',
@@ -675,9 +621,6 @@
       historias_desc: 'Dogs that changed the world. Each in their own way.',
       cart_title: 'Cart', cart_empty: 'Empty', cart_empty_sub: 'Add products from the catalog',
       cart_total: 'Total',
-      pay_tarjetas: 'Cards', pay_mp: 'MP', pay_btn: 'Pay now',
-      pay_num: 'Number', pay_venc: 'Expiry', pay_cvc: 'CVC',
-      pay_paypal_text: 'Secure payment via PayPal.', pay_paypal_btn: 'Pay with PayPal',
       pay_mp_text: 'Choose your payment method.', pay_mp_btn: 'Pay',
       pay_secure: 'Secure payment',
       footer_desc: 'Leather craftsmanship. Handmade from Colombia.',
@@ -707,9 +650,6 @@
       historias_desc: 'Cães que mudaram o mundo. Cada um à sua maneira.',
       cart_title: 'Carrinho', cart_empty: 'Vazio', cart_empty_sub: 'Adicione produtos do catálogo',
       cart_total: 'Total',
-      pay_tarjetas: 'Cartões', pay_mp: 'MP', pay_btn: 'Pagar agora',
-      pay_num: 'Número', pay_venc: 'Vencimento', pay_cvc: 'CVC',
-      pay_paypal_text: 'Pagamento seguro via PayPal.', pay_paypal_btn: 'Pagar com PayPal',
       pay_mp_text: 'Escolha seu método de pagamento.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pagamento seguro',
       footer_desc: 'Artesanato em couro. Feito à mão desde a Colômbia.',
@@ -739,9 +679,6 @@
       historias_desc: 'Des chiens qui ont changé le monde. Chacun à sa manière.',
       cart_title: 'Panier', cart_empty: 'Vide', cart_empty_sub: 'Ajoutez des produits du catalogue',
       cart_total: 'Total',
-      pay_tarjetas: 'Cartes', pay_mp: 'MP', pay_btn: 'Payer maintenant',
-      pay_num: 'Numéro', pay_venc: 'Expiration', pay_cvc: 'CVC',
-      pay_paypal_text: 'Paiement sécurisé via PayPal.', pay_paypal_btn: 'Payer avec PayPal',
       pay_mp_text: 'Choisissez votre méthode de paiement.', pay_mp_btn: 'Payer',
       pay_secure: 'Paiement sécurisé',
       footer_desc: 'Artisanat du cuir. Fait à la main depuis la Colombie.',
@@ -896,31 +833,5 @@
   applyTheme(currentTheme);
   applyLang(currentLang);
 
-  /* ── Stripe Elements ── */
-  let stripeCardElement = null;
-  (function initStripe() {
-    if (typeof Stripe === 'undefined' || !STRIPE_PK) return;
-    const container = document.getElementById('stripe-card-element');
-    if (!container) return;
-
-    const stripe = Stripe(STRIPE_PK);
-    const elements = stripe.elements();
-    const style = {
-      base: {
-        color: '#FFF8EA',
-        fontFamily: '"Inter", sans-serif',
-        fontSize: '14px',
-        '::placeholder': { color: 'rgba(255,248,234,0.3)' },
-      },
-      invalid: { color: '#ef4444' },
-    };
-    stripeCardElement = elements.create('card', { style });
-    stripeCardElement.mount('#stripe-card-element');
-
-    stripeCardElement.on('change', function(event) {
-      const displayError = document.getElementById('stripe-card-errors');
-      displayError.textContent = event.error ? event.error.message : '';
-    });
-  })();
 
   /* ── WhatsApp Widget (Web Component) ── */

@@ -11,13 +11,12 @@ class Payment(models.Model):
         CANCELED = "canceled", "Cancelado"
 
     class Method(models.TextChoices):
-        CARD = "card", "Tarjeta"
         NEQUI = "nequi", "Nequi"
 
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="monto")
     currency = models.CharField(max_length=3, default="COP", verbose_name="moneda")
     method = models.CharField(
-        max_length=10, choices=Method.choices, default=Method.CARD, verbose_name="método"
+        max_length=10, choices=Method.choices, default=Method.NEQUI, verbose_name="método"
     )
     status = models.CharField(
         max_length=20,
@@ -25,10 +24,6 @@ class Payment(models.Model):
         default=Status.PENDING,
         verbose_name="estado",
     )
-    stripe_payment_intent_id = models.CharField(
-        max_length=255, unique=True, blank=True, null=True, verbose_name="ID de PaymentIntent"
-    )
-    stripe_client_secret = models.TextField(blank=True, verbose_name="client_secret")
     nequi_transaction_id = models.CharField(
         max_length=255, unique=True, blank=True, null=True, verbose_name="ID transacción Nequi"
     )
@@ -48,7 +43,6 @@ class Payment(models.Model):
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["status"]),
-            models.Index(fields=["stripe_payment_intent_id"]),
             models.Index(fields=["nequi_transaction_id"]),
         ]
 

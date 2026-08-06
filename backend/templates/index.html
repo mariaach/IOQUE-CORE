@@ -42,12 +42,8 @@
           <option value="pt">🇵🇹 PT</option>
           <option value="fr">🇫🇷 FR</option>
         </select>
-        <button onclick="toggleCart()" class="nav-btn" style="position:relative;">
-          <i class="fa-solid fa-bag-shopping" style="font-size:var(--text-lg);"></i>
-          <span id="cart-count-nav" class="cart-badge">0</span>
-        </button>
       </div>
-      <div style="display:flex;gap:var(--space-2);align-items:center;">
+      <div style="display:flex;gap:var(--space-5);align-items:center;">
         <button onclick="toggleCart()" class="nav-btn" style="position:relative;display:block;">
           <i class="fa-solid fa-bag-shopping" style="font-size:var(--text-lg);"></i>
           <span id="cart-count-mob" class="cart-badge">0</span>
@@ -340,35 +336,18 @@
         <span id="cart-total" class="cart-total-amount">$0</span>
       </div>
       <div class="payment-tabs">
-        <button onclick="switchPaymentTab('cards',this)" class="payment-tab-btn active" data-method="card" data-i18n="pay_tarjetas">Tarjetas</button>
-        <button onclick="switchPaymentTab('paypal',this)" class="payment-tab-btn" data-method="paypal">PayPal</button>
-        <button onclick="switchPaymentTab('nequi',this)" class="payment-tab-btn" data-method="nequi">Nequi</button>
+        <button onclick="switchPaymentTab('nequi',this)" class="payment-tab-btn active" data-method="nequi">Nequi</button>
       </div>
-      <div id="tab-cards" class="payment-panel">
-        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);">
-          <i class="fa-brands fa-cc-visa" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
-          <i class="fa-brands fa-cc-mastercard" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
-          <i class="fa-brands fa-cc-amex" style="font-size:var(--text-xl);color:rgba(255,248,234,0.25);"></i>
-        </div>
-        <div id="stripe-card-element" style="padding:var(--space-3);background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:var(--space-4);">
-        </div>
-        <div id="stripe-card-errors" style="font-size:var(--text-sm);color:#ef4444;margin-bottom:var(--space-3);min-height:20px;"></div>
-        <button id="pay-btn" onclick="processPayment()" class="btn-pay" data-i18n="pay_btn"><i class="fa-solid fa-lock"></i> Pagar ahora</button>
-      </div>
-      <div id="tab-paypal" class="payment-panel" style="display:none;">
-        <div style="text-align:center;padding:var(--space-6) 0;">
-          <i class="fa-brands fa-paypal" style="font-size:3rem;color:rgba(255,248,234,0.2);margin-bottom:var(--space-4);display:block;"></i>
-          <p data-i18n="pay_paypal_text" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">Pago seguro vía PayPal.</p>
-          <button onclick="processPayment()" class="btn-pay-paypal" data-i18n="pay_paypal_btn">Pagar con PayPal</button>
-        </div>
-      </div>
-      <div id="tab-nequi" class="payment-panel" style="display:none;">
+      <div id="tab-nequi" class="payment-panel">
         <div style="text-align:center;padding:var(--space-6) 0;">
           <div style="font-size:3rem;margin-bottom:var(--space-4);color:rgba(198,161,91,0.5);">
             <i class="fa-solid fa-mobile-screen-button"></i>
           </div>
-          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">
+          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-3);">
             Paga con Nequi — 0% comisión. Ingresa tu número y recibe la notificación en tu app.
+          </p>
+          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">
+            Cuenta Nequi: <strong style="color:var(--text);">3216153977</strong>
           </p>
           <input type="tel" id="nequi-phone" placeholder="300 123 4567" class="form-input" style="width:100%;margin-bottom:var(--space-3);text-align:center;font-size:var(--text-lg);">
           <div id="nequi-status-msg" style="font-size:var(--text-sm);margin-bottom:var(--space-3);min-height:20px;"></div>
@@ -415,7 +394,7 @@
         </ul>
         <h4 class="footer-heading" data-i18n="footer_pagos" style="margin-top:var(--space-8);">Pagos</h4>
         <div class="footer-payment">
-          <span>Visa</span><span>MC</span><span>Nequi</span><span>PayPal</span><span>PSE</span>
+          <span>Nequi</span>
         </div>
       </div>
     </div>
@@ -453,9 +432,7 @@
   </div>
 </div>
 
-  <script src="https://js.stripe.com/v3/"></script>
-  <script>const STRIPE_PK = '{{ STRIPE_PUBLISHABLE_KEY }}';</script>
-  <script src="/static/js/app.js?v=6"></script>
+  <script src="/static/js/app.js?v=8"></script>
 <script type="module" src="/static/whatsapp-widget/widget.js"></script>
 </body>
 </html>

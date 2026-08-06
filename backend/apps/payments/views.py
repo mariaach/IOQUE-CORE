@@ -1,7 +1,5 @@
 import time
 
-import stripe
-from django.conf import settings
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -10,11 +8,9 @@ from rest_framework.response import Response
 from . import nequi as nequi_client
 from .models import Payment
 from .serializers import (
-    CreatePaymentSerializer,
     NequiPaymentSerializer,
     NequiPaymentResponseSerializer,
     NequiStatusSerializer,
-    PaymentIntentResponseSerializer,
     PaymentSerializer,
 )
 
@@ -24,96 +20,11 @@ class PaymentViewSet(viewsets.GenericViewSet):
     queryset = Payment.objects.all()
 
     def get_serializer_class(self):
-        if self.action == "create_payment_intent":
-            return CreatePaymentSerializer
         if self.action == "create_nequi_payment":
             return NequiPaymentSerializer
         if self.action == "check_nequi_status":
             return NequiStatusSerializer
         return PaymentSerializer
-
-    # ── Stripe (Tarjeta) ──
-
-    @action(detail=False, methods=["post"], url_path="create-payment-intent")
-    def create_payment_intent(self, request):
-        serializer = CreatePaymentSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        payment = Payment.objects.create(
-            amount=serializer.validated_data["amount"],
-            currency=serializer.validated_data.get("currency", "COP"),
-            method=Payment.Method.CARD,
-            customer_name=serializer.validated_data.get("customer_name", ""),
-            customer_email=serializer.validated_data.get("customer_email", ""),
-            customer_phone=serializer.validated_data.get("customer_phone", ""),
-            metadata={"cart_items": serializer.validated_data.get("cart_items", [])},
-        )
-
-        try:
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-            intent = stripe.PaymentIntent.create(
-                amount=int(payment.amount * 100),
-                currency=payment.currency.lower(),
-                metadata={
-                    "payment_id": str(payment.id),
-                    "customer_name": payment.customer_name,
-                    "customer_email": payment.customer_email,
-                },
-                description=f"IOQUE - Pago #{payment.id}",
-            )
-
-            payment.stripe_payment_intent_id = intent.id
-            payment.stripe_client_secret = intent.client_secret
-            payment.save()
-
-            response_data = PaymentIntentResponseSerializer({
-                "payment_id": payment.id,
-                "client_secret": intent.client_secret,
-                "publishable_key": settings.STRIPE_PUBLISHABLE_KEY,
-            }).data
-
-            return Response(response_data, status=status.HTTP_201_CREATED)
-
-        except stripe.error.StripeError as e:
-            payment.status = Payment.Status.FAILED
-            payment.save()
-            return Response(
-                {"error": str(e.user_message or e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    @action(detail=False, methods=["post"], url_path="stripe-webhook")
-    def stripe_webhook(self, request):
-        payload = request.body
-        sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-
-        try:
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-            )
-        except (ValueError, stripe.error.SignatureVerificationError) as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        if event["type"] == "payment_intent.succeeded":
-            intent = event["data"]["object"]
-            self._update_stripe_status(intent.id, Payment.Status.SUCCEEDED)
-        elif event["type"] == "payment_intent.payment_failed":
-            intent = event["data"]["object"]
-            self._update_stripe_status(intent.id, Payment.Status.FAILED)
-        elif event["type"] == "payment_intent.canceled":
-            intent = event["data"]["object"]
-            self._update_stripe_status(intent.id, Payment.Status.CANCELED)
-
-        return Response({"status": "ok"})
-
-    def _update_stripe_status(self, payment_intent_id: str, status_value: str) -> None:
-        try:
-            payment = Payment.objects.get(stripe_payment_intent_id=payment_intent_id)
-            payment.status = status_value
-            payment.save()
-        except Payment.DoesNotExist:
-            pass
 
     # ── Nequi ──
 

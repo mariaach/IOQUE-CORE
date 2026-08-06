@@ -5,9 +5,7 @@ from django.shortcuts import render
 from django.urls import path, include
 
 def index(request):
-    return render(request, "index.html", {
-        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLISHABLE_KEY,
-    })
+    return render(request, "index.html")
 
 urlpatterns = [
     path("", index, name="index"),
