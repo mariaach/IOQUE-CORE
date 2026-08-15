@@ -177,7 +177,7 @@
         + '<div class="product-info">'
         + '<div class="product-header"><span class="product-name">' + name + '</span><span class="product-price">$' + (p.price || 0).toLocaleString('es-CO') + '</span></div>'
         + '<p class="product-phrase">"' + phrase + '"</p>'
-        + '<button onclick="addToCart(\'' + name.replace(/'/g,"\\'") + '\',' + (p.price || 0) + ',this)" class="btn-gold-border"><i class="fa-solid fa-plus"></i> ' + ({ es: 'Añadir', en: 'Add', pt: 'Adicionar', fr: 'Ajouter' }[currentLang] || 'Add') + '</button>'
+        + '<button onclick="addToCart(\'' + name.replace(/'/g,"\\'") + '\',' + (p.price || 0) + ',this,\'' + (frontSrc || '').replace(/'/g,"\\'") + '\',\'' + (p.category_name || '').replace(/'/g,"\\'") + '\')" class="btn-gold-border"><i class="fa-solid fa-plus"></i> ' + ({ es: 'Añadir', en: 'Add', pt: 'Adicionar', fr: 'Ajouter' }[currentLang] || 'Add') + '</button>'
         + '</div></div>';
     });
     grid.innerHTML = html;
@@ -226,32 +226,50 @@
 
   let cart = [];
 
+  const NEQUI_QR_IMAGE = ''; // Ruta/URL configurable del QR de pago. Ej: '/static/img/nequi-qr.png'
+
   function toggleCart() {
     const o = document.getElementById('cart-overlay');
     const s = document.getElementById('cart-sidebar');
     o.classList.toggle('active');
     s.classList.toggle('active');
     document.body.style.overflow = o.classList.contains('active') ? 'hidden' : '';
+    if (o.classList.contains('active')) renderNequiQr();
   }
 
-  function addToCart(name, price, btn) {
+  function renderNequiQr() {
+    const qr = document.getElementById('nequi-qr');
+    if (!qr) return;
+    if (NEQUI_QR_IMAGE) {
+      qr.innerHTML = '<img src="' + NEQUI_QR_IMAGE + '" alt="QR de pago Nequi" class="nequi-qr-img">';
+      qr.classList.remove('nequi-qr-placeholder');
+      qr.classList.add('nequi-qr-real');
+    } else {
+      qr.innerHTML = '<i class="fa-solid fa-qrcode"></i><span>' + (translations[currentLang] && translations[currentLang].pay_qr_placeholder || 'QR DE PAGO') + '</span>';
+      qr.classList.add('nequi-qr-placeholder');
+      qr.classList.remove('nequi-qr-real');
+    }
+  }
+
+  function addToCart(name, price, btn, img, type) {
     const existing = cart.find(i => i.name === name);
     if (existing) existing.qty += 1;
-    else cart.push({ name, price, qty: 1 });
+    else cart.push({ name, price, qty: 1, img: img || '', type: type || '' });
     renderCart();
     showToast('✓ ' + name + (currentLang === 'es' ? ' añadido' : ' added'));
+    animateCartBadge();
     if (btn) {
       const orig = btn.innerHTML;
       btn.innerHTML = '<i class="fa-solid fa-check"></i> OK';
-      btn.style.background = 'rgba(198,161,91,0.15)';
-      btn.style.borderColor = 'var(--accent)';
-      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.borderColor = ''; }, 1200);
+      btn.classList.add('btn-added');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('btn-added'); }, 1200);
     }
   }
 
   function removeFromCart(name) {
     cart = cart.filter(i => i.name !== name);
     renderCart();
+    animateCartBadge();
   }
 
   function updateQty(name, delta) {
@@ -259,49 +277,89 @@
     if (!item) return;
     item.qty += delta;
     if (item.qty <= 0) removeFromCart(name);
-    else renderCart();
+    else {
+      renderCart();
+      animateCartBadge();
+      const qtyEl = document.querySelector('.cart-qty span[data-name="' + name.replace(/"/g, '\\"') + '"]');
+      if (qtyEl) {
+        qtyEl.classList.remove('qty-bump');
+        void qtyEl.offsetWidth;
+        qtyEl.classList.add('qty-bump');
+      }
+    }
+  }
+
+  function animateCartBadge() {
+    const nav = document.getElementById('cart-count-nav');
+    const fab = document.getElementById('fab-count');
+    [nav, fab].forEach(function(el) {
+      if (!el) return;
+      el.classList.remove('badge-pulse');
+      void el.offsetWidth;
+      el.classList.add('badge-pulse');
+    });
+  }
+
+  function formatCOP(value) {
+    return '$' + (value || 0).toLocaleString('es-CO');
   }
 
   function renderCart() {
     const container = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
+    const subtotalEl = document.getElementById('cart-subtotal');
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const count = cart.reduce((s, i) => s + i.qty, 0);
     const navCount = document.getElementById('cart-count-nav');
-    const mobCount = document.getElementById('cart-count-mob');
+    const navTotal = document.getElementById('cart-nav-total');
+    const fabCount = document.getElementById('fab-count');
+    const fabTotal = document.getElementById('fab-total');
+    const fabBtn = document.getElementById('fab-cart');
     if (navCount) navCount.textContent = count;
-    if (mobCount) mobCount.textContent = count;
+    if (navTotal) navTotal.textContent = formatCOP(total);
+    if (fabCount) fabCount.textContent = '(' + count + ')';
+    if (fabTotal) fabTotal.textContent = formatCOP(total);
+    if (fabBtn) fabBtn.classList.toggle('has-items', count > 0);
 
     const t = translations[currentLang];
 
     if (cart.length === 0) {
       container.innerHTML = '<div class="cart-empty"><i class="fa-solid fa-bag-shopping"></i><p style="font-size:var(--text-base);">' + t.cart_empty + '</p><p style="font-size:var(--text-sm);margin-top:var(--space-2);">' + t.cart_empty_sub + '</p></div>';
-      totalEl.textContent = '$0';
+      if (totalEl) totalEl.innerHTML = '$0';
+      if (subtotalEl) subtotalEl.textContent = '$0';
       return;
     }
 
     let html = '';
     cart.forEach(i => {
       const lineTotal = i.price * i.qty;
+      const thumb = i.img
+        ? '<img src="' + i.img + '" alt="' + i.name + '" class="cart-item-thumb">'
+        : '<div class="cart-item-avatar">' + i.name.charAt(0) + '</div>';
+      const typeLabel = i.type ? '<div class="cart-item-type">' + i.type + '</div>' : '';
       html += '<div class="cart-item">'
-        + '<div class="cart-item-avatar">' + i.name.charAt(0) + '</div>'
+        + thumb
         + '<div class="cart-item-info">'
         + '<div class="cart-item-name">' + i.name + '</div>'
-        + '<div class="cart-item-unit">$' + i.price.toLocaleString('es-CO') + (currentLang === 'es' ? ' c/u' : ' ea') + '</div>'
+        + typeLabel
+        + '<div class="cart-item-unit">' + formatCOP(i.price) + (currentLang === 'es' ? ' c/u' : ' ea') + '</div>'
         + '</div>'
+        + '<div class="cart-item-right">'
         + '<div class="cart-qty">'
-        + '<button onclick="updateQty(\'' + i.name + '\',-1)">−</button>'
-        + '<span>' + i.qty + '</span>'
-        + '<button onclick="updateQty(\'' + i.name + '\',1)">+</button>'
+        + '<button onclick="updateQty(\'' + i.name.replace(/'/g,"\\'") + '\',-1)" aria-label="Disminuir">−</button>'
+        + '<span data-name="' + i.name.replace(/"/g, '&quot;') + '">' + i.qty + '</span>'
+        + '<button onclick="updateQty(\'' + i.name.replace(/'/g,"\\'") + '\',1)" aria-label="Aumentar">+</button>'
         + '</div>'
         + '<div class="cart-item-total">'
-        + '<div class="cart-item-price">$' + lineTotal.toLocaleString('es-CO') + '</div>'
-        + '<button onclick="removeFromCart(\'' + i.name + '\')" class="cart-item-remove">' + (currentLang === 'es' ? 'Eliminar' : 'Remove') + '</button>'
+        + '<div class="cart-item-price">' + formatCOP(lineTotal) + '</div>'
+        + '<button onclick="removeFromCart(\'' + i.name.replace(/'/g,"\\'") + '\')" class="cart-item-remove"><i class="fa-solid fa-trash-can"></i> ' + (currentLang === 'es' ? 'Eliminar' : 'Remove') + '</button>'
+        + '</div>'
         + '</div>'
         + '</div>';
     });
     container.innerHTML = html;
-    totalEl.textContent = '$' + total.toLocaleString('es-CO');
+    if (subtotalEl) subtotalEl.textContent = formatCOP(total);
+    if (totalEl) totalEl.innerHTML = formatCOP(total) + ' <small>' + (t.cart_currency || 'COP') + '</small>';
   }
 
   function switchPaymentTab(tab, btn) {
@@ -375,6 +433,7 @@
             showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
             cart = [];
             renderCart();
+            animateCartBadge();
             setTimeout(() => toggleCart(), 1500);
           } else if (sd.status === 'failed' || sd.status === 'canceled') {
             clearInterval(poll);
@@ -392,7 +451,7 @@
       showToast('❌ ' + e.message);
     } finally {
       payBtn.disabled = false;
-      payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> ' + (currentLang === 'es' ? 'Pagar con Nequi' : 'Pay with Nequi');
+      payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> <span>' + (translations[currentLang].pay_nequi_btn || 'IR A PAGAR CON NEQUI') + '</span>';
     }
   }
 
@@ -590,8 +649,13 @@
       anadir: 'Añadir',
       historias_label: '// 003', historias_title: 'Leyendas <span style="color:var(--accent);">con patas</span>',
       historias_desc: 'Perros que cambiaron el mundo. Uno a su manera.',
-      cart_title: 'Carrito', cart_empty: 'Vacío', cart_empty_sub: 'Agrega productos del catálogo',
-      cart_total: 'Total',
+      cart_title: 'Mi Carrito', cart_empty: 'Vacío', cart_empty_sub: 'Agrega productos del catálogo',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Envío', cart_currency: 'COP',
+      cart_total: 'TOTAL',
+      nav_cart: 'Carrito', fab_text: 'VER MI PEDIDO',
+      pay_nequi_btn: 'IR A PAGAR CON NEQUI',
+      pay_qr_title: 'Escanea para pagar con Nequi', pay_qr_placeholder: 'QR DE PAGO', pay_qr_hint: 'Abre Nequi y escanea el código',
+      pay_nequi_account: 'Cuenta Nequi:',
       pay_mp_text: 'Elige tu método de pago.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pago seguro',
       footer_desc: 'Artesanía en cuero. Hecho a mano desde Colombia.',
@@ -619,8 +683,13 @@
       anadir: 'Add',
       historias_label: '// 003', historias_title: 'Legends <span style="color:var(--accent);">on paws</span>',
       historias_desc: 'Dogs that changed the world. Each in their own way.',
-      cart_title: 'Cart', cart_empty: 'Empty', cart_empty_sub: 'Add products from the catalog',
-      cart_total: 'Total',
+      cart_title: 'My Cart', cart_empty: 'Empty', cart_empty_sub: 'Add products from the catalog',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Shipping', cart_currency: 'COP',
+      cart_total: 'TOTAL',
+      nav_cart: 'Cart', fab_text: 'VIEW MY ORDER',
+      pay_nequi_btn: 'PAY WITH NEQUI',
+      pay_qr_title: 'Scan to pay with Nequi', pay_qr_placeholder: 'PAYMENT QR', pay_qr_hint: 'Open Nequi and scan the code',
+      pay_nequi_account: 'Nequi account:',
       pay_mp_text: 'Choose your payment method.', pay_mp_btn: 'Pay',
       pay_secure: 'Secure payment',
       footer_desc: 'Leather craftsmanship. Handmade from Colombia.',
@@ -648,8 +717,13 @@
       anadir: 'Adicionar',
       historias_label: '// 003', historias_title: 'Lendas <span style="color:var(--accent);">de patas</span>',
       historias_desc: 'Cães que mudaram o mundo. Cada um à sua maneira.',
-      cart_title: 'Carrinho', cart_empty: 'Vazio', cart_empty_sub: 'Adicione produtos do catálogo',
-      cart_total: 'Total',
+      cart_title: 'Meu Carrinho', cart_empty: 'Vazio', cart_empty_sub: 'Adicione produtos do catálogo',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Envio', cart_currency: 'COP',
+      cart_total: 'TOTAL',
+      nav_cart: 'Carrinho', fab_text: 'VER MEU PEDIDO',
+      pay_nequi_btn: 'IR PAGAR COM NEQUI',
+      pay_qr_title: 'Escaneie para pagar com Nequi', pay_qr_placeholder: 'QR DE PAGAMENTO', pay_qr_hint: 'Abra o Nequi e escaneie o código',
+      pay_nequi_account: 'Conta Nequi:',
       pay_mp_text: 'Escolha seu método de pagamento.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pagamento seguro',
       footer_desc: 'Artesanato em couro. Feito à mão desde a Colômbia.',
@@ -677,8 +751,13 @@
       anadir: 'Ajouter',
       historias_label: '// 003', historias_title: 'Légendes <span style="color:var(--accent);">à pattes</span>',
       historias_desc: 'Des chiens qui ont changé le monde. Chacun à sa manière.',
-      cart_title: 'Panier', cart_empty: 'Vide', cart_empty_sub: 'Ajoutez des produits du catalogue',
-      cart_total: 'Total',
+      cart_title: 'Mon Panier', cart_empty: 'Vide', cart_empty_sub: 'Ajoutez des produits du catalogue',
+      cart_subtotal: 'Sous-total', cart_shipping: 'Livraison', cart_currency: 'COP',
+      cart_total: 'TOTAL',
+      nav_cart: 'Panier', fab_text: 'VOIR MA COMMANDE',
+      pay_nequi_btn: 'PAYER AVEC NEQUI',
+      pay_qr_title: 'Scannez pour payer avec Nequi', pay_qr_placeholder: 'QR DE PAIEMENT', pay_qr_hint: 'Ouvrez Nequi et scannez le code',
+      pay_nequi_account: 'Compte Nequi :',
       pay_mp_text: 'Choisissez votre méthode de paiement.', pay_mp_btn: 'Payer',
       pay_secure: 'Paiement sécurisé',
       footer_desc: 'Artisanat du cuir. Fait à la main depuis la Colombie.',

@@ -8,10 +8,10 @@
   <link rel="shortcut icon" href="/static/img/logoicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
-  <link rel="stylesheet" href="/static/css/style.css?v=6">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
 </head>
 <body>
 
@@ -43,10 +43,16 @@
           <option value="fr">🇫🇷 FR</option>
         </select>
       </div>
-      <div style="display:flex;gap:var(--space-5);align-items:center;">
-        <button onclick="toggleCart()" class="nav-btn" style="position:relative;display:block;">
-          <i class="fa-solid fa-bag-shopping" style="font-size:var(--text-lg);"></i>
-          <span id="cart-count-mob" class="cart-badge">0</span>
+      <div style="display:flex;gap:var(--space-4);align-items:center;">
+        <button onclick="toggleCart()" class="cart-nav-btn" title="Ver carrito" aria-label="Ver carrito">
+          <span class="cart-nav-icon">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count-nav" class="cart-badge-gold">0</span>
+          </span>
+          <span class="cart-nav-label">
+            <span class="cart-nav-title" data-i18n="nav_cart">Carrito</span>
+            <span id="cart-nav-total" class="cart-nav-total">$0</span>
+          </span>
         </button>
         <button onclick="toggleMobileMenu()" class="nav-btn" style="display:block;">
           <i class="fa-solid fa-bars" style="font-size:var(--text-lg);"></i>
@@ -79,6 +85,12 @@
     </div>
   </div>
 </nav>
+
+<!-- FLOATING CART BUTTON -->
+<button id="fab-cart" class="fab-cart" onclick="toggleCart()" aria-label="Ver mi pedido">
+  <span class="fab-cart-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+  <span class="fab-cart-text"><span data-i18n="fab_text">VER MI PEDIDO</span> <strong id="fab-count">(0)</strong> <span class="fab-cart-sep">•</span> <strong id="fab-total">$0</strong></span>
+</button>
 
 <!-- HERO -->
 <section id="hero" class="hero">
@@ -318,9 +330,9 @@
   <div class="cart-backdrop"></div>
   <div id="cart-sidebar" class="cart-sidebar" onclick="event.stopPropagation()">
     <div class="cart-header">
-      <h2><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="cart_title">Carrito</span></h2>
-      <button onclick="toggleCart()" class="nav-btn" style="width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.03);">
-        <i class="fa-solid fa-xmark" style="font-size:var(--text-lg);"></i>
+      <h2><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="cart_title">Mi Carrito</span></h2>
+      <button onclick="toggleCart()" class="cart-close" aria-label="Cerrar carrito">
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
     <div id="cart-items" class="cart-items">
@@ -331,27 +343,41 @@
       </div>
     </div>
     <div class="cart-footer">
-      <div class="cart-total-row">
-        <span class="cart-total-label" data-i18n="cart_total">Total</span>
-        <span id="cart-total" class="cart-total-amount">$0</span>
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span class="cart-summary-label" data-i18n="cart_subtotal">Subtotal</span>
+          <span id="cart-subtotal" class="cart-summary-value">$0</span>
+        </div>
+        <div class="cart-summary-row">
+          <span class="cart-summary-label" data-i18n="cart_shipping">Envío</span>
+          <span id="cart-shipping" class="cart-summary-value">Incluido</span>
+        </div>
+        <div class="cart-summary-row cart-summary-total">
+          <span class="cart-summary-label" data-i18n="cart_total">TOTAL</span>
+          <span id="cart-total" class="cart-total-amount">$0 <small data-i18n="cart_currency">COP</small></span>
+        </div>
       </div>
       <div class="payment-tabs">
         <button onclick="switchPaymentTab('nequi',this)" class="payment-tab-btn active" data-method="nequi">Nequi</button>
       </div>
       <div id="tab-nequi" class="payment-panel">
         <div style="text-align:center;padding:var(--space-6) 0;">
-          <div style="font-size:3rem;margin-bottom:var(--space-4);color:rgba(198,161,91,0.5);">
-            <i class="fa-solid fa-mobile-screen-button"></i>
+          <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-nequi">
+            <i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="pay_nequi_btn">IR A PAGAR CON NEQUI</span>
+          </button>
+          <div id="nequi-status-msg" style="font-size:var(--text-sm);margin-bottom:var(--space-4);min-height:20px;"></div>
+          <div class="nequi-qr-area">
+            <p class="nequi-qr-title" data-i18n="pay_qr_title">Escanea para pagar con Nequi</p>
+            <div id="nequi-qr" class="nequi-qr-placeholder">
+              <i class="fa-solid fa-qrcode"></i>
+              <span data-i18n="pay_qr_placeholder">QR DE PAGO</span>
+            </div>
+            <p class="nequi-qr-hint" data-i18n="pay_qr_hint">Abre Nequi y escanea el código</p>
           </div>
-          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-3);">
-            Paga con Nequi — 0% comisión. Ingresa tu número y recibe la notificación en tu app.
+          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-xs);margin-bottom:var(--space-3);">
+            <span data-i18n="pay_nequi_account">Cuenta Nequi:</span> <strong style="color:var(--fg);">3216153977</strong>
           </p>
-          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-sm);margin-bottom:var(--space-5);">
-            Cuenta Nequi: <strong style="color:var(--text);">3216153977</strong>
-          </p>
-          <input type="tel" id="nequi-phone" placeholder="300 123 4567" class="form-input" style="width:100%;margin-bottom:var(--space-3);text-align:center;font-size:var(--text-lg);">
-          <div id="nequi-status-msg" style="font-size:var(--text-sm);margin-bottom:var(--space-3);min-height:20px;"></div>
-          <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-mp">Pagar con Nequi</button>
+          <input type="tel" id="nequi-phone" placeholder="300 123 4567" class="form-input" style="width:100%;margin-bottom:var(--space-4);text-align:center;font-size:var(--text-lg);">
         </div>
       </div>
       <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
@@ -432,7 +458,7 @@
   </div>
 </div>
 
-  <script src="/static/js/app.js?v=9"></script>
+  <script src="/static/js/app.js?v=10"></script>
 <script type="module" src="/static/whatsapp-widget/widget.js"></script>
 </body>
 </html>
