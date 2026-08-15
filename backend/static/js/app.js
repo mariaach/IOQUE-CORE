@@ -161,8 +161,8 @@
       }
       var nokey = !keyImg, nobreed = !realImg;
       var crossfade = !nokey && !nobreed ? 'crossfade' : '';
-      var frontSrc = (keyImg && keyImg.thumbnail) ? keyImg.thumbnail : (keyImg ? keyImg.url : (realImg && realImg.thumbnail ? realImg.thumbnail : (realImg ? realImg.url : '')));
-      var backSrc = (realImg && realImg.thumbnail) ? realImg.thumbnail : (realImg ? realImg.url : '');
+      var frontSrc = (realImg && realImg.thumbnail) ? realImg.thumbnail : (realImg ? realImg.url : (keyImg && keyImg.thumbnail ? keyImg.thumbnail : (keyImg ? keyImg.url : '')));
+      var backSrc = (keyImg && keyImg.thumbnail) ? keyImg.thumbnail : (keyImg ? keyImg.url : '');
       var name = p.name || 'Producto';
       var phrase = getPhrase(name, currentLang);
       var bg = getBg(name);

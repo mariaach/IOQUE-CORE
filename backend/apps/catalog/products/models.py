@@ -22,9 +22,7 @@ class Product(BaseModel):
         unique=True,
         verbose_name="SKU",
     )
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
+    price = models.PositiveIntegerField(
         default=0,
         verbose_name="precio",
     )
@@ -141,12 +139,19 @@ class ProductImage(models.Model):
         from django.core.exceptions import ValidationError
         super().clean()
         if self.image:
-            if self.image.size > self.MAX_UPLOAD_SIZE:
+            try:
+                size = self.image.size
+            except Exception:
+                size = None
+            if size and size > self.MAX_UPLOAD_SIZE:
                 raise ValidationError(
                     f"La imagen excede el tamaño máximo de "
                     f"{self.MAX_UPLOAD_SIZE // (1024 * 1024)} MB."
                 )
-            content_type = getattr(self.image.file, "content_type", None)
+            try:
+                content_type = getattr(self.image.file, "content_type", None)
+            except Exception:
+                content_type = None
             if content_type and content_type not in self.ALLOWED_CONTENT_TYPES:
                 raise ValidationError(
                     f"Tipo de archivo no permitido: {content_type}. "

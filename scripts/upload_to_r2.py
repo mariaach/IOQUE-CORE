@@ -146,6 +146,7 @@ def find_source_file(directory, name, slug):
     name_norm = normalize(name)
     slug_norm = normalize(slug)
 
+    matches = []
     for filename in os.listdir(directory):
         filepath = os.path.join(directory, filename)
         if not os.path.isfile(filepath):
@@ -155,17 +156,18 @@ def find_source_file(directory, name, slug):
 
         # Match exacto por slug o nombre
         if stem_norm == slug_norm or stem_norm == name_norm:
-            return filepath
-
-        # Match parcial: slug contenido en el filename
-        if slug_norm and slug_norm in stem_norm:
-            return filepath
+            matches.append(filepath)
+            continue
 
         # Match por nombre sin número prefijo (ej: "pug" en "1-pug")
         stem_clean = re.sub(r"^\d+-", "", stem_norm)
         if stem_clean == slug_norm or stem_clean == name_norm:
-            return filepath
+            matches.append(filepath)
 
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        print(f"  AMBIGUO: {name} ({slug}) coincide con {len(matches)} archivos: {matches}")
     return None
 
 

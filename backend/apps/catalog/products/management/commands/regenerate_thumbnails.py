@@ -32,7 +32,7 @@ class Command(BaseCommand):
         for img in queryset.iterator():
             for size_attr in ("image_thumbnail", "image_medium"):
                 try:
-                    getattr(img, size_attr).url
+                    getattr(img, size_attr).generate()
                     generated_or_ok += 1
                 except Exception as e:
                     errors += 1

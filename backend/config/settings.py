@@ -162,7 +162,10 @@ STORAGES = {
     },
 }
 
-IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.JustInTime"
+# Optimistic: genera la caché al guardar la imagen y no consulta el storage
+# al acceder a .url, evitando la generación perezosa (lenta) dentro del request.
+# Se debe pre-generar con regenerate_thumbnails tras importar productos.
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

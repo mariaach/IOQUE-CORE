@@ -1,7 +1,10 @@
 from django.contrib import admin
+from django.forms.models import BaseInlineFormSet
 from django.utils.html import format_html
 
+from .forms import ProductImageForm
 from .models import Product, ProductTranslation, ProductImage
+from .services import sync_image_from_source
 
 
 class ProductTranslationInline(admin.TabularInline):
@@ -11,8 +14,45 @@ class ProductTranslationInline(admin.TabularInline):
     fields = ["language", "name", "slug", "short_description", "story", "seo_title", "seo_description"]
 
 
+class ProductImageFormSet(BaseInlineFormSet):
+    def _apply_source(self, form, obj):
+        source = (form.cleaned_data.get("image") or "").strip()
+        if not source:
+            return
+        previous = obj.image.name
+        try:
+            sync_image_from_source(obj, source)
+        except Exception as exc:
+            form.add_error("image", str(exc))
+            obj.image = previous
+            if obj.pk:
+                obj.save(update_fields=["image"])
+
+    def save_new(self, form, commit=True):
+        obj = super().save_new(form, commit=False)
+        self._apply_source(form, obj)
+        if commit:
+            obj.save()
+        return obj
+
+    def save_existing(self, form, obj, commit=True):
+        if self.can_delete and self._should_delete_form(form):
+            return super().save_existing(form, obj, commit)
+        original = obj.image.name
+        result = super().save_existing(form, obj, commit)
+        source = (form.cleaned_data.get("image") or "").strip()
+        if source:
+            self._apply_source(form, obj)
+        elif not source and original:
+            obj.image = original
+            obj.save(update_fields=["image"])
+        return result
+
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
+    form = ProductImageForm
+    formset = ProductImageFormSet
     extra = 1
     fields = ["image", "type", "sort_order", "image_preview"]
     readonly_fields = ["image_preview"]

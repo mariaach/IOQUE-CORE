@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import csv
 import hashlib
 import io
 from typing import Dict, Optional, List, Tuple
@@ -166,10 +167,19 @@ class Command(BaseCommand):
         return stem.replace("_", "-").lower()
 
     def _find_list_file(self, image_dir: str) -> Optional[str]:
-        for f in os.listdir(image_dir):
-            if os.path.isfile(os.path.join(image_dir, f)):
-                if os.path.splitext(f)[0].lower().startswith("lista"):
-                    return os.path.join(image_dir, f)
+        # 1) Busca en el propio directorio de imágenes (ej: listaRelicarios.txt)
+        if os.path.isdir(image_dir):
+            for f in os.listdir(image_dir):
+                if os.path.isfile(os.path.join(image_dir, f)):
+                    if os.path.splitext(f)[0].lower().startswith("lista"):
+                        return os.path.join(image_dir, f)
+        # 2) Busca ListaMascotas.csv en el directorio padre (Recursos/)
+        parent = os.path.dirname(image_dir.rstrip("/"))
+        if os.path.isdir(parent):
+            for f in os.listdir(parent):
+                if os.path.isfile(os.path.join(parent, f)):
+                    if os.path.splitext(f)[0].lower().startswith("listamascotas"):
+                        return os.path.join(parent, f)
         return None
 
     def _parse_list_file(self, image_dir: str) -> Dict[int, dict]:
@@ -177,7 +187,7 @@ class Command(BaseCommand):
         list_path = self._find_list_file(image_dir)
         if not list_path:
             return entries
-        with open(list_path, encoding="utf-8") as fh:
+        with open(list_path, encoding="utf-8-sig") as fh:
             for line_no, raw in enumerate(fh, start=1):
                 line = raw.strip()
                 if not line or ";" not in line:
@@ -189,6 +199,28 @@ class Command(BaseCommand):
                     parts = parts[1:]
                 if not parts:
                     continue
+                if parts[0].lower() == "numero" or (parts[0].lower() in ("raza", "producto", "nombre") and len(parts) > 1 and parts[1].lower() in ("dificultad", "precio")):
+                    continue  # línea de cabecera del CSV
+
+                # Formato ListaMascotas.csv: raza;dificultad;precio_base;envio;precio_total;descripcion
+                if len(parts) >= 5 and parts[1].lower() in ("baja", "media", "alta"):
+                    name = parts[0]
+                    difficulty = parts[1]
+                    price_total = None
+                    total_match = re.search(r"(\d[\d.,]*)", parts[4])
+                    if total_match:
+                        parsed = re.sub(r"[^\d]", "", total_match.group(1))
+                        if parsed:
+                            price_total = int(parsed)
+                    desc = ";".join(parts[5:]).strip() or name
+                    entries.setdefault(index, {
+                        "price": price_total,
+                        "name": name,
+                        "description": desc,
+                        "difficulty": difficulty,
+                    })
+                    continue
+
                 price_part = parts[0]
                 desc = ";".join(parts[1:]).strip() if len(parts) > 1 else ""
                 if not desc:
