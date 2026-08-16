@@ -36,7 +36,7 @@ for i in range(30):
 
 echo ""
 echo "Creating migrations..."
-python manage.py makemigrations catalog_categories catalog_products contact --noinput
+python manage.py makemigrations catalog_categories catalog_products contact orders payments --noinput
 
 echo ""
 echo "Running migrations..."
@@ -60,8 +60,8 @@ python manage.py import_products
 python manage.py import_religion
 
 echo ""
-echo "Regenerating thumbnails..."
-python manage.py regenerate_thumbnails
+echo "Starting thumbnail regeneration in background..."
+( python manage.py regenerate_thumbnails ) > /app/gunicorn.log 2>&1 &
 
 echo ""
 echo "Seeding WhatsApp widget..."

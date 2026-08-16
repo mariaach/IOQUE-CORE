@@ -98,6 +98,70 @@ La gestión de datos se hace desde el panel de administración (`/admin/`).
 /api/products/?ordering=price,-created_at
 ```
 
+## Pedidos y Pagos con QR Nequi
+
+Flujo completo de compra: el cliente agrega productos al carrito, crea un pedido y paga escaneando un QR con Nequi.
+
+### Endpoints de pedidos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/orders/` | Crear pedido. Body: `{"items": [{"product_id": 1, "quantity": 2}], "idempotency_key": "..."}` |
+| GET | `/api/orders/{order_number}/payment/status/` | Consultar estado del pago |
+| POST | `/api/orders/{order_number}/payment/nequi/` | Generar QR de pago para el pedido |
+
+Seguridad de precios: el backend calcula siempre el subtotal, envío y total desde la base de datos (`Product.price`). El frontend solo envía `product_id` y `quantity`; nunca confía en el precio del navegador.
+
+Envío incluido: no se cobra envío adicional (`DEFAULT_SHIPPING_COST=0`). Si la cantidad total de productos supera `SHIPPING_DISCOUNT_THRESHOLD` (2), se descuenta `SHIPPING_DISCOUNT_PER_EXTRA` (15000 COP) del total por cada producto adicional.
+
+### Estados del pedido y del pago
+
+- **Order**: `PENDING_PAYMENT` → `PAYMENT_PROCESSING` → `PAID` · `PAYMENT_FAILED` · `PAYMENT_EXPIRED` · `CANCELLED` · `REFUNDED` · `COMPLETED`
+- **PaymentTransaction**: `CREATED` → `QR_GENERATED` → `PENDING` → `APPROVED` · `REJECTED` · `EXPIRED` · `CANCELLED` · `REVERSED` · `ERROR`
+
+El pedido y la transacción se crean en una única transacción de base de datos con validación de stock. Un doble clic en "pagar" devuelve la misma transacción (idempotencia).
+
+### Modos de pago Nequi
+
+| Variable | Valor | Descripción |
+|----------|-------|-------------|
+| `NEQUI_PAYMENT_MODE` | `static` | QR fijo del negocio (`NEQUI_STATIC_QR_URL`). Listo para producción sin credenciales. |
+| `NEQUI_PAYMENT_MODE` | `dynamic` | QR por transacción vía API oficial (requiere credenciales QA/sandbox). |
+
+- **Modo estático**: se muestra la imagen QR configurada en `NEQUI_STATIC_QR_URL`. No depende de la API de Nequi.
+- **Modo dinámico**: preparado en `NequiDynamicProvider`; requiere credenciales de `docs.conecta.nequi.com.co` (auth AWS-Sv4 + API Key) y pruebas en la app sandbox de Nequi.
+
+### Variables de entorno (`.env`)
+
+```
+NEQUI_ENABLED=True
+NEQUI_ENVIRONMENT=sandbox
+NEQUI_PAYMENT_MODE=static
+NEQUI_CLIENT_ID=...
+NEQUI_CLIENT_SECRET=...
+NEQUI_API_KEY=...
+NEQUI_MERCHANT_CODE=...
+NEQUI_AUTH_URI=https://oauth.sandbox.nequi.com/token
+NEQUI_API_BASE_PATH=https://api.sandbox.nequi.com/payments/v2
+NEQUI_NOTIFICATION_URL=https://tudominio.com/api/payments/nequi-webhook/
+NEQUI_STATIC_QR_URL=https://tudominio.com/media/qr-nequi.png
+NEQUI_BUSINESS_NAME=IO QUE Artesanías
+NEQUI_PAYMENT_EXPIRATION_MINUTES=15
+```
+
+### Confirmación del pago
+
+- **Polling**: el frontend consulta `payment/status/` cada 5s y se detiene en estados terminales (`APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`, `ERROR`). El frontend **nunca** confirma un pago: solo lee el estado.
+- **Webhook**: `POST /api/payments/nequi-webhook/` valida la referencia y actualiza el pedido; si la API no notifica, el polling con `getStatusPayment` es la fuente de verdad.
+
+### Tests
+
+```bash
+docker compose exec django python manage.py test apps.orders apps.payments --noinput
+```
+
+Cubren: creación de pedido, cálculo de totales desde BD, snapshot de OrderItems, idempotencia, validación de stock, QR estático, aprobado/rechazado/expirado, doble pago y seguridad del webhook.
+
 ## Estructura del Proyecto
 
 ```

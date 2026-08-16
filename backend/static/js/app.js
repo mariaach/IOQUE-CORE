@@ -177,7 +177,7 @@
         + '<div class="product-info">'
         + '<div class="product-header"><span class="product-name">' + name + '</span><span class="product-price">$' + (p.price || 0).toLocaleString('es-CO') + '</span></div>'
         + '<p class="product-phrase">"' + phrase + '"</p>'
-        + '<button onclick="addToCart(\'' + name.replace(/'/g,"\\'") + '\',' + (p.price || 0) + ',this,\'' + (frontSrc || '').replace(/'/g,"\\'") + '\',\'' + (p.category_name || '').replace(/'/g,"\\'") + '\')" class="btn-gold-border"><i class="fa-solid fa-plus"></i> ' + ({ es: 'Añadir', en: 'Add', pt: 'Adicionar', fr: 'Ajouter' }[currentLang] || 'Add') + '</button>'
+        + '<button onclick="addToCart(' + (p.id || 0) + ',\'' + name.replace(/'/g,"\\'") + '\',' + (p.price || 0) + ',this,\'' + (frontSrc || '').replace(/'/g,"\\'") + '\',\'' + (p.category_name || '').replace(/'/g,"\\'") + '\')" class="btn-gold-border"><i class="fa-solid fa-plus"></i> ' + ({ es: 'Añadir', en: 'Add', pt: 'Adicionar', fr: 'Ajouter' }[currentLang] || 'Add') + '</button>'
         + '</div></div>';
     });
     grid.innerHTML = html;
@@ -225,8 +225,20 @@
   });
 
   let cart = [];
+  let paymentState = null;
 
   const NEQUI_QR_IMAGE = ''; // Ruta/URL configurable del QR de pago. Ej: '/static/img/nequi-qr.png'
+
+  // Envío incluido en el precio del producto + descuento por productos adicionales (espejo del backend)
+  const SHIPPING_DISCOUNT_THRESHOLD = 2;
+  const SHIPPING_DISCOUNT_PER_EXTRA = 15000;
+
+  function getShippingDiscount(count) {
+    if (count > SHIPPING_DISCOUNT_THRESHOLD) {
+      return (count - SHIPPING_DISCOUNT_THRESHOLD) * SHIPPING_DISCOUNT_PER_EXTRA;
+    }
+    return 0;
+  }
 
   function toggleCart() {
     const o = document.getElementById('cart-overlay');
@@ -234,27 +246,27 @@
     o.classList.toggle('active');
     s.classList.toggle('active');
     document.body.style.overflow = o.classList.contains('active') ? 'hidden' : '';
-    if (o.classList.contains('active')) renderNequiQr();
   }
 
-  function renderNequiQr() {
+  function renderNequiQr(qrUrl) {
     const qr = document.getElementById('nequi-qr');
     if (!qr) return;
-    if (NEQUI_QR_IMAGE) {
-      qr.innerHTML = '<img src="' + NEQUI_QR_IMAGE + '" alt="QR de pago Nequi" class="nequi-qr-img">';
+    const src = qrUrl || NEQUI_QR_IMAGE;
+    if (src) {
+      qr.innerHTML = '<img src="' + src + '" alt="QR de pago Nequi" class="nequi-qr-img">';
       qr.classList.remove('nequi-qr-placeholder');
       qr.classList.add('nequi-qr-real');
     } else {
-      qr.innerHTML = '<i class="fa-solid fa-qrcode"></i><span>' + (translations[currentLang] && translations[currentLang].pay_qr_placeholder || 'QR DE PAGO') + '</span>';
+      qr.innerHTML = '<i class="fa-solid fa-qrcode"></i><span>' + ((translations[currentLang] && translations[currentLang].pay_qr_placeholder) || 'QR DE PAGO') + '</span>';
       qr.classList.add('nequi-qr-placeholder');
       qr.classList.remove('nequi-qr-real');
     }
   }
 
-  function addToCart(name, price, btn, img, type) {
+  function addToCart(productId, name, price, btn, img, type) {
     const existing = cart.find(i => i.name === name);
     if (existing) existing.qty += 1;
-    else cart.push({ name, price, qty: 1, img: img || '', type: type || '' });
+    else cart.push({ productId: productId || 0, name, price, qty: 1, img: img || '', type: type || '' });
     renderCart();
     showToast('✓ ' + name + (currentLang === 'es' ? ' añadido' : ' added'));
     animateCartBadge();
@@ -308,8 +320,11 @@
     const container = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const subtotalEl = document.getElementById('cart-subtotal');
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const count = cart.reduce((s, i) => s + i.qty, 0);
+    const discount = getShippingDiscount(count);
+    const shipping = 0;
+    const total = subtotal + shipping - discount;
     const navCount = document.getElementById('cart-count-nav');
     const navTotal = document.getElementById('cart-nav-total');
     const fabCount = document.getElementById('fab-count');
@@ -322,11 +337,16 @@
     if (fabBtn) fabBtn.classList.toggle('has-items', count > 0);
 
     const t = translations[currentLang];
+    const shippingLabel = t.cart_shipping_included || 'Incluido';
 
     if (cart.length === 0) {
       container.innerHTML = '<div class="cart-empty"><i class="fa-solid fa-bag-shopping"></i><p style="font-size:var(--text-base);">' + t.cart_empty + '</p><p style="font-size:var(--text-sm);margin-top:var(--space-2);">' + t.cart_empty_sub + '</p></div>';
       if (totalEl) totalEl.innerHTML = '$0';
       if (subtotalEl) subtotalEl.textContent = '$0';
+      const shippingEl = document.getElementById('cart-shipping');
+      if (shippingEl) shippingEl.textContent = shippingLabel;
+      const discRow = document.getElementById('cart-discount-row');
+      if (discRow) discRow.style.display = 'none';
       return;
     }
 
@@ -358,101 +378,185 @@
         + '</div>';
     });
     container.innerHTML = html;
-    if (subtotalEl) subtotalEl.textContent = formatCOP(total);
+    if (subtotalEl) subtotalEl.textContent = formatCOP(subtotal);
+    const shippingEl = document.getElementById('cart-shipping');
+    if (shippingEl) shippingEl.textContent = shippingLabel;
+    const discRow = document.getElementById('cart-discount-row');
+    const discEl = document.getElementById('cart-discount');
+    if (discount > 0) {
+      if (discRow) discRow.style.display = '';
+      if (discEl) discEl.textContent = '- ' + formatCOP(discount);
+    } else {
+      if (discRow) discRow.style.display = 'none';
+    }
     if (totalEl) totalEl.innerHTML = formatCOP(total) + ' <small>' + (t.cart_currency || 'COP') + '</small>';
   }
 
-  function switchPaymentTab(tab, btn) {
-    document.querySelectorAll('.payment-panel').forEach(el => el.style.display = 'none');
-    document.getElementById('tab-' + tab).style.display = '';
-    document.querySelectorAll('.payment-tab-btn').forEach(el => {
-      el.classList.remove('active');
-    });
-    if (btn) btn.classList.add('active');
+  function t(key, fallback) {
+    return (translations[currentLang] && translations[currentLang][key]) || fallback || '';
+  }
+
+  function setPaymentStep(step) {
+    const checkout = document.getElementById('pay-checkout');
+    const qrStep = document.getElementById('pay-qr-step');
+    const okStep = document.getElementById('pay-success-step');
+    const payBtn = document.getElementById('nequi-pay-btn');
+    if (step === 'qr') {
+      if (qrStep) qrStep.style.display = '';
+      if (okStep) okStep.style.display = 'none';
+      if (payBtn) payBtn.style.display = 'none';
+    } else if (step === 'success') {
+      if (qrStep) qrStep.style.display = 'none';
+      if (okStep) okStep.style.display = '';
+      if (payBtn) payBtn.style.display = 'none';
+    } else {
+      if (qrStep) qrStep.style.display = 'none';
+      if (okStep) okStep.style.display = 'none';
+      if (payBtn) payBtn.style.display = '';
+    }
+  }
+
+  function cancelPayment() {
+    stopPaymentPolling();
+    paymentState = null;
+    const statusLine = document.getElementById('pay-status-line');
+    if (statusLine) statusLine.style.display = 'none';
+    const qr = document.getElementById('nequi-qr');
+    if (qr) qr.innerHTML = '';
+    const statusMsg = document.getElementById('nequi-status-msg');
+    if (statusMsg) statusMsg.innerHTML = '';
+    setPaymentStep('default');
+    resetPayButton();
+  }
+
+  function resetPayButton() {
+    const payBtn = document.getElementById('nequi-pay-btn');
+    if (payBtn) {
+      payBtn.disabled = false;
+      payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> <span>' + t('pay_nequi_btn', 'IR A PAGAR CON NEQUI') + '</span>';
+    }
+  }
+
+  function stopPaymentPolling() {
+    if (paymentState && paymentState.poll) {
+      clearInterval(paymentState.poll);
+      paymentState.poll = null;
+    }
   }
 
   async function processPayment() {
     if (cart.length === 0) {
-      showToast(currentLang === 'es' ? 'Agrega productos al carrito' : 'Add products to cart');
+      showToast('❌ ' + t('cart_empty', 'Empty cart'));
       return;
     }
 
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    stopPaymentPolling();
 
-    const phoneInput = document.getElementById('nequi-phone');
-    const phone = phoneInput ? phoneInput.value.trim() : '';
     const statusMsg = document.getElementById('nequi-status-msg');
     const payBtn = document.getElementById('nequi-pay-btn');
-
-    if (!phone || phone.length < 7) {
-      showToast('❌ ' + (currentLang === 'es' ? 'Ingresa tu número de Nequi' : 'Enter your Nequi phone number'));
-      return;
-    }
+    const t0 = t('pay_creating', 'Generando tu pedido...');
 
     payBtn.disabled = true;
-    payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (currentLang === 'es' ? 'Enviando...' : 'Sending...');
-    if (statusMsg) statusMsg.textContent = '';
+    payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + t('pay_creating', 'Generando pedido...');
+    if (statusMsg) statusMsg.innerHTML = '<span style="color:var(--accent);">' + t0 + '</span>';
+    setPaymentStep('default');
+
+    const idempotencyKey = 'client-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
 
     try {
-      const res = await fetch('/api/payments/nequi-pay/', {
+      const orderRes = await fetch('/api/orders/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone_number: phone,
-          amount: total,
-          currency: 'COP',
-          cart_items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
+          items: cart.map(i => ({ product_id: i.productId, quantity: i.qty })),
+          idempotency_key: idempotencyKey,
         }),
       });
+      const orderData = await orderRes.json();
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Error al crear el pago');
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || t('pay_error', 'Error al crear el pedido'));
       }
 
-      if (statusMsg) {
-        statusMsg.innerHTML = '<span style="color:#22c55e;">✓ ' + (currentLang === 'es' ? 'Revisa tu app de Nequi y aprueba el pago' : 'Check your Nequi app and approve the payment') + '</span>';
+      const orderNumber = orderData.order_number;
+
+      const qrRes = await fetch('/api/orders/' + orderNumber + '/payment/nequi/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const qrData = await qrRes.json();
+
+      if (!qrRes.ok) {
+        throw new Error(qrData.error || t('pay_error_qr', 'No fue posible generar el pago'));
       }
 
-      const paymentId = data.payment_id;
-      const maxAttempts = 30;
-      let attempts = 0;
+      setPaymentStep('qr');
+      renderNequiQr(qrData.qr_code || '');
+      if (statusMsg) statusMsg.innerHTML = '';
 
-      const poll = setInterval(async () => {
-        attempts++;
-        try {
-          const sr = await fetch('/api/payments/nequi-status/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ payment_id: paymentId }),
-          });
-          const sd = await sr.json();
-          if (sd.status === 'succeeded') {
-            clearInterval(poll);
-            showToast('✅ ' + (currentLang === 'es' ? 'Pagado: $' : 'Paid: $') + total.toLocaleString('es-CO'));
-            cart = [];
-            renderCart();
-            animateCartBadge();
-            setTimeout(() => toggleCart(), 1500);
-          } else if (sd.status === 'failed' || sd.status === 'canceled') {
-            clearInterval(poll);
-            showToast('❌ ' + (currentLang === 'es' ? 'Pago rechazado' : 'Payment rejected'));
-          }
-        } catch (e) {
-          // continue polling
-        }
-        if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          showToast('⏱️ ' + (currentLang === 'es' ? 'Tiempo de espera agotado' : 'Timeout'));
-        }
-      }, 3000);
-    } catch (e) {
-      showToast('❌ ' + e.message);
-    } finally {
-      payBtn.disabled = false;
-      payBtn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> <span>' + (translations[currentLang].pay_nequi_btn || 'IR A PAGAR CON NEQUI') + '</span>';
+      paymentState = { orderNumber: orderNumber, poll: null, attempts: 0 };
+      pollPaymentStatus(orderNumber);
+     } catch (e) {
+      if (statusMsg) statusMsg.innerHTML = '<span style="color:#ef4444;">❌ ' + e.message + '</span>';
+      setPaymentStep('default');
+      resetPayButton();
     }
+  }
+
+  function pollPaymentStatus(orderNumber) {
+    const statusLine = document.getElementById('pay-status-line');
+    const statusMsg = document.getElementById('nequi-status-msg');
+
+    paymentState.attempts = 0;
+    paymentState.poll = setInterval(async () => {
+      paymentState.attempts++;
+      try {
+        const res = await fetch('/api/orders/' + orderNumber + '/payment/status/');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error de estado');
+
+        const payStatus = data.payment_status;
+        const terminal = ['APPROVED', 'REJECTED', 'EXPIRED', 'CANCELLED', 'ERROR', 'REVERSED'];
+
+        if (payStatus === 'APPROVED') {
+          stopPaymentPolling();
+          setPaymentStep('success');
+          const orderEl = document.getElementById('pay-success-order');
+          if (orderEl) orderEl.textContent = t('pay_order_label', 'Pedido') + ' #' + data.order_number;
+          showToast('✅ ' + t('pay_paid', 'Pago confirmado'));
+          cart = [];
+          renderCart();
+          animateCartBadge();
+          return;
+        }
+
+        if (terminal.indexOf(payStatus) !== -1) {
+          stopPaymentPolling();
+          if (statusMsg) {
+            let msg;
+            if (payStatus === 'EXPIRED') msg = '⏱️ ' + t('pay_expired', 'El pago expiró, intenta de nuevo');
+            else if (payStatus === 'ERROR' || payStatus === 'REVERSED') msg = '❌ ' + t('pay_error_final', 'Error en el pago');
+            else msg = '❌ ' + t('pay_rejected', 'Pago rechazado');
+            statusMsg.innerHTML = '<span style="color:#ef4444;">' + msg + '</span>';
+          }
+          setPaymentStep('default');
+          resetPayButton();
+          return;
+        }
+
+        if (statusLine) statusLine.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + t('pay_waiting', 'Esperando confirmación del pago...');
+      } catch (e) {
+        // continue polling
+      }
+
+      if (paymentState.attempts >= 60) {
+        stopPaymentPolling();
+        paymentState = null;
+        if (statusLine) statusLine.innerHTML = '<i class="fa-solid fa-clock"></i> ' + t('pay_timeout', 'El tiempo de espera se agotó');
+        setPaymentStep('default');
+        resetPayButton();
+      }
+    }, 5000);
   }
 
   function openStory(id) {
@@ -650,12 +754,19 @@
       historias_label: '// 003', historias_title: 'Leyendas <span style="color:var(--accent);">con patas</span>',
       historias_desc: 'Perros que cambiaron el mundo. Uno a su manera.',
       cart_title: 'Mi Carrito', cart_empty: 'Vacío', cart_empty_sub: 'Agrega productos del catálogo',
-      cart_subtotal: 'Subtotal', cart_shipping: 'Envío', cart_currency: 'COP',
-      cart_total: 'TOTAL',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Envío', cart_shipping_included: 'Incluido', cart_currency: 'COP',
+      cart_total: 'TOTAL', cart_discount: 'Descuento',
       nav_cart: 'Carrito', fab_text: 'VER MI PEDIDO',
       pay_nequi_btn: 'IR A PAGAR CON NEQUI',
       pay_qr_title: 'Escanea para pagar con Nequi', pay_qr_placeholder: 'QR DE PAGO', pay_qr_hint: 'Abre Nequi y escanea el código',
+      pay_cancel: 'Cancelar y seguir comprando',
       pay_nequi_account: 'Cuenta Nequi:',
+      pay_creating: 'Generando tu pedido...', pay_error: 'Error al crear el pedido', pay_error_qr: 'No fue posible generar el pago', pay_error_final: 'Error en el pago',
+      pay_step_order: 'Tu pedido', pay_step_scan: 'Escanea', pay_step_done: 'Confirmación',
+      pay_waiting: 'Esperando confirmación del pago...', pay_timeout: 'El tiempo de espera se agotó',
+      pay_paid: 'Pago confirmado', pay_rejected: 'Pago rechazado', pay_expired: 'El pago expiró, intenta de nuevo',
+      pay_success: '¡Pago confirmado!', pay_success_text: 'Gracias por comprar en IO QUE Artesanías.',
+      pay_order_label: 'Pedido',
       pay_mp_text: 'Elige tu método de pago.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pago seguro',
       footer_desc: 'Artesanía en cuero. Hecho a mano desde Colombia.',
@@ -684,12 +795,19 @@
       historias_label: '// 003', historias_title: 'Legends <span style="color:var(--accent);">on paws</span>',
       historias_desc: 'Dogs that changed the world. Each in their own way.',
       cart_title: 'My Cart', cart_empty: 'Empty', cart_empty_sub: 'Add products from the catalog',
-      cart_subtotal: 'Subtotal', cart_shipping: 'Shipping', cart_currency: 'COP',
-      cart_total: 'TOTAL',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Shipping', cart_shipping_included: 'Included', cart_currency: 'COP',
+      cart_total: 'TOTAL', cart_discount: 'Discount',
       nav_cart: 'Cart', fab_text: 'VIEW MY ORDER',
       pay_nequi_btn: 'PAY WITH NEQUI',
       pay_qr_title: 'Scan to pay with Nequi', pay_qr_placeholder: 'PAYMENT QR', pay_qr_hint: 'Open Nequi and scan the code',
+      pay_cancel: 'Cancel and keep shopping',
       pay_nequi_account: 'Nequi account:',
+      pay_creating: 'Generating your order...', pay_error: 'Error creating the order', pay_error_qr: 'Could not generate the payment', pay_error_final: 'Payment error',
+      pay_step_order: 'Your order', pay_step_scan: 'Scan', pay_step_done: 'Confirmation',
+      pay_waiting: 'Waiting for payment confirmation...', pay_timeout: 'The wait timed out',
+      pay_paid: 'Payment confirmed', pay_rejected: 'Payment rejected', pay_expired: 'Payment expired, try again',
+      pay_success: 'Payment confirmed!', pay_success_text: 'Thank you for shopping at IO QUE Artesanías.',
+      pay_order_label: 'Order',
       pay_mp_text: 'Choose your payment method.', pay_mp_btn: 'Pay',
       pay_secure: 'Secure payment',
       footer_desc: 'Leather craftsmanship. Handmade from Colombia.',
@@ -718,12 +836,19 @@
       historias_label: '// 003', historias_title: 'Lendas <span style="color:var(--accent);">de patas</span>',
       historias_desc: 'Cães que mudaram o mundo. Cada um à sua maneira.',
       cart_title: 'Meu Carrinho', cart_empty: 'Vazio', cart_empty_sub: 'Adicione produtos do catálogo',
-      cart_subtotal: 'Subtotal', cart_shipping: 'Envio', cart_currency: 'COP',
-      cart_total: 'TOTAL',
+      cart_subtotal: 'Subtotal', cart_shipping: 'Envio', cart_shipping_included: 'Incluído', cart_currency: 'COP',
+      cart_total: 'TOTAL', cart_discount: 'Desconto',
       nav_cart: 'Carrinho', fab_text: 'VER MEU PEDIDO',
       pay_nequi_btn: 'IR PAGAR COM NEQUI',
       pay_qr_title: 'Escaneie para pagar com Nequi', pay_qr_placeholder: 'QR DE PAGAMENTO', pay_qr_hint: 'Abra o Nequi e escaneie o código',
+      pay_cancel: 'Cancelar e continuar comprando',
       pay_nequi_account: 'Conta Nequi:',
+      pay_creating: 'Gerando seu pedido...', pay_error: 'Erro ao criar o pedido', pay_error_qr: 'Não foi possível gerar o pagamento', pay_error_final: 'Erro no pagamento',
+      pay_step_order: 'Seu pedido', pay_step_scan: 'Escaneie', pay_step_done: 'Confirmação',
+      pay_waiting: 'Aguardando confirmação do pagamento...', pay_timeout: 'O tempo de espera esgotou',
+      pay_paid: 'Pagamento confirmado', pay_rejected: 'Pagamento rejeitado', pay_expired: 'Pagamento expirado, tente novamente',
+      pay_success: 'Pagamento confirmado!', pay_success_text: 'Obrigado por comprar na IO QUE Artesanías.',
+      pay_order_label: 'Pedido',
       pay_mp_text: 'Escolha seu método de pagamento.', pay_mp_btn: 'Pagar',
       pay_secure: 'Pagamento seguro',
       footer_desc: 'Artesanato em couro. Feito à mão desde a Colômbia.',
@@ -752,12 +877,19 @@
       historias_label: '// 003', historias_title: 'Légendes <span style="color:var(--accent);">à pattes</span>',
       historias_desc: 'Des chiens qui ont changé le monde. Chacun à sa manière.',
       cart_title: 'Mon Panier', cart_empty: 'Vide', cart_empty_sub: 'Ajoutez des produits du catalogue',
-      cart_subtotal: 'Sous-total', cart_shipping: 'Livraison', cart_currency: 'COP',
-      cart_total: 'TOTAL',
+      cart_subtotal: 'Sous-total', cart_shipping: 'Livraison', cart_shipping_included: 'Incluse', cart_currency: 'COP',
+      cart_total: 'TOTAL', cart_discount: 'Remise',
       nav_cart: 'Panier', fab_text: 'VOIR MA COMMANDE',
       pay_nequi_btn: 'PAYER AVEC NEQUI',
       pay_qr_title: 'Scannez pour payer avec Nequi', pay_qr_placeholder: 'QR DE PAIEMENT', pay_qr_hint: 'Ouvrez Nequi et scannez le code',
+      pay_cancel: 'Annuler et continuer les achats',
       pay_nequi_account: 'Compte Nequi :',
+      pay_creating: 'Génération de votre commande...', pay_error: 'Erreur lors de la création de la commande', pay_error_qr: 'Impossible de générer le paiement', pay_error_final: 'Erreur de paiement',
+      pay_step_order: 'Votre commande', pay_step_scan: 'Scannez', pay_step_done: 'Confirmation',
+      pay_waiting: 'En attente de confirmation du paiement...', pay_timeout: 'Le délai d\'attente est dépassé',
+      pay_paid: 'Paiement confirmé', pay_rejected: 'Paiement refusé', pay_expired: 'Paiement expiré, réessayez',
+      pay_success: 'Paiement confirmé !', pay_success_text: 'Merci d\'avoir acheté chez IO QUE Artesanías.',
+      pay_order_label: 'Commande',
       pay_mp_text: 'Choisissez votre méthode de paiement.', pay_mp_btn: 'Payer',
       pay_secure: 'Paiement sécurisé',
       footer_desc: 'Artisanat du cuir. Fait à la main depuis la Colombie.',

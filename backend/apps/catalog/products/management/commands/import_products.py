@@ -428,7 +428,7 @@ class Command(BaseCommand):
 
         if not price:
             price_points = [27000, 27500, 28000, 28500, 29000]
-            price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)
+            price_idx = hashlib.sha256(stem.encode()).digest()[0] % len(price_points)
             price = price_points[price_idx]
 
         product = Product.objects.create(

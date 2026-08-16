@@ -4,6 +4,7 @@ import io
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from PIL import Image
+import logging
 
 from apps.catalog.products.models import Product, ProductImage
 
@@ -53,12 +54,12 @@ class Command(BaseCommand):
 
                 try:
                     img.image_thumbnail.url
-                except Exception:
-                    pass
+                except Exception as e:
+                    logging.warning('URL retrieval failed')
                 try:
                     img.image_medium.url
-                except Exception:
-                    pass
+                except Exception as e:
+                    logging.warning('URL retrieval failed')
 
                 created_count += 1
                 self.stdout.write(

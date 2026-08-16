@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.api",
     "apps.contact",
     "apps.payments",
+    "apps.orders",
 ]
 
 MIDDLEWARE = [
@@ -229,6 +230,18 @@ NEQUI_MERCHANT_CODE = os.getenv("NEQUI_MERCHANT_CODE", "")
 NEQUI_AUTH_URI = os.getenv("NEQUI_AUTH_URI", "https://oauth.sandbox.nequi.com/token")
 NEQUI_API_BASE_PATH = os.getenv("NEQUI_API_BASE_PATH", "https://api.sandbox.nequi.com/payments/v2")
 NEQUI_NOTIFICATION_URL = os.getenv("NEQUI_NOTIFICATION_URL", "")
+
+# Pagos con QR Nequi
+NEQUI_ENABLED = os.getenv("NEQUI_ENABLED", "True").lower() in ("true", "1", "yes")
+NEQUI_ENVIRONMENT = os.getenv("NEQUI_ENVIRONMENT", "sandbox")
+NEQUI_PAYMENT_MODE = os.getenv("NEQUI_PAYMENT_MODE", "static")
+NEQUI_MERCHANT_PHONE = os.getenv("NEQUI_MERCHANT_PHONE", "3216153977")
+NEQUI_STATIC_QR_URL = os.getenv("NEQUI_STATIC_QR_URL", "")
+NEQUI_BUSINESS_NAME = os.getenv("NEQUI_BUSINESS_NAME", "IO QUE Artesanías")
+NEQUI_PAYMENT_EXPIRATION_MINUTES = int(os.getenv("NEQUI_PAYMENT_EXPIRATION_MINUTES", "15"))
+DEFAULT_SHIPPING_COST = int(os.getenv("DEFAULT_SHIPPING_COST", "0"))
+SHIPPING_DISCOUNT_THRESHOLD = int(os.getenv("SHIPPING_DISCOUNT_THRESHOLD", "2"))
+SHIPPING_DISCOUNT_PER_EXTRA = int(os.getenv("SHIPPING_DISCOUNT_PER_EXTRA", "15000"))
 
 LOGGING = {
     "version": 1,

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
-  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="stylesheet" href="/static/css/style.css?v=11">
 </head>
 <body>
 
@@ -352,20 +352,21 @@
           <span class="cart-summary-label" data-i18n="cart_shipping">Envío</span>
           <span id="cart-shipping" class="cart-summary-value">Incluido</span>
         </div>
+        <div class="cart-summary-row" id="cart-discount-row" style="display:none;">
+          <span class="cart-summary-label cart-summary-discount" data-i18n="cart_discount">Descuento</span>
+          <span id="cart-discount" class="cart-summary-value cart-summary-discount-value"></span>
+        </div>
         <div class="cart-summary-row cart-summary-total">
           <span class="cart-summary-label" data-i18n="cart_total">TOTAL</span>
           <span id="cart-total" class="cart-total-amount">$0 <small data-i18n="cart_currency">COP</small></span>
         </div>
       </div>
-      <div class="payment-tabs">
-        <button onclick="switchPaymentTab('nequi',this)" class="payment-tab-btn active" data-method="nequi">Nequi</button>
-      </div>
-      <div id="tab-nequi" class="payment-panel">
-        <div style="text-align:center;padding:var(--space-6) 0;">
-          <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-nequi">
-            <i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="pay_nequi_btn">IR A PAGAR CON NEQUI</span>
-          </button>
-          <div id="nequi-status-msg" style="font-size:var(--text-sm);margin-bottom:var(--space-4);min-height:20px;"></div>
+      <div id="pay-checkout" class="pay-checkout">
+        <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-nequi">
+          <i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="pay_nequi_btn">IR A PAGAR CON NEQUI</span>
+        </button>
+        <div id="nequi-status-msg" class="nequi-status-msg"></div>
+        <div id="pay-qr-step" class="pay-qr-step" style="display:none;">
           <div class="nequi-qr-area">
             <p class="nequi-qr-title" data-i18n="pay_qr_title">Escanea para pagar con Nequi</p>
             <div id="nequi-qr" class="nequi-qr-placeholder">
@@ -374,13 +375,31 @@
             </div>
             <p class="nequi-qr-hint" data-i18n="pay_qr_hint">Abre Nequi y escanea el código</p>
           </div>
-          <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-xs);margin-bottom:var(--space-3);">
-            <span data-i18n="pay_nequi_account">Cuenta Nequi:</span> <strong style="color:var(--fg);">3216153977</strong>
-          </p>
-          <input type="tel" id="nequi-phone" placeholder="300 123 4567" class="form-input" style="width:100%;margin-bottom:var(--space-4);text-align:center;font-size:var(--text-lg);">
+          <div class="nequi-qr-actions">
+            <button type="button" class="btn-cancel-payment" onclick="cancelPayment()" tabindex="0">
+              <i class="fa-solid fa-xmark"></i> <span data-i18n="pay_cancel">Cancelar y seguir comprando</span>
+            </button>
+          </div>
+          <p class="pay-account" data-i18n="pay_nequi_account">Cuenta Nequi: <strong>3216153977</strong></p>
+          <div class="pay-progress">
+            <div class="pay-progress-item active"><i class="fa-solid fa-bag-shopping"></i><span data-i18n="pay_step_order">Tu pedido</span></div>
+            <div class="pay-progress-line"></div>
+            <div class="pay-progress-item active"><i class="fa-solid fa-qrcode"></i><span data-i18n="pay_step_scan">Escanea</span></div>
+            <div class="pay-progress-line"></div>
+            <div class="pay-progress-item"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay_step_done">Confirmación</span></div>
+          </div>
+          <div class="pay-status-line" id="pay-status-line">
+            <i class="fa-solid fa-spinner fa-spin"></i> <span data-i18n="pay_waiting">Esperando confirmación del pago...</span>
+          </div>
         </div>
+        <div id="pay-success-step" class="pay-success-step" style="display:none;">
+          <div class="pay-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <h3 class="pay-success-title" data-i18n="pay_success">¡Pago confirmado!</h3>
+          <p class="pay-success-order" id="pay-success-order"></p>
+          <p class="pay-success-text" data-i18n="pay_success_text">Gracias por comprar en IO QUE Artesanías.</p>
+        </div>
+        <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
       </div>
-      <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
     </div>
   </div>
 </div>
@@ -458,7 +477,7 @@
   </div>
 </div>
 
-  <script src="/static/js/app.js?v=10"></script>
+  <script src="/static/js/app.js?v=14"></script>
 <script type="module" src="/static/whatsapp-widget/widget.js"></script>
 </body>
 </html>
