@@ -775,21 +775,21 @@
 
     /* NEQUI QR AREA */
     .nequi-qr-area {
-      margin: 0 0 var(--space-3); padding: var(--space-5);
+      margin: 0 0 var(--space-2); padding: var(--space-4);
       border-radius: var(--radius-md);
       background: rgba(255,255,255,0.015); border: 1px dashed rgba(212,175,55,0.35);
       text-align: center;
     }
-    .nequi-qr-title { font-family: var(--font-body); font-size: var(--text-xs); color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: var(--space-4); }
+    .nequi-qr-title { font-family: var(--font-body); font-size: var(--text-xs); color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: var(--space-3); }
     .nequi-qr-placeholder {
-      width: 176px; height: 176px; margin: 0 auto var(--space-4);
+      width: 264px; height: 264px; margin: 0 auto var(--space-3);
       border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-3);
       background: #fff; color: #0A0A0A;
       font-family: var(--font-body); font-weight: 700; font-size: var(--text-xs); letter-spacing: 0.1em;
       border: 1px solid rgba(0,0,0,0.1);
     }
     .nequi-qr-placeholder i { font-size: 40px; color: #111; opacity: 0.5; }
-    .nequi-qr-real img { width: 176px; height: 176px; object-fit: contain; display: block; margin: 0 auto var(--space-4); border-radius: var(--radius-md); }
+    .nequi-qr-real img { width: 264px; height: 264px; object-fit: contain; display: block; margin: 0 auto var(--space-3); border-radius: var(--radius-md); }
     .nequi-qr-hint { font-family: var(--font-body); font-size: var(--text-xs); color: var(--muted); }
     .pay-account { font-family: var(--font-body); color: var(--muted); font-size: var(--text-xs); text-align: center; margin-bottom: var(--space-3); }
     .pay-account strong { color: var(--fg); }
@@ -816,7 +816,7 @@
 
     .cart-security { text-align: center; font-size: var(--text-xs); color: rgba(255,248,234,0.15); margin-top: var(--space-3); font-family: var(--font-body); }
 
-    .nequi-qr-actions { text-align: center; margin-top: var(--space-3); }
+    .nequi-qr-actions { text-align: center; margin-top: var(--space-2); }
     .btn-cancel-payment {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       padding: var(--space-2) var(--space-6);
@@ -828,7 +828,7 @@
     .btn-cancel-payment:hover { color: var(--accent-on); background: var(--accent); border-color: var(--accent); }
     .btn-cancel-payment i { font-size: 14px; }
 
-    .nequi-qr-wa { text-align: center; margin-top: var(--space-3); }
+    .nequi-qr-wa { text-align: center; margin-top: var(--space-2); }
     .btn-pay-whatsapp {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       width: 100%; max-width: 360px;
