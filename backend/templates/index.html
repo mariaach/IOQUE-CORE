@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
-  <link rel="stylesheet" href="/static/css/style.css?v=11">
+  <link rel="stylesheet" href="/static/css/style.css?v=12">
 </head>
 <body>
 
@@ -375,6 +375,12 @@
             </div>
             <p class="nequi-qr-hint" data-i18n="pay_qr_hint">Abre Nequi y escanea el código</p>
           </div>
+          <div class="nequi-qr-wa">
+            <button type="button" class="btn-pay-whatsapp" onclick="sendOrderWhatsApp()" tabindex="0">
+              <i class="fa-brands fa-whatsapp"></i> <span data-i18n="pay_whatsapp_btn">Ya pagué · Enviar pedido por WhatsApp</span>
+            </button>
+            <p class="nequi-qr-wa-hint" data-i18n="pay_whatsapp_hint">Te enviamos el carrito y el comprobante de tu pago</p>
+          </div>
           <div class="nequi-qr-actions">
             <button type="button" class="btn-cancel-payment" onclick="cancelPayment()" tabindex="0">
               <i class="fa-solid fa-xmark"></i> <span data-i18n="pay_cancel">Cancelar y seguir comprando</span>
@@ -477,7 +483,7 @@
   </div>
 </div>
 
-  <script src="/static/js/app.js?v=14"></script>
+  <script src="/static/js/app.js?v=16"></script>
 <script type="module" src="/static/whatsapp-widget/widget.js"></script>
 </body>
 </html>

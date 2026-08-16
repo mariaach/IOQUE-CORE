@@ -227,7 +227,7 @@
   let cart = [];
   let paymentState = null;
 
-  const NEQUI_QR_IMAGE = ''; // Ruta/URL configurable del QR de pago. Ej: '/static/img/nequi-qr.png'
+  const NEQUI_QR_IMAGE = '/static/img/qr-ioque.png'; // QR de pago Nequi del negocio
 
   // Envío incluido en el precio del producto + descuento por productos adicionales (espejo del backend)
   const SHIPPING_DISCOUNT_THRESHOLD = 2;
@@ -427,6 +427,59 @@
     if (statusMsg) statusMsg.innerHTML = '';
     setPaymentStep('default');
     resetPayButton();
+  }
+
+  const WHATSAPP_NUMBER = '573177695006'; // WhatsApp del negocio (con código de país)
+
+  function sendOrderWhatsApp() {
+    if (!paymentState || !paymentState.orderNumber) {
+      showToast('❌ ' + t('pay_wa_no_order', 'Primero genera tu pedido'));
+      return;
+    }
+    const orderNumber = paymentState.orderNumber;
+    const subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+    const count = cart.reduce(function(s, i) { return s + i.qty; }, 0);
+    const discount = getShippingDiscount(count);
+    const total = subtotal - discount;
+    const now = new Date();
+
+    const lines = [];
+    lines.push('*Hola IOQUE!* 👋');
+    lines.push('');
+    lines.push('He realizado un pago y quiero confirmar mi pedido:');
+    lines.push('');
+    lines.push('*🛒 MI CARRITO*');
+    cart.forEach(function(i) {
+      lines.push('• ' + i.name + ' x' + i.qty + ' — ' + formatCOP(i.price * i.qty));
+    });
+    lines.push('');
+    lines.push('*Subtotal:* ' + formatCOP(subtotal));
+    lines.push('*Envío:* Incluido');
+    if (discount > 0) lines.push('*Descuento:* -' + formatCOP(discount));
+    lines.push('*TOTAL:* ' + formatCOP(total));
+    lines.push('');
+    lines.push('*🧾 COMPROBANTE DE PAGO*');
+    lines.push('Pedido: ' + orderNumber);
+    lines.push('Pago: Nequi ✓');
+    lines.push('Monto pagado: ' + formatCOP(total));
+    lines.push('Cuenta: 3216153977');
+    lines.push('Fecha: ' + now.toLocaleString());
+    lines.push('');
+    lines.push('Por favor confírmenme mi pedido. ¡Gracias!');
+
+    const text = lines.join('\n');
+    const url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+
+    stopPaymentPolling();
+    paymentState = null;
+    cart = [];
+    renderCart();
+    animateCartBadge();
+    setPaymentStep('success');
+    const orderEl = document.getElementById('pay-success-order');
+    if (orderEl) orderEl.textContent = t('pay_order_label', 'Pedido') + ' #' + orderNumber;
+    showToast('✅ ' + t('pay_wa_sent', 'Pedido enviado por WhatsApp'));
   }
 
   function resetPayButton() {
@@ -760,6 +813,8 @@
       pay_nequi_btn: 'IR A PAGAR CON NEQUI',
       pay_qr_title: 'Escanea para pagar con Nequi', pay_qr_placeholder: 'QR DE PAGO', pay_qr_hint: 'Abre Nequi y escanea el código',
       pay_cancel: 'Cancelar y seguir comprando',
+      pay_whatsapp_btn: 'Ya pagué · Enviar pedido por WhatsApp', pay_whatsapp_hint: 'Te enviamos el carrito y el comprobante de tu pago',
+      pay_wa_sent: 'Pedido enviado por WhatsApp', pay_wa_no_order: 'Primero genera tu pedido',
       pay_nequi_account: 'Cuenta Nequi:',
       pay_creating: 'Generando tu pedido...', pay_error: 'Error al crear el pedido', pay_error_qr: 'No fue posible generar el pago', pay_error_final: 'Error en el pago',
       pay_step_order: 'Tu pedido', pay_step_scan: 'Escanea', pay_step_done: 'Confirmación',
@@ -801,6 +856,8 @@
       pay_nequi_btn: 'PAY WITH NEQUI',
       pay_qr_title: 'Scan to pay with Nequi', pay_qr_placeholder: 'PAYMENT QR', pay_qr_hint: 'Open Nequi and scan the code',
       pay_cancel: 'Cancel and keep shopping',
+      pay_whatsapp_btn: 'I paid · Send order via WhatsApp', pay_whatsapp_hint: 'We send your cart and payment receipt',
+      pay_wa_sent: 'Order sent via WhatsApp', pay_wa_no_order: 'Create your order first',
       pay_nequi_account: 'Nequi account:',
       pay_creating: 'Generating your order...', pay_error: 'Error creating the order', pay_error_qr: 'Could not generate the payment', pay_error_final: 'Payment error',
       pay_step_order: 'Your order', pay_step_scan: 'Scan', pay_step_done: 'Confirmation',
@@ -842,6 +899,8 @@
       pay_nequi_btn: 'IR PAGAR COM NEQUI',
       pay_qr_title: 'Escaneie para pagar com Nequi', pay_qr_placeholder: 'QR DE PAGAMENTO', pay_qr_hint: 'Abra o Nequi e escaneie o código',
       pay_cancel: 'Cancelar e continuar comprando',
+      pay_whatsapp_btn: 'Paguei · Enviar pedido pelo WhatsApp', pay_whatsapp_hint: 'Enviamos seu carrinho e o comprovante do pagamento',
+      pay_wa_sent: 'Pedido enviado pelo WhatsApp', pay_wa_no_order: 'Primeiro gere seu pedido',
       pay_nequi_account: 'Conta Nequi:',
       pay_creating: 'Gerando seu pedido...', pay_error: 'Erro ao criar o pedido', pay_error_qr: 'Não foi possível gerar o pagamento', pay_error_final: 'Erro no pagamento',
       pay_step_order: 'Seu pedido', pay_step_scan: 'Escaneie', pay_step_done: 'Confirmação',
@@ -883,6 +942,8 @@
       pay_nequi_btn: 'PAYER AVEC NEQUI',
       pay_qr_title: 'Scannez pour payer avec Nequi', pay_qr_placeholder: 'QR DE PAIEMENT', pay_qr_hint: 'Ouvrez Nequi et scannez le code',
       pay_cancel: 'Annuler et continuer les achats',
+      pay_whatsapp_btn: "J'ai payé · Envoyer la commande par WhatsApp", pay_whatsapp_hint: 'Nous envoyons votre panier et le reçu de paiement',
+      pay_wa_sent: 'Commande envoyée par WhatsApp', pay_wa_no_order: 'Créez d\u0027abord votre commande',
       pay_nequi_account: 'Compte Nequi :',
       pay_creating: 'Génération de votre commande...', pay_error: 'Erreur lors de la création de la commande', pay_error_qr: 'Impossible de générer le paiement', pay_error_final: 'Erreur de paiement',
       pay_step_order: 'Votre commande', pay_step_scan: 'Scannez', pay_step_done: 'Confirmation',

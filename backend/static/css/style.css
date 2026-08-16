@@ -828,6 +828,20 @@
     .btn-cancel-payment:hover { color: var(--accent-on); background: var(--accent); border-color: var(--accent); }
     .btn-cancel-payment i { font-size: 14px; }
 
+    .nequi-qr-wa { text-align: center; margin-top: var(--space-3); }
+    .btn-pay-whatsapp {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; max-width: 360px;
+      padding: var(--space-3) var(--space-6);
+      border: none; border-radius: var(--radius-md);
+      font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700;
+      color: #fff; background: linear-gradient(135deg, #25D366, #128C7E);
+      cursor: pointer; transition: all 0.15s ease; box-shadow: 0 4px 18px rgba(37, 211, 102, 0.35);
+    }
+    .btn-pay-whatsapp:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .btn-pay-whatsapp i { font-size: 18px; }
+    .nequi-qr-wa-hint { font-family: var(--font-body); font-size: var(--text-xs); color: var(--muted); margin-top: var(--space-2); }
+
     /* GALLERY LIGHTBOX */
     .lightbox-overlay {
       position: fixed; inset: 0; z-index: 80;
