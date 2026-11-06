@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IOQUE — Neo Artesanal</title>
+  <link rel="icon" type="image/png" href="/static/img/logoicon.png" />
+  <link rel="shortcut icon" href="/static/img/logoicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="/static/whatsapp-widget/widget.css">
+  <link rel="stylesheet" href="/static/css/style.css?v=13">
+</head>
+<body>
+
+<div class="spotlight"></div>
+<div id="toast" class="toast"></div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="#" class="logo-box" style="border-color: rgba(198,161,91,0.3);">IO</a>
+      <div class="nav-links">
+        <a href="#esencia" data-i18n="nav_esencia">Esencia</a>
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-toggle">
+            <span data-i18n="nav_catalogo">Catálogo</span>
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </button>
+          <div class="nav-dropdown-menu" id="nav-catalogo-desktop"></div>
+        </div>
+        <a href="#historias" data-i18n="nav_historias">Historias</a>
+        <a href="#contacto" data-i18n="nav_contacto">Contacto</a>
+        <button onclick="toggleTheme()" class="nav-btn" title="Cambiar tema">
+          <i id="theme-icon" class="fa-solid fa-sun" style="font-size:var(--text-lg);"></i>
+        </button>
+        <select onchange="changeLang(this.value)" class="lang-select" id="lang-select-nav" aria-label="Idioma">
+          <option value="es">🇪🇸 ES</option>
+          <option value="en">🇺🇸 EN</option>
+          <option value="pt">🇵🇹 PT</option>
+          <option value="fr">🇫🇷 FR</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:var(--space-4);align-items:center;">
+        <button onclick="toggleCart()" class="cart-nav-btn" title="Ver carrito" aria-label="Ver carrito">
+          <span class="cart-nav-icon">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count-nav" class="cart-badge-gold">0</span>
+          </span>
+          <span class="cart-nav-label">
+            <span class="cart-nav-title" data-i18n="nav_cart">Carrito</span>
+            <span id="cart-nav-total" class="cart-nav-total">$0</span>
+          </span>
+        </button>
+        <button onclick="toggleMobileMenu()" class="nav-btn" style="display:block;">
+          <i class="fa-solid fa-bars" style="font-size:var(--text-lg);"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="mobile-menu">
+    <a href="#esencia" onclick="closeMobileMenu()" data-i18n="nav_esencia">Esencia</a>
+    <div class="nav-dropdown" style="display:block;">
+      <button class="nav-dropdown-toggle" onclick="this.parentElement.classList.toggle('open')" style="display:flex;width:100%;justify-content:space-between;align-items:center;padding:var(--space-3) 0;font-family:var(--font-body);font-size:var(--text-sm);color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;background:none;border:none;cursor:pointer;">
+        <span data-i18n="nav_catalogo">Catálogo</span>
+        <i class="fa-solid fa-chevron-down dropdown-arrow" style="font-size:10px;transition:transform 0.25s ease;"></i>
+      </button>
+      <div class="nav-dropdown-menu" id="nav-catalogo-mobile" style="display:none;position:static;background:transparent;border:none;margin-top:0;padding-left:var(--space-4);box-shadow:none;"></div>
+    </div>
+    <a href="#historias" onclick="closeMobileMenu()" data-i18n="nav_historias">Historias</a>
+    <a href="#contacto" onclick="closeMobileMenu()" data-i18n="nav_contacto">Contacto</a>
+    <div style="display:flex;gap:var(--space-4);margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--border-soft);">
+      <button onclick="toggleTheme();closeMobileMenu()" class="nav-btn" style="display:flex;align-items:center;gap:var(--space-2);">
+        <i id="theme-icon-mob" class="fa-solid fa-sun"></i>
+        <span data-i18n="theme_toggle">Tema</span>
+      </button>
+      <select onchange="changeLang(this.value);closeMobileMenu()" class="lang-select" id="lang-select-mob" aria-label="Idioma" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-1) var(--space-2);font-family:var(--font-body);font-size:var(--text-sm);cursor:pointer;">
+        <option value="es">🇪🇸 ES</option>
+        <option value="en">🇺🇸 EN</option>
+        <option value="pt">🇵🇹 PT</option>
+        <option value="fr">🇫🇷 FR</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<!-- FLOATING CART BUTTON -->
+<button id="fab-cart" class="fab-cart" onclick="toggleCart()" aria-label="Ver mi pedido">
+  <span class="fab-cart-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+  <span class="fab-cart-text"><span data-i18n="fab_text">VER MI PEDIDO</span> <strong id="fab-count">(0)</strong> <span class="fab-cart-sep">•</span> <strong id="fab-total">$0</strong></span>
+</button>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-badge" data-i18n="hero_badge">Edición Limitada · Hecho a Mano</span>
+    <h1 class="hero-title">
+      <span style="--i: 0">I</span>
+      <span style="--i: 1" class="hero-logo" aria-label="O"></span>
+      <span style="--i: 2">Q</span>
+      <span style="--i: 3">U</span>
+      <span style="--i: 4">E</span>
+    </h1>
+    <div class="hero-subtitle" data-i18n="hero_subtitle">
+      <span style="--i: 0">A</span>
+      <span style="--i: 1">R</span>
+      <span style="--i: 2">T</span>
+      <span style="--i: 3">E</span>
+      <span style="--i: 4">S</span>
+      <span style="--i: 5">A</span>
+      <span style="--i: 6">N</span>
+      <span style="--i: 7">I</span>
+      <span style="--i: 8">A</span>
+      <span style="--i: 9">S</span>
+    </div>
+    <div class="gold-divider" style="margin:var(--space-6) auto;"></div>
+    <p class="hero-tagline" data-i18n="hero_tagline">"El lazo que nos une"</p>
+    <p class="hero-text" data-i18n="hero_text">Cuero · Hilo · Aguja · Cada llavero es una pieza única de arte portable.</p>
+    <div style="display:flex;flex-direction:column;gap:var(--space-4);align-items:center;justify-content:center;">
+      <div style="display:flex;flex-direction:column;sm:flex-direction:row;gap:var(--space-4);">
+        <a href="#catalogo" class="btn-primary" data-i18n="hero_explorar"><i class="fa-solid fa-arrow-right"></i> Explorar</a>
+        <a href="#historias" class="btn-secondary" data-i18n="hero_historias_btn"><i class="fa-solid fa-play"></i> Historias</a>
+      </div>
+    </div>
+    <div class="hero-social">
+      <a href="https://www.instagram.com/ioqueartesanias/" target="_blank" data-i18n="social_instagram">Instagram</a><span class="sep">/</span>
+      <a href="https://www.tiktok.com/@ioqueartesanias" target="_blank" data-i18n="social_tiktok">TikTok</a><span class="sep">/</span>
+      <a href="https://youtube.com/@ioqueartesanias" target="_blank" data-i18n="social_youtube">YouTube</a><span class="sep">/</span>
+      <a href="https://www.facebook.com/people/IOQUE-Artesanias/61581278192834/" target="_blank" data-i18n="social_facebook">Facebook</a>
+    </div>
+  </div>
+  <div class="bounce-chevron">
+    <i class="fa-solid fa-chevron-down"></i>
+  </div>
+</section>
+
+<!-- ESENCIA -->
+<section id="esencia" class="section">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="esencia_label">// 001</span>
+      <h2 class="section-title" data-i18n="esencia_title">La <span style="color:var(--accent);">materia</span> del arte</h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="esencia_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        No hay dos piezas iguales. Cada llavero es el resultado de un diálogo entre la mano y la materia.
+      </p>
+    </div>
+    <div class="value-grid">
+      <div class="value-card reveal" style="transition-delay:0.1s">
+        <div class="value-card-bg" style="background-image:url(/static/img/corte.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <span class="value-number">01</span>
+        <h3 class="value-title" data-i18n="esencia_valor1_title">Cuero</h3>
+        <p class="value-text" data-i18n="esencia_valor1_text">Seleccionado, cortado, trabajado. Cada pieza cuenta su propia historia antes de ser llavero.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.2s">
+        <div class="value-card-bg" style="background-image:url(/static/img/coser.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-link"></i></div>
+        <span class="value-number">02</span>
+        <h3 class="value-title" data-i18n="esencia_valor2_title">Hilo</h3>
+        <p class="value-text" data-i18n="esencia_valor2_text">Encerado, resistente. Cada puntada es deliberada, como cada palabra en una carta escrita a mano.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.3s">
+        <div class="value-card-bg" style="background-image:url(/static/img/llavero.png);"></div>
+        <div class="value-icon"><i class="fa-solid fa-dog"></i></div>
+        <span class="value-number">03</span>
+        <h3 class="value-title" data-i18n="esencia_valor3_title">Alma</h3>
+        <p class="value-text" data-i18n="esencia_valor3_text">Cada raza tiene un espíritu. Capturamos ese gesto, esa mirada, esa energía inconfundible.</p>
+      </div>
+    </div>
+    <div class="process-grid reveal" style="margin-top:var(--space-12);">
+      <div class="process-step">
+        <div class="process-number">01</div>
+        <p class="process-label" data-i18n="proceso_cortar">Cortar</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">02</div>
+        <p class="process-label" data-i18n="proceso_coser">Coser</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">03</div>
+        <p class="process-label" data-i18n="proceso_montar">Montar</p>
+      </div>
+      <div class="process-step">
+        <div class="process-number">04</div>
+        <p class="process-label" data-i18n="proceso_empacar">Empacar</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATÁLOGO -->
+<section id="catalogo" class="section section-dark" style="position:relative;overflow:hidden;">
+  <div class="catalogo-bg"></div>
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="catalogo_label">// 002</span>
+      <h2 class="section-title" data-i18n="catalogo_title">Galería <span style="color:var(--accent);">Mascotas</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="catalogo_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        Una colección de retratos en cuero. Cada uno con su propia frecuencia.
+      </p>
+    </div>
+    <div id="catalog-grid" class="product-grid"></div>
+    <div id="catalog-grid-pagination" class="pagination" style="display:none;justify-content:center;align-items:center;gap:var(--space-4);margin-top:var(--space-8);">
+      <button type="button" class="btn-pagination" id="catalog-grid-prev" data-grid="catalog-grid" data-cat="1" data-dir="-1" disabled>
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span id="catalog-grid-page-info" style="font-family:var(--font-body);font-size:var(--text-sm);color:var(--muted);"></span>
+      <button type="button" class="btn-pagination" id="catalog-grid-next" data-grid="catalog-grid" data-cat="1" data-dir="1">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- RELIGION -->
+<section id="religion" class="section section-dark" style="position:relative;overflow:hidden;">
+  <div class="religion-bg"></div>
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label">// 003</span>
+      <h2 class="section-title">Galería <span style="color:var(--accent);">Religión</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        Fe y arte en cada pieza artesanal.
+      </p>
+    </div>
+    <div id="religion-grid" class="product-grid"></div>
+    <div id="religion-grid-pagination" class="pagination" style="display:none;justify-content:center;align-items:center;gap:var(--space-4);margin-top:var(--space-8);">
+      <button type="button" class="btn-pagination" id="religion-grid-prev" data-grid="religion-grid" data-cat="3" data-dir="-1" disabled>
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span id="religion-grid-page-info" style="font-family:var(--font-body);font-size:var(--text-sm);color:var(--muted);"></span>
+      <button type="button" class="btn-pagination" id="religion-grid-next" data-grid="religion-grid" data-cat="3" data-dir="1">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CUYES -->
+<section id="cuyes" class="section section-dark" style="position:relative;overflow:hidden;">
+  <div class="cuyes-bg"></div>
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label">// 004</span>
+      <h2 class="section-title">Galería <span style="color:var(--accent);">Cuyes</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        El ícono andino hecho cuero con amor.
+      </p>
+    </div>
+    <div id="cuyes-grid" class="product-grid"></div>
+    <div id="cuyes-grid-pagination" class="pagination" style="display:none;justify-content:center;align-items:center;gap:var(--space-4);margin-top:var(--space-8);">
+      <button type="button" class="btn-pagination" id="cuyes-grid-prev" data-grid="cuyes-grid" data-cat="4" data-dir="-1" disabled>
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span id="cuyes-grid-page-info" style="font-family:var(--font-body);font-size:var(--text-sm);color:var(--muted);"></span>
+      <button type="button" class="btn-pagination" id="cuyes-grid-next" data-grid="cuyes-grid" data-cat="4" data-dir="1">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORIAS -->
+<section id="historias" class="section">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span class="section-label" data-i18n="historias_label">// 003</span>
+      <h2 class="section-title" data-i18n="historias_title">Leyendas <span style="color:var(--accent);">con patas</span></h2>
+      <div class="gold-divider" style="margin:var(--space-5) auto;"></div>
+      <p data-i18n="historias_desc" style="font-family:var(--font-body);color:var(--muted);font-size:var(--text-base);line-height:var(--leading-body);margin-top:var(--space-5);">
+        Perros que cambiaron el mundo. Uno a su manera.
+      </p>
+    </div>
+    <div class="story-grid">
+      <div class="story-card reveal" style="transition-delay:0.05s" onclick="openStory('hachiko')">
+        <div class="story-card-inner">
+          <img src="" alt="Hachiko" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #c6a15b, #5c3a1e);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Akita Inu</span>
+            <h3 class="story-name">Hachiko</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+      <div class="story-card reveal" style="transition-delay:0.1s" onclick="openStory('balto')">
+        <div class="story-card-inner">
+          <img src="" alt="Balto" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #5a7a8a, #2a4a5a);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Husky</span>
+            <h3 class="story-name">Balto</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+      <div class="story-card reveal" style="transition-delay:0.15s" onclick="openStory('laika')">
+        <div class="story-card-inner">
+          <img src="" alt="Laika" class="story-img" onerror="this.style.display='none'" style="background:linear-gradient(135deg, #2e3440, #1a1e28);">
+          <div class="story-gradient"></div>
+          <div class="story-label">
+            <span class="story-breed">Pastor Ruso</span>
+            <h3 class="story-name">Laika</h3>
+          </div>
+          <div class="story-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY MODAL -->
+<div id="story-modal" class="modal-overlay" onclick="if(event.target===this)closeStory()">
+  <div class="modal-backdrop"></div>
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button onclick="closeStory()" class="modal-close"><i class="fa-solid fa-xmark" style="font-size:var(--text-lg);"></i></button>
+    <div id="story-content"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div id="cart-overlay" class="cart-overlay" onclick="if(event.target===this)toggleCart()">
+  <div class="cart-backdrop"></div>
+  <div id="cart-sidebar" class="cart-sidebar" onclick="event.stopPropagation()">
+    <div class="cart-header">
+      <h2><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="cart_title">Mi Carrito</span></h2>
+      <button onclick="toggleCart()" class="cart-close" aria-label="Cerrar carrito">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="cart-items" class="cart-items">
+      <div class="cart-empty">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <p data-i18n="cart_empty" style="font-size:var(--text-base);">Vacío</p>
+        <p data-i18n="cart_empty_sub" style="font-size:var(--text-sm);margin-top:var(--space-2);">Agrega productos del catálogo</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span class="cart-summary-label" data-i18n="cart_subtotal">Subtotal</span>
+          <span id="cart-subtotal" class="cart-summary-value">$0</span>
+        </div>
+        <div class="cart-summary-row">
+          <span class="cart-summary-label" data-i18n="cart_shipping">Envío</span>
+          <span id="cart-shipping" class="cart-summary-value">Incluido</span>
+        </div>
+        <div class="cart-summary-row" id="cart-discount-row" style="display:none;">
+          <span class="cart-summary-label cart-summary-discount" data-i18n="cart_discount">Descuento</span>
+          <span id="cart-discount" class="cart-summary-value cart-summary-discount-value"></span>
+        </div>
+        <div class="cart-summary-row cart-summary-total">
+          <span class="cart-summary-label" data-i18n="cart_total">TOTAL</span>
+          <span id="cart-total" class="cart-total-amount">$0 <small data-i18n="cart_currency">COP</small></span>
+        </div>
+      </div>
+      <div id="pay-checkout" class="pay-checkout">
+        <button onclick="processPayment()" id="nequi-pay-btn" class="btn-pay-nequi">
+          <i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="pay_nequi_btn">IR A PAGAR CON NEQUI</span>
+        </button>
+        <div id="nequi-status-msg" class="nequi-status-msg"></div>
+        <div id="pay-qr-step" class="pay-qr-step" style="display:none;">
+          <div class="nequi-qr-area">
+            <p class="nequi-qr-title" data-i18n="pay_qr_title">Escanea para pagar con Nequi</p>
+            <div id="nequi-qr" class="nequi-qr-placeholder">
+              <i class="fa-solid fa-qrcode"></i>
+              <span data-i18n="pay_qr_placeholder">QR DE PAGO</span>
+            </div>
+            <p class="nequi-qr-hint" data-i18n="pay_qr_hint">Abre Nequi y escanea el código</p>
+          </div>
+          <div class="nequi-qr-wa">
+            <button type="button" class="btn-pay-whatsapp" onclick="sendOrderWhatsApp()" tabindex="0">
+              <i class="fa-brands fa-whatsapp"></i> <span data-i18n="pay_whatsapp_btn">Ya pagué · Enviar pedido por WhatsApp</span>
+            </button>
+            <p class="nequi-qr-wa-hint" data-i18n="pay_whatsapp_hint">Te enviamos el carrito y el comprobante de tu pago</p>
+          </div>
+          <div class="nequi-qr-actions">
+            <button type="button" class="btn-cancel-payment" onclick="cancelPayment()" tabindex="0">
+              <i class="fa-solid fa-xmark"></i> <span data-i18n="pay_cancel">Regresar al catálogo</span>
+            </button>
+          </div>
+          <p class="pay-account" data-i18n="pay_nequi_account">Cuenta Nequi: <strong>3216153977</strong></p>
+          <div class="pay-progress">
+            <div class="pay-progress-item active"><i class="fa-solid fa-bag-shopping"></i><span data-i18n="pay_step_order">Tu pedido</span></div>
+            <div class="pay-progress-line"></div>
+            <div class="pay-progress-item active"><i class="fa-solid fa-qrcode"></i><span data-i18n="pay_step_scan">Escanea</span></div>
+            <div class="pay-progress-line"></div>
+            <div class="pay-progress-item"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay_step_done">Confirmación</span></div>
+          </div>
+          <div class="pay-status-line" id="pay-status-line">
+            <i class="fa-solid fa-spinner fa-spin"></i> <span data-i18n="pay_waiting">Esperando confirmación del pago...</span>
+          </div>
+        </div>
+        <div id="pay-success-step" class="pay-success-step" style="display:none;">
+          <div class="pay-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <h3 class="pay-success-title" data-i18n="pay_success">¡Pago confirmado!</h3>
+          <p class="pay-success-order" id="pay-success-order"></p>
+          <p class="pay-success-text" data-i18n="pay_success_text">Gracias por comprar en IO QUE Artesanías.</p>
+        </div>
+        <p class="cart-security" data-i18n="pay_secure"><i class="fa-solid fa-shield-halved"></i> Pago seguro</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contacto" class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">IOQUE</div>
+        <p class="footer-text" data-i18n="footer_desc">Artesanía en cuero. Hecho a mano desde Colombia.</p>
+        <p class="footer-tagline" data-i18n="hero_tagline">"El lazo que nos une"</p>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_nav">Navegación</h4>
+        <ul class="footer-links">
+          <li><a href="#hero" data-i18n="footer_inicio">Inicio</a></li>
+          <li><a href="#esencia" data-i18n="nav_esencia">Esencia</a></li>
+          <li><a href="#catalogo" data-i18n="nav_catalogo">Catálogo</a></li>
+          <li><a href="#historias" data-i18n="nav_historias">Historias</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_redes">Redes</h4>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/ioqueartesanias/" target="_blank" title="Instagram" onmouseover="this.style.borderColor='#E4405F';this.style.color='#E4405F'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://youtube.com/@ioqueartesanias" target="_blank" title="YouTube" onmouseover="this.style.borderColor='#FF0000';this.style.color='#FF0000'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@ioqueartesanias" target="_blank" title="TikTok" onmouseover="this.style.borderColor='#fff';this.style.color='#fff'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="https://www.facebook.com/people/IOQUE-Artesanias/61581278192834/" target="_blank" title="Facebook" onmouseover="this.style.borderColor='#1877F2';this.style.color='#1877F2'" onmouseout="this.style.borderColor='';this.style.color=''"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-heading" data-i18n="footer_contacto">Contacto</h4>
+        <ul class="footer-links">
+          <li><a href="mailto:ioqueartesanias@gmail.com" style="color:var(--muted);font-size:var(--text-sm);text-decoration:none;">ioqueartesanias@gmail.com</a></li>
+          <li><a href="tel:+573177695006" style="color:var(--muted);font-size:var(--text-sm);text-decoration:none;">+57 317 7695006</a></li>
+        </ul>
+        <h4 class="footer-heading" data-i18n="footer_pagos" style="margin-top:var(--space-8);">Pagos</h4>
+        <div class="footer-payment">
+          <span>Nequi</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy" data-i18n="footer_copy">&copy; 2026 IOQUE · Hecho a mano</p>
+      <div class="footer-legal">
+        <span data-i18n="footer_terminos">Términos</span><span data-i18n="footer_privacidad">Privacidad</span><span data-i18n="footer_envios">Envíos</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- GALLERY LIGHTBOX -->
+<div id="gallery-lightbox" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Galería de imágenes">
+  <div class="lightbox-backdrop" onclick="closeGallery()"></div>
+  <div class="lightbox-container">
+    <div class="lightbox-header">
+      <div class="lightbox-header-left">
+        <i class="fa-solid fa-camera"></i>
+        <div>
+          <span class="lightbox-title"></span>
+          <span class="lightbox-count"></span>
+        </div>
+      </div>
+      <button class="lightbox-close" onclick="closeGallery()" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="lightbox-main">
+      <button class="lightbox-nav lightbox-prev" onclick="navigateGallery(-1)" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="lightbox-image-wrap">
+        <img class="lightbox-image" src="" alt="">
+      </div>
+      <button class="lightbox-nav lightbox-next" onclick="navigateGallery(1)" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="lightbox-thumbnails"></div>
+  </div>
+</div>
+
+  <script src="/static/js/app.js?v=17"></script>
+<script type="module" src="/static/whatsapp-widget/widget.js"></script>
+</body>
+</html>

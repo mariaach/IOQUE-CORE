@@ -57,6 +57,32 @@
     return phrases[lang] || phrases.en;
   }
 
+  function escapeAttr(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  /* Si la miniatura cacheada devuelve 404, usa la imagen original como
+     respaldo. Si también falla, aplica el color de fondo del producto. */
+  function handleProductImageError(el) {
+    var fallback = el.getAttribute('data-fallback');
+    if (fallback && el.getAttribute('data-fallback-used') !== '1') {
+      el.setAttribute('data-fallback-used', '1');
+      el.src = fallback;
+      return;
+    }
+    var bg = el.getAttribute('data-bg');
+    if (bg) el.style.background = bg;
+    if (el.getAttribute('data-hide-on-error') === '1') {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'block';
+    }
+  }
+
   function getBg(name) {
     if (FALLBACK_BG[name]) return FALLBACK_BG[name];
     const colors = ['#C49A6C','#2A2A2A','#C4956A','#D4B8A0','#4A3520','#B8956A','#8A9A8A','#C4A070','#5C4033','#8B7355','#3A3020','#E8CBA0','#D4A060','#E8B860','#FFFFFF','#E8D8C0','#8A7A60','#C4A880','#2A2018','#B8885A','#D4A860'];
@@ -163,6 +189,8 @@
       var crossfade = !nokey && !nobreed ? 'crossfade' : '';
       var frontSrc = (realImg && realImg.thumbnail) ? realImg.thumbnail : (realImg ? realImg.url : (keyImg && keyImg.thumbnail ? keyImg.thumbnail : (keyImg ? keyImg.url : '')));
       var backSrc = (keyImg && keyImg.thumbnail) ? keyImg.thumbnail : (keyImg ? keyImg.url : '');
+      var frontFallback = (realImg && realImg.thumbnail && realImg.url) ? realImg.url : (keyImg && keyImg.url ? keyImg.url : '');
+      var backFallback = (keyImg && keyImg.url) ? keyImg.url : '';
       var name = p.name || 'Producto';
       var phrase = getPhrase(name, currentLang);
       var bg = getBg(name);
@@ -170,8 +198,8 @@
       galleryProducts[p.id] = p;
       html += '<div class="product-card reveal" style="transition-delay:' + delay + 's">'
         + '<div class="product-img-wrap' + (crossfade ? ' crossfade' : '') + '">'
-        + '<img src="' + frontSrc + '" alt="' + name + '" class="product-img" loading="lazy" width="400" height="400" onerror="this.style.background=\'' + bg + '\';this.style.display=\'block\'">'
-        + (backSrc && !nokey ? '<img src="' + backSrc + '" alt="' + name + '" class="product-img-back" loading="lazy" width="400" height="400" onerror="this.style.display=\'none\'">' : '')
+        + '<img src="' + escapeAttr(frontSrc) + '" data-fallback="' + escapeAttr(frontFallback) + '" data-bg="' + escapeAttr(bg) + '" alt="' + escapeAttr(name) + '" class="product-img" loading="lazy" width="400" height="400" onerror="handleProductImageError(this)">'
+        + (backSrc && !nokey ? '<img src="' + escapeAttr(backSrc) + '" data-fallback="' + escapeAttr(backFallback) + '" data-hide-on-error="1" alt="' + escapeAttr(name) + '" class="product-img-back" loading="lazy" width="400" height="400" onerror="handleProductImageError(this)">' : '')
         + (imgCount > 0 ? '<button class="gallery-btn" data-product-id="' + p.id + '" aria-label="Ver galería de ' + name + '"><i class="fa-solid fa-camera"></i><span class="gallery-btn-count">+' + imgCount + '</span></button>' : '')
         + '</div>'
         + '<div class="product-info">'
@@ -532,10 +560,18 @@
       }
 
       const orderNumber = orderData.order_number;
+      const accessToken = orderData.access_token || '';
+
+      if (!accessToken) {
+        throw new Error(t('pay_error', 'Error al crear el pedido'));
+      }
 
       const qrRes = await fetch('/api/orders/' + orderNumber + '/payment/nequi/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Order-Token': accessToken,
+        },
       });
       const qrData = await qrRes.json();
 
@@ -547,7 +583,12 @@
       renderNequiQr(qrData.qr_code || '');
       if (statusMsg) statusMsg.innerHTML = '';
 
-      paymentState = { orderNumber: orderNumber, poll: null, attempts: 0 };
+      paymentState = {
+        orderNumber: orderNumber,
+        accessToken: accessToken,
+        poll: null,
+        attempts: 0,
+      };
       pollPaymentStatus(orderNumber);
      } catch (e) {
       if (statusMsg) statusMsg.innerHTML = '<span style="color:#ef4444;">❌ ' + e.message + '</span>';
@@ -562,9 +603,12 @@
 
     paymentState.attempts = 0;
     paymentState.poll = setInterval(async () => {
+      if (!paymentState) return;
       paymentState.attempts++;
       try {
-        const res = await fetch('/api/orders/' + orderNumber + '/payment/status/');
+        const res = await fetch('/api/orders/' + orderNumber + '/payment/status/', {
+          headers: { 'X-Order-Token': paymentState.accessToken || '' },
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error de estado');
 
@@ -706,6 +750,13 @@
     var src = data.medium || data.url || data.thumbnail || '';
     img.style.opacity = '0';
     setTimeout(function() {
+      img.dataset.fallbackTried = '';
+      img.onerror = function() {
+        if (!img.dataset.fallbackTried && data.url && img.src !== data.url) {
+          img.dataset.fallbackTried = '1';
+          img.src = data.url;
+        }
+      };
       img.src = src;
       img.alt = data.alt || 'Imagen de producto';
       img.onload = function() { img.style.opacity = '1'; };
@@ -723,8 +774,9 @@
     var html = '';
     galleryState.images.forEach(function(img, i) {
       var src = img.thumbnail || img.url || '';
+      var fallback = (img.thumbnail && img.url) ? img.url : '';
       var active = i === galleryState.index ? ' active' : '';
-      html += '<img class="lightbox-thumb' + active + '" src="' + src + '" alt="' + (img.alt || 'Miniatura') + '" onclick="selectThumbnail(' + i + ')" loading="lazy">';
+      html += '<img class="lightbox-thumb' + active + '" src="' + escapeAttr(src) + '" data-fallback="' + escapeAttr(fallback) + '" alt="' + escapeAttr(img.alt || 'Miniatura') + '" onclick="selectThumbnail(' + i + ')" loading="lazy" onerror="handleProductImageError(this)">';
     });
     container.innerHTML = html;
     var activeThumb = container.querySelector('.lightbox-thumb.active');
@@ -812,7 +864,7 @@
       nav_cart: 'Carrito', fab_text: 'VER MI PEDIDO',
       pay_nequi_btn: 'IR A PAGAR CON NEQUI',
       pay_qr_title: 'Escanea para pagar con Nequi', pay_qr_placeholder: 'QR DE PAGO', pay_qr_hint: 'Abre Nequi y escanea el código',
-      pay_cancel: 'Cancelar y seguir comprando',
+      pay_cancel: 'Regresar al catálogo',
       pay_whatsapp_btn: 'Ya pagué · Enviar pedido por WhatsApp', pay_whatsapp_hint: 'Te enviamos el carrito y el comprobante de tu pago',
       pay_wa_sent: 'Pedido enviado por WhatsApp', pay_wa_no_order: 'Primero genera tu pedido',
       pay_nequi_account: 'Cuenta Nequi:',
@@ -855,7 +907,7 @@
       nav_cart: 'Cart', fab_text: 'VIEW MY ORDER',
       pay_nequi_btn: 'PAY WITH NEQUI',
       pay_qr_title: 'Scan to pay with Nequi', pay_qr_placeholder: 'PAYMENT QR', pay_qr_hint: 'Open Nequi and scan the code',
-      pay_cancel: 'Cancel and keep shopping',
+      pay_cancel: 'Back to catalog',
       pay_whatsapp_btn: 'I paid · Send order via WhatsApp', pay_whatsapp_hint: 'We send your cart and payment receipt',
       pay_wa_sent: 'Order sent via WhatsApp', pay_wa_no_order: 'Create your order first',
       pay_nequi_account: 'Nequi account:',
@@ -898,7 +950,7 @@
       nav_cart: 'Carrinho', fab_text: 'VER MEU PEDIDO',
       pay_nequi_btn: 'IR PAGAR COM NEQUI',
       pay_qr_title: 'Escaneie para pagar com Nequi', pay_qr_placeholder: 'QR DE PAGAMENTO', pay_qr_hint: 'Abra o Nequi e escaneie o código',
-      pay_cancel: 'Cancelar e continuar comprando',
+      pay_cancel: 'Voltar ao catálogo',
       pay_whatsapp_btn: 'Paguei · Enviar pedido pelo WhatsApp', pay_whatsapp_hint: 'Enviamos seu carrinho e o comprovante do pagamento',
       pay_wa_sent: 'Pedido enviado pelo WhatsApp', pay_wa_no_order: 'Primeiro gere seu pedido',
       pay_nequi_account: 'Conta Nequi:',
@@ -941,7 +993,7 @@
       nav_cart: 'Panier', fab_text: 'VOIR MA COMMANDE',
       pay_nequi_btn: 'PAYER AVEC NEQUI',
       pay_qr_title: 'Scannez pour payer avec Nequi', pay_qr_placeholder: 'QR DE PAIEMENT', pay_qr_hint: 'Ouvrez Nequi et scannez le code',
-      pay_cancel: 'Annuler et continuer les achats',
+      pay_cancel: "Retour au catalogue",
       pay_whatsapp_btn: "J'ai payé · Envoyer la commande par WhatsApp", pay_whatsapp_hint: 'Nous envoyons votre panier et le reçu de paiement',
       pay_wa_sent: 'Commande envoyée par WhatsApp', pay_wa_no_order: 'Créez d\u0027abord votre commande',
       pay_nequi_account: 'Compte Nequi :',

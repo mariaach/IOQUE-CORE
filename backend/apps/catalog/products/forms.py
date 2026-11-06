@@ -1,10 +1,13 @@
-import os
-
-import requests
 from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import ProductImage
+from .security import (
+    UnsafeSourceError,
+    validate_local_path,
+    validate_remote_url,
+    validate_storage_name,
+)
 
 
 class ProductImageForm(forms.ModelForm):
@@ -31,18 +34,18 @@ class ProductImageForm(forms.ModelForm):
         source = (self.cleaned_data.get("image") or "").strip()
         if not source:
             return source
-        if source.startswith(("http://", "https://")):
-            try:
-                resp = requests.head(source, timeout=15, allow_redirects=True)
-                if resp.status_code >= 400:
-                    raise ValidationError(f"La URL responde {resp.status_code}.")
-            except requests.RequestException as exc:
-                raise ValidationError(f"No se pudo acceder a la URL: {exc}") from exc
-        elif source.startswith("/"):
-            if not os.path.isfile(source):
-                raise ValidationError(f"No existe la ruta en el contenedor: {source}")
-        else:
+
+        try:
+            if source.startswith(("http://", "https://")):
+                return validate_remote_url(source)
+            if source.startswith("/"):
+                return validate_local_path(source)
+
+            name = validate_storage_name(source)
             from django.core.files.storage import default_storage
-            if not default_storage.exists(source):
-                raise ValidationError(f"No existe en el storage: {source}")
-        return source
+
+            if not default_storage.exists(name):
+                raise ValidationError(f"No existe en el storage: {name}")
+            return name
+        except UnsafeSourceError as exc:
+            raise ValidationError(str(exc)) from exc

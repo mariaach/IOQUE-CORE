@@ -52,14 +52,13 @@ class Command(BaseCommand):
                 img.image.save(filename, img_file, save=True)
                 img_file.close()
 
-                try:
-                    img.image_thumbnail.url
-                except Exception as e:
-                    logging.warning('URL retrieval failed')
-                try:
-                    img.image_medium.url
-                except Exception as e:
-                    logging.warning('URL retrieval failed')
+                for size_attr in ("image_thumbnail", "image_medium"):
+                    try:
+                        getattr(img, size_attr).generate()
+                    except Exception:
+                        logging.exception(
+                            "No se pudo generar %s para la imagen %s", size_attr, img.pk
+                        )
 
                 created_count += 1
                 self.stdout.write(

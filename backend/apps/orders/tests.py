@@ -1,6 +1,10 @@
+import hashlib
+import hmac
+import json
 from datetime import timedelta
 from unittest import mock
 
+from django.test import override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -9,6 +13,11 @@ from apps.catalog.categories.models import Category, CategoryTranslation
 from apps.catalog.products.models import Product, ProductTranslation
 from apps.orders.models import Order, OrderItem
 from apps.payments.models import PaymentTransaction
+
+
+def order_token(order_response) -> str:
+    """Token firmado devuelto al crear el pedido."""
+    return order_response.data["access_token"]
 
 
 def make_product(sku="SKU-1", price=40000, stock=5, **kwargs):
@@ -160,7 +169,10 @@ class PaymentFlowTests(APITestCase):
         order_number = resp.data["order_number"]
         order = Order.objects.get(order_number=order_number)
 
-        qr_resp = self.client.post(f"/api/orders/{order_number}/payment/nequi/")
+        qr_resp = self.client.post(
+            f"/api/orders/{order_number}/payment/nequi/",
+            HTTP_X_ORDER_TOKEN=order_token(resp),
+        )
         self.assertEqual(qr_resp.status_code, status.HTTP_201_CREATED)
         txn = PaymentTransaction.objects.get(order=order)
         self.assertEqual(txn.status, PaymentTransaction.Status.QR_GENERATED)
@@ -175,14 +187,21 @@ class PaymentFlowTests(APITestCase):
             format="json",
         )
         order_number = order_resp.data["order_number"]
-        self.client.post(f"/api/orders/{order_number}/payment/nequi/")
+        token = order_token(order_resp)
+        self.client.post(
+            f"/api/orders/{order_number}/payment/nequi/",
+            HTTP_X_ORDER_TOKEN=token,
+        )
 
         with mock.patch(
             "apps.orders.services.get_payment_provider",
             return_value=FakeProvider(),
         ):
             FakeProvider.status_to_return = PaymentTransaction.Status.APPROVED
-            resp = self.client.get(f"/api/orders/{order_number}/payment/status/")
+            resp = self.client.get(
+                f"/api/orders/{order_number}/payment/status/",
+                HTTP_X_ORDER_TOKEN=token,
+            )
 
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         order = Order.objects.get(order_number=order_number)
@@ -197,14 +216,21 @@ class PaymentFlowTests(APITestCase):
             format="json",
         )
         order_number = order_resp.data["order_number"]
-        self.client.post(f"/api/orders/{order_number}/payment/nequi/")
+        token = order_token(order_resp)
+        self.client.post(
+            f"/api/orders/{order_number}/payment/nequi/",
+            HTTP_X_ORDER_TOKEN=token,
+        )
 
         with mock.patch(
             "apps.orders.services.get_payment_provider",
             return_value=FakeProvider(),
         ):
             FakeProvider.status_to_return = PaymentTransaction.Status.REJECTED
-            resp = self.client.get(f"/api/orders/{order_number}/payment/status/")
+            resp = self.client.get(
+                f"/api/orders/{order_number}/payment/status/",
+                HTTP_X_ORDER_TOKEN=token,
+            )
 
         order = Order.objects.get(order_number=order_number)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -226,7 +252,10 @@ class PaymentFlowTests(APITestCase):
             status=PaymentTransaction.Status.QR_GENERATED,
             expires_at=timezone.now() - timedelta(minutes=1),
         )
-        resp = self.client.get(f"/api/orders/{order_number}/payment/status/")
+        resp = self.client.get(
+            f"/api/orders/{order_number}/payment/status/",
+            HTTP_X_ORDER_TOKEN=order_token(order_resp),
+        )
         txn.refresh_from_db()
         order.refresh_from_db()
         self.assertEqual(txn.status, PaymentTransaction.Status.EXPIRED)
@@ -237,6 +266,38 @@ class PaymentFlowTests(APITestCase):
         resp = self.client.get("/api/orders/NO-EXISTE/payment/status/")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_payment_endpoints_require_order_token(self):
+        product = make_product()
+        order_resp = self.client.post(
+            "/api/orders/",
+            {"items": [{"product_id": product.id, "quantity": 1}]},
+            format="json",
+        )
+        order_number = order_resp.data["order_number"]
+
+        qr_resp = self.client.post(f"/api/orders/{order_number}/payment/nequi/")
+        status_resp = self.client.get(f"/api/orders/{order_number}/payment/status/")
+        self.assertEqual(qr_resp.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(status_resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_order_token_cannot_access_another_order(self):
+        product = make_product(stock=10)
+        first = self.client.post(
+            "/api/orders/",
+            {"items": [{"product_id": product.id, "quantity": 1}]},
+            format="json",
+        )
+        second = self.client.post(
+            "/api/orders/",
+            {"items": [{"product_id": product.id, "quantity": 1}]},
+            format="json",
+        )
+        resp = self.client.get(
+            f"/api/orders/{second.data['order_number']}/payment/status/",
+            HTTP_X_ORDER_TOKEN=order_token(first),
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_double_payment_returns_same_transaction(self):
         product = make_product()
         order_resp = self.client.post(
@@ -245,8 +306,15 @@ class PaymentFlowTests(APITestCase):
             format="json",
         )
         order_number = order_resp.data["order_number"]
-        first = self.client.post(f"/api/orders/{order_number}/payment/nequi/")
-        second = self.client.post(f"/api/orders/{order_number}/payment/nequi/")
+        token = order_token(order_resp)
+        first = self.client.post(
+            f"/api/orders/{order_number}/payment/nequi/",
+            HTTP_X_ORDER_TOKEN=token,
+        )
+        second = self.client.post(
+            f"/api/orders/{order_number}/payment/nequi/",
+            HTTP_X_ORDER_TOKEN=token,
+        )
         self.assertEqual(first.data["id"], second.data["id"])
         self.assertEqual(PaymentTransaction.objects.filter(order__order_number=order_number).count(), 1)
 
@@ -331,21 +399,97 @@ class OrderModelTests(APITestCase):
         self.assertEqual(resp.data["total"], 80000)
 
 
+@override_settings(NEQUI_WEBHOOK_SECRET="test-secret")
 class WebhookTests(APITestCase):
+    def _signed_post(self, payload, **kwargs):
+        body = json.dumps(payload).encode("utf-8")
+        signature = hmac.new(
+            b"test-secret", body, hashlib.sha256
+        ).hexdigest()
+        return self.client.post(
+            "/api/payments/nequi-webhook/",
+            data=body,
+            content_type="application/json",
+            HTTP_X_NEQUI_SIGNATURE=signature,
+            **kwargs,
+        )
+
+    @staticmethod
+    def _payload(transaction_id, status_code="0"):
+        return {
+            "ResponseMessage": {
+                "ResponseBody": {
+                    "any": {
+                        "unregisteredPaymentRS": {
+                            "transactionID": transaction_id,
+                        }
+                    }
+                },
+                "ResponseHeader": {"Status": {"StatusCode": status_code}},
+            }
+        }
+
     def test_webhook_unknown_transaction_is_safe(self):
+        resp = self._signed_post(self._payload("NO-EXISTE"))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_webhook_requires_signature(self):
+        body = json.dumps(self._payload("X")).encode("utf-8")
         resp = self.client.post(
             "/api/payments/nequi-webhook/",
-            {
-                "ResponseMessage": {
-                    "ResponseBody": {
-                        "any": {"unregisteredPaymentRS": {"transactionID": "NO-EXISTE"}}
-                    },
-                    "ResponseHeader": {"Status": {"StatusCode": "0"}},
-                }
-            },
-            format="json",
+            data=body,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_webhook_rejects_invalid_signature(self):
+        body = json.dumps(self._payload("X")).encode("utf-8")
+        resp = self.client.post(
+            "/api/payments/nequi-webhook/",
+            data=body,
+            content_type="application/json",
+            HTTP_X_NEQUI_SIGNATURE="firma-invalida",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_webhook_accepts_query_token(self):
+        resp = self.client.post(
+            "/api/payments/nequi-webhook/?token=test-secret",
+            data=json.dumps(self._payload("NO-EXISTE")).encode("utf-8"),
+            content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    @override_settings(NEQUI_WEBHOOK_SECRET="")
+    def test_webhook_disabled_without_secret(self):
+        resp = self._signed_post(self._payload("X"))
+        self.assertEqual(resp.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def test_webhook_approves_transaction(self):
+        product = make_product()
+        order_resp = self.client.post(
+            "/api/orders/",
+            {"items": [{"product_id": product.id, "quantity": 1}]},
+            format="json",
+        )
+        order = Order.objects.get(order_number=order_resp.data["order_number"])
+        txn = PaymentTransaction.objects.create(
+            order=order,
+            amount=order.total,
+            currency="COP",
+            status=PaymentTransaction.Status.PENDING,
+            provider_transaction_id="TX-123",
+        )
+
+        resp = self._signed_post(self._payload("TX-123"))
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertTrue(resp.data["updated"])
+        txn.refresh_from_db()
+        order.refresh_from_db()
+        self.assertEqual(txn.status, PaymentTransaction.Status.APPROVED)
+        self.assertEqual(order.status, Order.Status.PAID)
+        self.assertIsNotNone(order.paid_at)
 
 
 def OrderService_create():

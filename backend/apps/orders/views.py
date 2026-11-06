@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
@@ -16,7 +17,21 @@ from apps.orders.services import (
     OrderService,
     OrderValidationError,
 )
+from apps.orders.tokens import validate_order_token
 from apps.payments.providers import PaymentProviderError
+
+
+def _get_order_for_request(request, order_number: str) -> Order:
+    """Obtiene el pedido y exige el token firmado que se entrega al crearlo."""
+    order = get_object_or_404(Order, order_number=order_number)
+    token = (
+        request.headers.get("X-Order-Token")
+        or request.query_params.get("token")
+        or ""
+    )
+    if not validate_order_token(token, order):
+        raise PermissionDenied("Token de pedido inválido o expirado.")
+    return order
 
 
 class OrderViewSet(viewsets.GenericViewSet):
@@ -56,7 +71,7 @@ class OrderViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=["get"], url_path="payment/status")
     def payment_status(self, request, order_number=None):
-        order = get_object_or_404(Order, order_number=order_number)
+        order = _get_order_for_request(request, order_number)
         try:
             txn = OrderService.check_payment_status(order)
         except OrderNotFoundError as exc:
@@ -76,7 +91,7 @@ class OrderViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=["post"], url_path="payment/nequi")
     def create_nequi_qr(self, request, order_number=None):
-        order = get_object_or_404(Order, order_number=order_number)
+        order = _get_order_for_request(request, order_number)
         try:
             txn = OrderService.create_payment(order)
         except PaymentProviderError as exc:

@@ -125,6 +125,7 @@ class Command(BaseCommand):
             slug = es.slug if es else None
             candidates = source_files.get(slug, []) if slug else []
 
+            cache_cleared = False
             for img in product.images.all():
                 if only_type and img.type != only_type:
                     continue
@@ -149,12 +150,19 @@ class Command(BaseCommand):
                     updated += 1
                     continue
 
+                # La URL de ImageKit se deriva del nombre del archivo y de los
+                # procesadores, no del contenido. Si el contenido cambia pero
+                # el nombre no, hay que borrar la caché ANTES de guardar para
+                # que la señal de ImageKit la vuelva a generar con el nuevo
+                # contenido (con Optimistic no se regenera al pedir .url).
+                if client is not None and not cache_cleared:
+                    delete_cache_prefix(product.sku)
+                    cache_cleared = True
+
                 basename = os.path.basename(img.image.name)
                 img.image.save(basename, ContentFile(data), save=True)
                 updated += 1
                 self.stdout.write(f"  OK {product.sku} {img.type} -> {img.image.name}")
-                if client is not None:
-                    delete_cache_prefix(product.sku)
 
         if check_only:
             self.stdout.write(

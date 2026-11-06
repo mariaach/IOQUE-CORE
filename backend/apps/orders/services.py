@@ -116,7 +116,10 @@ class OrderService:
                     unit_price=product.price,
                     quantity=qty,
                 )
-                # Decrement inventory
+                # El producto se cargó con select_for_update(), así que la
+                # reserva de stock es segura dentro de esta transacción.
+                product.stock -= qty
+                product.save(update_fields=["stock", "updated_at"])
             log_event("ORDER_CREATED", order_number=order.order_number)
             order.refresh_from_db()
             return order

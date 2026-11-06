@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.orders.models import Order, OrderItem
+from apps.orders.tokens import make_order_token
 from apps.payments.models import PaymentTransaction
 
 
@@ -16,15 +17,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    access_token = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
             "id", "order_number", "customer_name", "customer_email",
             "customer_phone", "subtotal", "shipping_cost", "discount",
-            "total", "currency", "status", "created_at", "updated_at", "items",
+            "total", "currency", "status", "created_at", "updated_at",
+            "items", "access_token",
         ]
         read_only_fields = fields
+
+    def get_access_token(self, obj) -> str:
+        return make_order_token(obj)
 
 
 class OrderCreateSerializer(serializers.Serializer):

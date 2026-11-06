@@ -315,7 +315,7 @@ class Command(BaseCommand):
     def _generate_thumbnails(self, img):
         for size_attr in ("image_thumbnail", "image_medium"):
             try:
-                getattr(img, size_attr).url
+                getattr(img, size_attr).generate()
             except Exception as e:
                 self.stdout.write(
                     self.style.WARNING(f"  Error generando {size_attr} para imagen {img.id}: {e}")
@@ -326,7 +326,7 @@ class Command(BaseCommand):
         for img in ProductImage.objects.filter(product__category_id=RELIGION_CATEGORY_ID).iterator():
             for size_attr in ("image_thumbnail", "image_medium"):
                 try:
-                    getattr(img, size_attr).url
+                    getattr(img, size_attr).generate()
                 except Exception as e:
                     errors += 1
                     self.stdout.write(self.style.WARNING(

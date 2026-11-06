@@ -323,7 +323,7 @@ class Command(BaseCommand):
         for img in ProductImage.objects.iterator():
             for size_name, size_attr in [("thumbnail", "image_thumbnail"), ("medium", "image_medium")]:
                 try:
-                    getattr(img, size_attr).url
+                    getattr(img, size_attr).generate()
                 except Exception as e:
                     errors += 1
                     self.stdout.write(
@@ -383,7 +383,7 @@ class Command(BaseCommand):
     def _generate_thumbnails(self, img):
         for size_name, size_attr in [("thumbnail", "image_thumbnail"), ("medium", "image_medium")]:
             try:
-                getattr(img, size_attr).url
+                getattr(img, size_attr).generate()
             except Exception as e:
                 self.stdout.write(
                     self.style.WARNING(

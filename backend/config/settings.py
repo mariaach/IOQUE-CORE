@@ -10,7 +10,13 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "insecure-dev-key-change-in-producti
 
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+def _env_list(name: str, default: str) -> list[str]:
+    """Lee una lista separada por comas, ignorando espacios y entradas vacías."""
+    return [value.strip() for value in os.getenv(name, default).split(",") if value.strip()]
+
+
+ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
 # Cloudflare / Reverse Proxy
 USE_X_FORWARDED_HOST = True
@@ -177,17 +183,17 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = os.getenv(
+    CORS_ALLOWED_ORIGINS = _env_list(
         "CORS_ALLOWED_ORIGINS",
         "http://localhost:4200,http://localhost:80,http://127.0.0.1:4200",
-    ).split(",")
+    )
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = os.getenv(
+CSRF_TRUSTED_ORIGINS = _env_list(
     "CSRF_TRUSTED_ORIGINS",
     "http://localhost:80,http://127.0.0.1:80",
-).split(",")
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -230,6 +236,14 @@ NEQUI_MERCHANT_CODE = os.getenv("NEQUI_MERCHANT_CODE", "")
 NEQUI_AUTH_URI = os.getenv("NEQUI_AUTH_URI", "https://oauth.sandbox.nequi.com/token")
 NEQUI_API_BASE_PATH = os.getenv("NEQUI_API_BASE_PATH", "https://api.sandbox.nequi.com/payments/v2")
 NEQUI_NOTIFICATION_URL = os.getenv("NEQUI_NOTIFICATION_URL", "")
+# Secreto compartido para firmar el webhook. Si queda vacío, el endpoint
+# responde 503 y no acepta notificaciones.
+NEQUI_WEBHOOK_SECRET = os.getenv("NEQUI_WEBHOOK_SECRET", "")
+
+# Vigencia del token firmado que permite consultar un pedido concreto.
+ORDER_ACCESS_TOKEN_MAX_AGE = int(
+    os.getenv("ORDER_ACCESS_TOKEN_MAX_AGE", str(60 * 60 * 24 * 30))
+)
 
 # Pagos con QR Nequi
 NEQUI_ENABLED = os.getenv("NEQUI_ENABLED", "True").lower() in ("true", "1", "yes")
