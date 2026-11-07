@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 
 from .models import Category, CategoryTranslation
 
@@ -17,15 +18,24 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [CategoryTranslationInline]
     actions = ["activate_categories", "deactivate_categories"]
 
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("translations")
+            .annotate(_product_count=Count("products"))
+        )
+
     def name_display(self, obj: Category) -> str:
         return str(obj)
 
     name_display.short_description = "nombre"
 
     def product_count(self, obj: Category) -> int:
-        return obj.products.count()
+        return obj._product_count
 
     product_count.short_description = "productos"
+    product_count.admin_order_field = "_product_count"
 
     @admin.action(description="Activar categorías seleccionadas")
     def activate_categories(self, request, queryset):

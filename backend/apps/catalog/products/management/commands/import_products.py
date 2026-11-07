@@ -1,42 +1,78 @@
 import os
 import re
+import json
+import csv
 import hashlib
 import io
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
-from PIL import Image
 from django.db import transaction
 from django.core.files import File
 
 from apps.catalog.products.models import Product, ProductTranslation, ProductImage
-from apps.catalog.categories.models import CategoryTranslation
 from apps.catalog.categories.services import CategoryService
 
 
 class Command(BaseCommand):
-    help = "Importa productos desde los directorios img-breeds e img-keychain"
+    help = "Importa productos desde directorios de imágenes de Recursos"
 
     PRODUCT_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
-    BREEDS_DIR = "/Recursos/img-breeds"
-    KEYCHAIN_DIR = "/Recursos/img-keychain"
+
+    DEFAULT_DIRS = {
+        "1": [("REAL", "/Recursos/img-breeds"), ("KEYCHAIN", "/Recursos/img-keychain")],
+        "3": [("REAL", "/Recursos/img-religion")],
+    }
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--category-id",
+            type=int,
+            default=1,
+            help="ID de la categoría (default: 1=Mascotas)",
+        )
+        parser.add_argument(
+            "--dir",
+            action="append",
+            dest="image_dirs",
+            metavar="TYPE:PATH",
+            help=(
+                "Directorio de imágenes como TYPE:PATH (ej: KEYCHAIN:/Recursos/img-religion). "
+                "Puede repetirse. Si no se indica, usa los directorios por defecto de la categoría."
+            ),
+        )
 
     def handle(self, *args, **options):
-        if not os.path.isdir(self.BREEDS_DIR):
+        category_id = options["category_id"]
+        image_dirs = self._parse_dirs(options.get("image_dirs"), category_id)
+
+        if not image_dirs:
             self.stderr.write(self.style.ERROR(
-                f"Directorio no encontrado: {self.BREEDS_DIR}"
+                f"No hay directorios configurados para categoría {category_id}. "
+                f"Usa --dir TYPE:PATH para especificar."
             ))
             return
 
-        if not os.path.isdir(self.KEYCHAIN_DIR):
-            self.stderr.write(self.style.ERROR(
-                f"Directorio no encontrado: {self.KEYCHAIN_DIR}"
-            ))
-            return
+        # Validar que todos los directorios existan
+        for img_type, dir_path in image_dirs:
+            if not os.path.isdir(dir_path):
+                self.stderr.write(self.style.ERROR(
+                    f"Directorio no encontrado: {dir_path} (tipo: {img_type})"
+                ))
+                return
 
-        breed_files = self._get_files(self.BREEDS_DIR)
-        keychain_files = self._get_files(self.KEYCHAIN_DIR)
-        all_stems = sorted(set(breed_files.keys()) | set(keychain_files.keys()))
+        # Escanear archivos de todos los directorios
+        files_by_type: Dict[str, Dict[str, str]] = {}
+        list_by_dir: Dict[str, Dict[int, dict]] = {}
+        all_stems = set()
+        for img_type, dir_path in image_dirs:
+            files = self._get_files(dir_path)
+            files_by_type[img_type] = files
+            list_by_dir[dir_path] = self._parse_list_file(dir_path)
+            all_stems.update(files.keys())
+
+        all_stems = sorted(all_stems)
 
         if not all_stems:
             self.stdout.write(self.style.WARNING(
@@ -44,7 +80,8 @@ class Command(BaseCommand):
             ))
             return
 
-        category = CategoryService.get_or_create_dogs_category()
+        category = self._get_category(category_id)
+        sku_map = self._load_sku_map()
 
         existing_slugs = set(
             ProductTranslation.objects
@@ -55,21 +92,19 @@ class Command(BaseCommand):
         stems_to_import = [s for s in all_stems if self._slug(s) not in existing_slugs]
 
         if stems_to_import:
-            last_product = Product.objects.order_by("id").last()
-            start_index = (last_product.id + 1) if last_product else 1
-
             created = 0
             errors = []
 
             with transaction.atomic():
-                for i, stem in enumerate(stems_to_import, start=start_index):
+                for stem in stems_to_import:
                     try:
                         self._create_product(
                             stem=stem,
-                            breed_file=breed_files.get(stem),
-                            keychain_file=keychain_files.get(stem),
+                            files_by_type=files_by_type,
+                            image_dirs=image_dirs,
                             category=category,
-                            index=i,
+                            sku_map=sku_map,
+                            list_by_dir=list_by_dir,
                         )
                         created += 1
                     except Exception as e:
@@ -83,8 +118,33 @@ class Command(BaseCommand):
                     self.stderr.write(self.style.WARNING(f"  Error: {error}"))
 
         self._regenerate_thumbnails()
-
         self._fill_missing_translations()
+
+    def _parse_dirs(
+        self, raw_dirs: Optional[List[str]], category_id: int
+    ) -> List[Tuple[str, str]]:
+        if raw_dirs:
+            result = []
+            for entry in raw_dirs:
+                if ":" not in entry:
+                    self.stderr.write(self.style.ERROR(
+                        f"Formato inválido: '{entry}'. Usa TYPE:PATH (ej: KEYCHAIN:/Recursos/img-religion)"
+                    ))
+                    return []
+                img_type, path = entry.split(":", 1)
+                result.append((img_type.upper(), path))
+            return result
+        return self.DEFAULT_DIRS.get(str(category_id), [])
+
+    def _get_category(self, category_id: int):
+        if category_id == 1:
+            return CategoryService.get_or_create_mascotas_category()
+        from apps.catalog.categories.models import Category
+        category, _ = Category.objects.get_or_create(
+            id=category_id,
+            defaults={"active": True},
+        )
+        return category
 
     def _get_files(self, directory: str) -> Dict[str, str]:
         result = {}
@@ -106,10 +166,123 @@ class Command(BaseCommand):
         stem = re.sub(r"^\d+-", "", stem)
         return stem.replace("_", "-").lower()
 
-    def _generate_sku(self, index: int) -> str:
-        return f"KEY-{index:06d}"
+    def _find_list_file(self, image_dir: str) -> Optional[str]:
+        # 1) Busca en el propio directorio de imágenes (ej: listaRelicarios.txt)
+        if os.path.isdir(image_dir):
+            for f in os.listdir(image_dir):
+                if os.path.isfile(os.path.join(image_dir, f)):
+                    if os.path.splitext(f)[0].lower().startswith("lista"):
+                        return os.path.join(image_dir, f)
+        # 2) Busca ListaMascotas.csv en el directorio padre (Recursos/)
+        parent = os.path.dirname(image_dir.rstrip("/"))
+        if os.path.isdir(parent):
+            for f in os.listdir(parent):
+                if os.path.isfile(os.path.join(parent, f)):
+                    if os.path.splitext(f)[0].lower().startswith("listamascotas"):
+                        return os.path.join(parent, f)
+        return None
 
-    def _translation_data(self, name: str, slug: str) -> dict:
+    def _parse_list_file(self, image_dir: str) -> Dict[int, dict]:
+        entries: Dict[int, dict] = {}
+        list_path = self._find_list_file(image_dir)
+        if not list_path:
+            return entries
+        with open(list_path, encoding="utf-8-sig") as fh:
+            for line_no, raw in enumerate(fh, start=1):
+                line = raw.strip()
+                if not line or ";" not in line:
+                    continue
+                parts = [part.strip() for part in line.split(";")]
+                index = -1
+                if parts and re.fullmatch(r"\d+", parts[0]):
+                    index = int(parts[0])
+                    parts = parts[1:]
+                if not parts:
+                    continue
+                if parts[0].lower() == "numero" or (parts[0].lower() in ("raza", "producto", "nombre") and len(parts) > 1 and parts[1].lower() in ("dificultad", "precio")):
+                    continue  # línea de cabecera del CSV
+
+                # Formato ListaMascotas.csv: raza;dificultad;precio_base;envio;precio_total;descripcion
+                if len(parts) >= 5 and parts[1].lower() in ("baja", "media", "alta"):
+                    name = parts[0]
+                    difficulty = parts[1]
+                    price_total = None
+                    total_match = re.search(r"(\d[\d.,]*)", parts[4])
+                    if total_match:
+                        parsed = re.sub(r"[^\d]", "", total_match.group(1))
+                        if parsed:
+                            price_total = int(parsed)
+                    desc = ";".join(parts[5:]).strip() or name
+                    entries.setdefault(index, {
+                        "price": price_total,
+                        "name": name,
+                        "description": desc,
+                        "difficulty": difficulty,
+                    })
+                    continue
+
+                price_part = parts[0]
+                desc = ";".join(parts[1:]).strip() if len(parts) > 1 else ""
+                if not desc:
+                    continue
+                price = None
+                price_match = re.search(r"(\d[\d.,]*)", price_part)
+                if price_match:
+                    parsed = re.sub(r"[^\d]", "", price_match.group(1))
+                    if parsed:
+                        price = int(parsed)
+                name = re.split(r"\s*\(", desc, maxsplit=1)[0].strip().rstrip(".") or desc
+                entries.setdefault(index if index != -1 else line_no, {
+                    "price": price,
+                    "name": name,
+                    "description": desc,
+                })
+        return entries
+
+    def _image_index(self, stem: str) -> int:
+        match = re.match(r"^\s*(\d+)", stem)
+        return int(match.group(1)) if match else -1
+
+    def _generate_sku(self) -> str:
+        last = (
+            Product.objects
+            .filter(sku__startswith="KEY-")
+            .order_by("-sku")
+            .values_list("sku", flat=True)
+            .first()
+        )
+        if last:
+            num = int(last.split("-")[1]) + 1
+        else:
+            num = 1
+        return f"KEY-{num:06d}"
+
+    def _load_sku_map(self) -> Dict[str, str]:
+        products_json = os.path.join(settings.BASE_DIR, "docs", "products.json")
+        if not os.path.exists(products_json):
+            self.stdout.write(self.style.WARNING(
+                f"products.json no encontrado: {products_json}, se generarán SKUs automáticos."
+            ))
+            return {}
+        with open(products_json) as f:
+            data = json.load(f)
+        return {
+            p["translations"]["es"]["slug"]: p["sku"]
+            for p in data
+            if "translations" in p and "es" in p["translations"]
+        }
+
+    def _translation_data(self, name: str, slug: str, description: Optional[str] = None) -> dict:
+        if description:
+            desc = {
+                "name": name,
+                "slug": slug,
+                "short_description": description,
+                "story": description,
+                "seo_title": name,
+                "seo_description": description,
+            }
+            return {lang: dict(desc) for lang in ("es", "en", "pt", "fr")}
         return {
             "es": {
                 "name": name,
@@ -150,7 +323,7 @@ class Command(BaseCommand):
         for img in ProductImage.objects.iterator():
             for size_name, size_attr in [("thumbnail", "image_thumbnail"), ("medium", "image_medium")]:
                 try:
-                    getattr(img, size_attr).url
+                    getattr(img, size_attr).generate()
                 except Exception as e:
                     errors += 1
                     self.stdout.write(
@@ -210,7 +383,7 @@ class Command(BaseCommand):
     def _generate_thumbnails(self, img):
         for size_name, size_attr in [("thumbnail", "image_thumbnail"), ("medium", "image_medium")]:
             try:
-                getattr(img, size_attr).url
+                getattr(img, size_attr).generate()
             except Exception as e:
                 self.stdout.write(
                     self.style.WARNING(
@@ -221,19 +394,42 @@ class Command(BaseCommand):
     def _create_product(
         self,
         stem: str,
-        breed_file: Optional[str],
-        keychain_file: Optional[str],
+        files_by_type: Dict[str, Dict[str, str]],
+        image_dirs: List[Tuple[str, str]],
         category,
-        index: int,
+        sku_map: Dict[str, str],
+        list_by_dir: Dict[str, Dict[int, dict]] = None,
     ):
-        filename = breed_file or keychain_file
-        product_name = self._product_name(filename)
-        slug = self._slug(stem)
-        sku = self._generate_sku(index)
+        list_by_dir = list_by_dir or {}
+        # Find first available file for naming
+        first_file = None
+        first_dir = None
+        for img_type, dir_path in image_dirs:
+            if stem in files_by_type.get(img_type, {}):
+                first_file = files_by_type[img_type][stem]
+                first_dir = dir_path
+                break
+        if not first_file:
+            return
 
-        price_points = [27000, 27500, 28000, 28500, 29000]
-        price_idx = hashlib.md5(stem.encode()).digest()[0] % len(price_points)
-        price = price_points[price_idx]
+        entry = list_by_dir.get(first_dir, {}).get(self._image_index(stem))
+
+        if entry:
+            product_name = entry["name"]
+            description = entry["description"]
+            price = entry["price"]
+        else:
+            product_name = self._product_name(first_file)
+            description = None
+            price = None
+
+        slug = self._slug(stem)
+        sku = sku_map.get(slug, self._generate_sku())
+
+        if not price:
+            price_points = [27000, 27500, 28000, 28500, 29000]
+            price_idx = hashlib.sha256(stem.encode()).digest()[0] % len(price_points)
+            price = price_points[price_idx]
 
         product = Product.objects.create(
             category=category,
@@ -243,7 +439,7 @@ class Command(BaseCommand):
             active=True,
         )
 
-        for lang, name_translated in self._translation_data(product_name, slug).items():
+        for lang, name_translated in self._translation_data(product_name, slug, description).items():
             ProductTranslation.objects.create(
                 product=product,
                 language=lang,
@@ -255,26 +451,19 @@ class Command(BaseCommand):
                 seo_description=name_translated["seo_description"],
             )
 
-        if breed_file:
-            path = os.path.join(self.BREEDS_DIR, breed_file)
-            img_file = self._open_and_resize(path, breed_file)
+        sort_order = 0
+        for img_type, dir_path in image_dirs:
+            filename = files_by_type.get(img_type, {}).get(stem)
+            if not filename:
+                continue
+            path = os.path.join(dir_path, filename)
+            img_file = self._open_and_resize(path, filename)
             img = ProductImage.objects.create(
                 product=product,
-                type=ProductImage.ImageType.REAL,
-                sort_order=0,
+                type=img_type,
+                sort_order=sort_order,
             )
-            img.image.save(breed_file, img_file, save=True)
+            img.image.save(filename, img_file, save=True)
             img_file.close()
             self._generate_thumbnails(img)
-
-        if keychain_file:
-            path = os.path.join(self.KEYCHAIN_DIR, keychain_file)
-            img_file = self._open_and_resize(path, keychain_file)
-            img = ProductImage.objects.create(
-                product=product,
-                type=ProductImage.ImageType.KEYCHAIN,
-                sort_order=1,
-            )
-            img.image.save(keychain_file, img_file, save=True)
-            img_file.close()
-            self._generate_thumbnails(img)
+            sort_order += 1

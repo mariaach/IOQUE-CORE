@@ -11,8 +11,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    expose:
+      - "5432"
     ports:
-      - "5432:5432"
+      # Solo accesible desde el propio host, no desde Internet.
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 15s
@@ -40,13 +43,21 @@ services:
       - media_volume:/app/mediafiles
       - static_volume:/app/staticfiles
       #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
-      - /home/bayron/Documents/IOQUE/Recursos:/Recursos:ro
+      - /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
+      #- /home/bayron/Documents/PROYECTOS/IOQUE/Recursos:/Recursos:ro
     entrypoint:
       - /app/docker/entrypoint.sh
     env_file:
       - .env
     environment:
       POSTGRES_HOST: postgres
+      NEQUI_CLIENT_ID: ${NEQUI_CLIENT_ID}
+      NEQUI_CLIENT_SECRET: ${NEQUI_CLIENT_SECRET}
+      NEQUI_API_KEY: ${NEQUI_API_KEY}
+      NEQUI_MERCHANT_CODE: ${NEQUI_MERCHANT_CODE}
+      NEQUI_AUTH_URI: ${NEQUI_AUTH_URI}
+      NEQUI_API_BASE_PATH: ${NEQUI_API_BASE_PATH}
+      NEQUI_NOTIFICATION_URL: ${NEQUI_NOTIFICATION_URL}
     depends_on:
       postgres:
         condition: service_healthy

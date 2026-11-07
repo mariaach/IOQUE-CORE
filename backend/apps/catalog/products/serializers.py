@@ -6,10 +6,12 @@ from .models import Product, ProductTranslation, ProductImage
 class ProductImageSerializer(serializers.ModelSerializer):
     url = serializers.ImageField(source="image", read_only=True)
     thumbnail = serializers.SerializerMethodField()
+    medium = serializers.SerializerMethodField()
+    alt = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductImage
-        fields = ["id", "url", "thumbnail", "type", "sort_order"]
+        fields = ["id", "url", "thumbnail", "medium", "alt", "type", "sort_order"]
 
     def get_thumbnail(self, obj: ProductImage) -> str | None:
         try:
@@ -20,6 +22,27 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return obj.image.url
         except Exception:
             return None
+
+    def get_medium(self, obj: ProductImage) -> str | None:
+        try:
+            return obj.image_medium.url
+        except Exception:
+            pass
+        try:
+            return obj.image.url
+        except Exception:
+            return None
+
+    def get_alt(self, obj: ProductImage) -> str:
+        product_name = ""
+        for trans in obj.product.translations.all():
+            if trans.language == self.context.get("language", "es"):
+                product_name = trans.name
+                break
+        if not product_name:
+            product_name = obj.product.sku
+        type_labels = {"REAL": "Real", "KEYCHAIN": "Llavero", "DETAIL": "Detalle", "PACKAGE": "Empaque"}
+        return f"{product_name} - {type_labels.get(obj.type, obj.type)}"
 
 
 class ProductTranslationSerializer(serializers.ModelSerializer):

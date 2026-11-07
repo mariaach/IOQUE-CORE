@@ -66,17 +66,8 @@ docker compose exec django python manage.py import_products
 
 ### Autenticación
 
-```bash
-# Obtener token
-curl -X POST http://localhost/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "admin123"}'
-
-# Refrescar token
-curl -X POST http://localhost/api/token/refresh/ \
-  -H "Content-Type: application/json" \
-  -d '{"refresh": "..."}'
-```
+La API de catálogo es **pública y de solo lectura**: no requiere token.
+La gestión de datos se hace desde el panel de administración (`/admin/`).
 
 ### Endpoints
 
@@ -106,6 +97,84 @@ curl -X POST http://localhost/api/token/refresh/ \
 /api/products/?ordering=-created_at
 /api/products/?ordering=price,-created_at
 ```
+
+## Pedidos y Pagos con QR Nequi
+
+Flujo completo de compra: el cliente agrega productos al carrito, crea un pedido y paga escaneando un QR con Nequi.
+
+### Endpoints de pedidos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/orders/` | Crear pedido. Body: `{"items": [{"product_id": 1, "quantity": 2}], "idempotency_key": "..."}` |
+| GET | `/api/orders/{order_number}/payment/status/` | Consultar estado del pago (requiere token) |
+| POST | `/api/orders/{order_number}/payment/nequi/` | Generar QR de pago para el pedido (requiere token) |
+
+La creación del pedido devuelve `access_token`, un token firmado y con caducidad (30 días por defecto). Los endpoints de estado y QR lo exigen en la cabecera `X-Order-Token` (o `?token=`); sin él responden `403`. Así el número de pedido, que es corto y predecible, no permite consultar pedidos ajenos.
+
+Seguridad de precios: el backend calcula siempre el subtotal, envío y total desde la base de datos (`Product.price`). El frontend solo envía `product_id` y `quantity`; nunca confía en el precio del navegador. El stock se descuenta al crear el pedido dentro de la misma transacción que valida la disponibilidad.
+
+Envío incluido: no se cobra envío adicional (`DEFAULT_SHIPPING_COST=0`). Si la cantidad total de productos supera `SHIPPING_DISCOUNT_THRESHOLD` (2), se descuenta `SHIPPING_DISCOUNT_PER_EXTRA` (15000 COP) del total por cada producto adicional.
+
+### Estados del pedido y del pago
+
+- **Order**: `PENDING_PAYMENT` → `PAYMENT_PROCESSING` → `PAID` · `PAYMENT_FAILED` · `PAYMENT_EXPIRED` · `CANCELLED` · `REFUNDED` · `COMPLETED`
+- **PaymentTransaction**: `CREATED` → `QR_GENERATED` → `PENDING` → `APPROVED` · `REJECTED` · `EXPIRED` · `CANCELLED` · `REVERSED` · `ERROR`
+
+El pedido y la transacción se crean en una única transacción de base de datos con validación de stock. Un doble clic en "pagar" devuelve la misma transacción (idempotencia).
+
+### Modos de pago Nequi
+
+| Variable | Valor | Descripción |
+|----------|-------|-------------|
+| `NEQUI_PAYMENT_MODE` | `static` | QR fijo del negocio (`NEQUI_STATIC_QR_URL`). Listo para producción sin credenciales. |
+| `NEQUI_PAYMENT_MODE` | `dynamic` | QR por transacción vía API oficial (requiere credenciales QA/sandbox). |
+
+- **Modo estático**: se muestra la imagen QR configurada en `NEQUI_STATIC_QR_URL`. No depende de la API de Nequi.
+- **Modo dinámico**: preparado en `NequiDynamicProvider`; requiere credenciales de `docs.conecta.nequi.com.co` (auth AWS-Sv4 + API Key) y pruebas en la app sandbox de Nequi.
+
+### Variables de entorno (`.env`)
+
+```
+NEQUI_ENABLED=True
+NEQUI_ENVIRONMENT=sandbox
+NEQUI_PAYMENT_MODE=static
+NEQUI_CLIENT_ID=...
+NEQUI_CLIENT_SECRET=...
+NEQUI_API_KEY=...
+NEQUI_MERCHANT_CODE=...
+NEQUI_AUTH_URI=https://oauth.sandbox.nequi.com/token
+NEQUI_API_BASE_PATH=https://api.sandbox.nequi.com/payments/v2
+NEQUI_NOTIFICATION_URL=https://tudominio.com/api/payments/nequi-webhook/?token=<NEQUI_WEBHOOK_SECRET>
+NEQUI_WEBHOOK_SECRET=<secreto-largo-y-aleatorio>
+NEQUI_STATIC_QR_URL=https://tudominio.com/media/qr-nequi.png
+NEQUI_BUSINESS_NAME=IO QUE Artesanías
+NEQUI_PAYMENT_EXPIRATION_MINUTES=15
+```
+
+### Confirmación del pago
+
+- **Polling**: el frontend consulta `payment/status/` cada 5s y se detiene en estados terminales (`APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`, `ERROR`). El frontend **nunca** confirma un pago: solo lee el estado.
+- **Webhook**: `POST /api/payments/nequi-webhook/` valida la firma y actualiza el pedido; si la API no notifica, el polling con `getStatusPayment` es la fuente de verdad.
+  - Firma HMAC-SHA256 del cuerpo en `X-Nequi-Signature` (hex o `sha256=<hex>`), o `?token=<NEQUI_WEBHOOK_SECRET>`.
+  - Si `NEQUI_WEBHOOK_SECRET` está vacío, el endpoint responde `503`: nunca queda abierto.
+  - Los endpoints legados `/api/payments/nequi-pay/` y `/api/payments/nequi-status/` fueron eliminados (ahora `404`).
+
+### Tests
+
+```bash
+docker compose exec django python manage.py test apps.orders apps.catalog.products --noinput
+```
+
+Cubren: creación de pedido, cálculo de totales desde BD, snapshot de OrderItems, idempotencia, validación y descuento de stock, QR estático, aprobado/rechazado/expirado, doble pago, tokens de pedido, firma del webhook y validaciones SSRF/rutas locales.
+
+### Notas de seguridad y despliegue
+
+- `DJANGO_DEBUG=False` en producción. Con `DEBUG=True` Django expone trazas y detalles internos.
+- nginx conserva `X-Forwarded-Proto=https` cuando Cloudflare termina TLS (`map $http_x_forwarded_proto`). Si el origen también atiende HTTP directo por IP, deja `SECURE_SSL_REDIRECT=False`; actívalo solo cuando todo el tráfico llegue por HTTPS.
+- PostgreSQL se publica únicamente en `127.0.0.1:5432`, no en todas las interfaces.
+- `.env` debe tener permisos `600` y no se versiona (solo `.env.example`).
+- El admin de imágenes solo descarga URLs públicas HTTP(S) en puertos 80/443, con límite de tamaño y redirecciones, y solo lee archivos de imagen dentro de `/Recursos`. El contenido se valida con Pillow (JPEG/PNG/WebP).
 
 ## Estructura del Proyecto
 
@@ -153,7 +222,27 @@ docker compose exec django python manage.py import_products
 
 # Recolectar estáticos
 docker compose exec django python manage.py collectstatic --noinput
+
+# Verificar/regenerar miniaturas y versiones medianas (ImageKit -> R2)
+docker compose exec django python manage.py regenerate_thumbnails
 ```
+
+### Imágenes que devuelven 404 en `/CACHE/images/...`
+
+Las URLs `CACHE/images/...` las genera ImageKit. Con la estrategia `Optimistic`
+el archivo **no** se crea al pedir la URL: se genera al guardar la imagen. Si se
+borra la caché del SKU sin regenerarla, la URL queda en 404 aunque la imagen
+original exista.
+
+Para repararlo:
+
+```bash
+docker compose exec django python manage.py regenerate_thumbnails
+```
+
+No borres manualmente `CACHE/images/products/<SKU>/`; para invalidar una imagen
+usa el panel de administración o `sync_product_images`, que regeneran todas las
+variantes del producto.
 
 
 

@@ -10,7 +10,36 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "insecure-dev-key-change-in-producti
 
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+def _env_list(name: str, default: str) -> list[str]:
+    """Lee una lista separada por comas, ignorando espacios y entradas vacías."""
+    return [value.strip() for value in os.getenv(name, default).split(",") if value.strip()]
+
+
+ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+
+# Cloudflare / Reverse Proxy
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# --- Security hardened for production ---
+_INSECURE_KEYS = frozenset({
+    "insecure-dev-key-change-in-production",
+    "change-this-to-a-random-secret-key",
+})
+if not DEBUG and SECRET_KEY in _INSECURE_KEYS:
+    raise RuntimeError(
+        "SECRET_KEY inseguro en producción. "
+        "Define DJANGO_SECRET_KEY en las variables de entorno."
+    )
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() in ("true", "1", "yes")
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,6 +52,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_filters",
+    "drf_spectacular",
     "imagekit",
     # Local apps
     "apps.catalog.categories",
@@ -31,6 +61,8 @@ INSTALLED_APPS = [
     "apps.catalog.common",
     "apps.api",
     "apps.contact",
+    "apps.payments",
+    "apps.orders",
 ]
 
 MIDDLEWARE = [
@@ -89,12 +121,6 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
-if not DEBUG and SECRET_KEY == "insecure-dev-key-change-in-production":
-    raise RuntimeError(
-        "SECRET_KEY inseguro en producción. "
-        "Define DJANGO_SECRET_KEY en las variables de entorno."
-    )
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
@@ -110,8 +136,6 @@ LANGUAGES = [
     ("fr", "Français"),
 ]
 
-LOCALE_PATHS = [BASE_DIR / "locale"]
-
 TIME_ZONE = os.getenv("DJANGO_TIMEZONE", "America/Mexico_City")
 
 USE_I18N = True
@@ -123,27 +147,53 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
-IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.JustInTime"
-
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
+# Cloudflare R2 Storage Settings
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "auto")
+AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL") or None
+AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "False").lower() == "true"
+AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
+AWS_S3_ADDRESSING_STYLE = "path"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# Optimistic: genera la caché al guardar la imagen y no consulta el storage
+# al acceder a .url, evitando la generación perezosa (lenta) dentro del request.
+# Se debe pre-generar con regenerate_thumbnails tras importar productos.
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Limit request body and file upload sizes (10 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = os.getenv(
+    CORS_ALLOWED_ORIGINS = _env_list(
         "CORS_ALLOWED_ORIGINS",
         "http://localhost:4200,http://localhost:80,http://127.0.0.1:4200",
-    ).split(",")
+    )
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = os.getenv(
+CSRF_TRUSTED_ORIGINS = _env_list(
     "CSRF_TRUSTED_ORIGINS",
     "http://localhost:80,http://127.0.0.1:80",
-).split(",")
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -159,8 +209,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.openapi.AutoSchema",
-    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
@@ -170,6 +219,43 @@ REST_FRAMEWORK = {
         "user": os.getenv("DRF_THROTTLE_USER", "120/minute"),
     },
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "IOQUE - API de Catálogo",
+    "DESCRIPTION": "API REST del catálogo de productos artesanales de IOQUE.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+}
+
+# Nequi
+NEQUI_CLIENT_ID = os.getenv("NEQUI_CLIENT_ID", "")
+NEQUI_CLIENT_SECRET = os.getenv("NEQUI_CLIENT_SECRET", "")
+NEQUI_API_KEY = os.getenv("NEQUI_API_KEY", "")
+NEQUI_MERCHANT_CODE = os.getenv("NEQUI_MERCHANT_CODE", "")
+NEQUI_AUTH_URI = os.getenv("NEQUI_AUTH_URI", "https://oauth.sandbox.nequi.com/token")
+NEQUI_API_BASE_PATH = os.getenv("NEQUI_API_BASE_PATH", "https://api.sandbox.nequi.com/payments/v2")
+NEQUI_NOTIFICATION_URL = os.getenv("NEQUI_NOTIFICATION_URL", "")
+# Secreto compartido para firmar el webhook. Si queda vacío, el endpoint
+# responde 503 y no acepta notificaciones.
+NEQUI_WEBHOOK_SECRET = os.getenv("NEQUI_WEBHOOK_SECRET", "")
+
+# Vigencia del token firmado que permite consultar un pedido concreto.
+ORDER_ACCESS_TOKEN_MAX_AGE = int(
+    os.getenv("ORDER_ACCESS_TOKEN_MAX_AGE", str(60 * 60 * 24 * 30))
+)
+
+# Pagos con QR Nequi
+NEQUI_ENABLED = os.getenv("NEQUI_ENABLED", "True").lower() in ("true", "1", "yes")
+NEQUI_ENVIRONMENT = os.getenv("NEQUI_ENVIRONMENT", "sandbox")
+NEQUI_PAYMENT_MODE = os.getenv("NEQUI_PAYMENT_MODE", "static")
+NEQUI_MERCHANT_PHONE = os.getenv("NEQUI_MERCHANT_PHONE", "3216153977")
+NEQUI_STATIC_QR_URL = os.getenv("NEQUI_STATIC_QR_URL", "")
+NEQUI_BUSINESS_NAME = os.getenv("NEQUI_BUSINESS_NAME", "IO QUE Artesanías")
+NEQUI_PAYMENT_EXPIRATION_MINUTES = int(os.getenv("NEQUI_PAYMENT_EXPIRATION_MINUTES", "15"))
+DEFAULT_SHIPPING_COST = int(os.getenv("DEFAULT_SHIPPING_COST", "0"))
+SHIPPING_DISCOUNT_THRESHOLD = int(os.getenv("SHIPPING_DISCOUNT_THRESHOLD", "2"))
+SHIPPING_DISCOUNT_PER_EXTRA = int(os.getenv("SHIPPING_DISCOUNT_PER_EXTRA", "15000"))
 
 LOGGING = {
     "version": 1,

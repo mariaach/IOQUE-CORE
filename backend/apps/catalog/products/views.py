@@ -39,6 +39,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if not query:
             return Response({"results": []})
         products = ProductService.search_products(query, language)
+        page = self.paginate_queryset(products)
+        if page is not None:
+            serializer = ProductListSerializer(
+                page, many=True, context={"language": language},
+            )
+            return self.get_paginated_response(serializer.data)
         serializer = ProductListSerializer(
             products, many=True, context={"language": language},
         )

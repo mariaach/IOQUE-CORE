@@ -3,7 +3,6 @@ from rest_framework import viewsets, permissions
 from .models import Category
 from .serializers import CategoryListSerializer, CategoryDetailSerializer
 from .filters import CategoryFilter
-from .services import CategoryService
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
